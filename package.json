@@ -1,0 +1,34 @@
+{
+  "name": "510k-sift",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Setfive/510k-sift.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Setfive/510k-sift/issues"
+  },
+  "homepage": "https://github.com/Setfive/510k-sift#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.332.0",
+    "@aws-sdk/s3-request-presigner": "^3.332.0",
+    "axios": "^1.4.0",
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "moment": "^2.29.4",
+    "prettier": "^2.8.8",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.9.1",
+    "typeorm": "^0.3.16",
+    "typescript": "^5.0.4"
+  }
+}
