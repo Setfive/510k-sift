@@ -61,7 +61,7 @@ async function download() {
     end += 1000;
   }
 
-  logger.info(`getDownloadUrls: ${chunks.length} chunks!`);
+  logger.info(`download: ${chunks.length} chunks!`);
 
   let num = 0;
   for (const chunk of chunks) {
