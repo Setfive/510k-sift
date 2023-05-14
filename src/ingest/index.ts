@@ -47,6 +47,7 @@ export const appDataSource = new DataSource({
   } else if (options.command === "getDownloadUrls") {
     await getDownloadUrls();
   } else if (options.command === "download") {
+    await download();
   }
 })();
 
@@ -61,13 +62,13 @@ async function download() {
     end += 1000;
   }
 
-  logger.info(`download: ${chunks.length} chunks!`);
-
+  const curls: string[] = [];
   let num = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
+      .where("u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL")
       .orderBy("u.id", "ASC")
       .limit(1000)
       .offset(chunk[0])
@@ -75,9 +76,20 @@ async function download() {
     for (const record of records) {
       num += 1;
       const percent = Math.round((num / totalRecords) * 100);
-      logger.info(`${num} / ${totalRecords} (${percent})`);
+
+      if (record.summaryStatementURL) {
+        curls.push(
+          `curl -o statement_${record.knumber}.pdf ${record.summaryStatementURL}`
+        );
+      }
+
+      if (record.foiaURL) {
+        curls.push(`curl -o foia_${record.knumber}.pdf ${record.foiaURL}`);
+      }
     }
   }
+
+  console.log(curls.join("\n"));
 }
 
 async function getDownloadUrls() {
@@ -229,7 +241,6 @@ async function fetch510kCSV(url: string): Promise<string> {
           });
         });
       });
-      zipfile.on("end", () => {});
     });
   });
 }
