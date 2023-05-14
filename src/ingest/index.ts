@@ -46,8 +46,39 @@ export const appDataSource = new DataSource({
     await createdb();
   } else if (options.command === "getDownloadUrls") {
     await getDownloadUrls();
+  } else if (options.command === "download") {
   }
 })();
+
+async function download() {
+  const totalRecords = await appDataSource.getRepository(Device).count();
+  const chunks: number[][] = [];
+  let start = 0;
+  let end = 1000;
+  while (end < totalRecords) {
+    chunks.push([start, end]);
+    start += 1000;
+    end += 1000;
+  }
+
+  logger.info(`getDownloadUrls: ${chunks.length} chunks!`);
+
+  let num = 0;
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .orderBy("u.id", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const record of records) {
+      num += 1;
+      const percent = Math.round((num / totalRecords) * 100);
+      logger.info(`${num} / ${totalRecords} (${percent})`);
+    }
+  }
+}
 
 async function getDownloadUrls() {
   const totalRecords = await appDataSource.getRepository(Device).count();
