@@ -98,7 +98,7 @@ async function getDownloadUrls() {
 
       num += 1;
       const percent = Math.round((num / totalRecords) * 100);
-      logger.info(`${num} / ${totalRecords} (${percent})`);`
+      logger.info(`${num} / ${totalRecords} (${percent})`);
     }
   }
 }
