@@ -95,10 +95,11 @@ async function getDownloadUrls() {
       } catch (e) {
         logger.error(e.message);
       }
-    }
 
-    num += 1;
-    logger.info(Math.round((num / totalRecords) * 100));
+      num += 1;
+      const percent = Math.round((num / totalRecords) * 100);
+      logger.info(`${num} / ${totalRecords} (${percent})`);`
+    }
   }
 }
 
