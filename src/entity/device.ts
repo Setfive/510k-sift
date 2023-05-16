@@ -36,10 +36,10 @@ export class Device {
   postal_code: string;
 
   @Column()
-  datereceived: string;
+  datereceived: Date;
 
   @Column()
-  decisiondate: string;
+  decisiondate: Date;
 
   @Column()
   decision: string;

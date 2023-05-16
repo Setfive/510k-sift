@@ -4,6 +4,7 @@ import * as winston from "winston";
 import { ICommandLineArgs, ICSVEntry } from "./types";
 import { CURRENT_MONTH_510k_CSV, HISTORICAL_510k_CSVs } from "./data";
 import axios from "axios";
+import * as moment from "moment";
 import * as yauzl from "yauzl";
 import { v4 as uuidv4 } from "uuid";
 import * as cheerio from "cheerio";
@@ -180,8 +181,8 @@ async function createdb() {
       item.country_code = record.COUNTRY_CODE;
       item.zip = record.ZIP;
       item.postal_code = record.POSTAL_CODE;
-      item.datereceived = record.DATERECEIVED;
-      item.decisiondate = record.DECISIONDATE;
+      item.datereceived = moment(record.DATERECEIVED, "MM/DD/YYYY").toDate();
+      item.decisiondate = moment(record.DECISIONDATE, "MM/DD/YYYY").toDate();
       item.decision = record.DECISION;
       item.reviewadvisecomm = record.REVIEWADVISECOMM;
       item.productcode = record.PRODUCTCODE;
