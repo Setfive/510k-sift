@@ -1,10 +1,13 @@
+import { Device } from "../entity/device";
+
 export interface ICommandLineArgs {
   command:
     | "createdb"
     | "convertPdfToJson"
     | "createBashConverts"
     | "getDownloadUrls"
-    | "download";
+    | "download"
+    | "calculateTokens";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {
@@ -34,4 +37,9 @@ export interface ICSVEntry {
   THIRDPARTY: string;
   EXPEDITEDREVIEW: string;
   DEVICENAME: string;
+}
+
+export interface IDeviceJson extends Device {
+  statementText: string;
+  foiaText: string;
 }

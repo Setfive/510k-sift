@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
-import { ICommandLineArgsExtract } from "../types/types";
+import { ICommandLineArgsExtract, IDeviceJson } from "../types/types";
 import { Device } from "../entity/device";
 import { appDataSource } from "../db";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -49,8 +49,47 @@ const logger = winston.createLogger({
     await convertPdfToJson(options.id);
   } else if (options.command === "createBashConverts") {
     await createBashConverts();
+  } else if (options.command === "calculateTokens") {
+    await calculateTokens();
   }
 })();
+
+async function calculateTokens() {
+  const totalRecords = await appDataSource.getRepository(Device).count();
+  const chunks: number[][] = [];
+  let start = 0;
+  let end = 1000;
+  while (end < totalRecords) {
+    chunks.push([start, end]);
+    start += 1000;
+    end += 1000;
+  }
+
+  let totalStringLength = 0;
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where("u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL")
+      .orderBy("u.id", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const record of records) {
+      const file = `${process.cwd()}/data/json/${record.knumber}.json`;
+      if (!fs.existsSync(file)) {
+        continue;
+      }
+      const data: IDeviceJson = JSON.parse(
+        fs.readFileSync(file, "utf8")
+      ) as IDeviceJson;
+      totalStringLength += data.statementText.split(" ").length;
+      totalStringLength += data.foiaText.split(" ").length;
+    }
+  }
+
+  console.log(`totalStringLength = ${totalStringLength}`);
+}
 
 async function createBashConverts() {
   const totalRecords = await appDataSource.getRepository(Device).count();

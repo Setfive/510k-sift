@@ -37,4 +37,3 @@ lerna-debug.log*
 # Custom
 db.sqlite
 data/
-unstructured/venv/

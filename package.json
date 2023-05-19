@@ -13,7 +13,8 @@
     "ingest:download": "npm run ingest -- --command=download",
     "extract": "ts-node --project tsconfig.json --files src/extract/index.ts",
     "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson",
-    "extract:create-commands": "npm run extract -- --command=createBashConverts"
+    "extract:create-commands": "npm run extract -- --command=createBashConverts",
+    "extract:calculate-tokens": "npm run extract -- --command=calculateTokens"
   },
   "repository": {
     "type": "git",
