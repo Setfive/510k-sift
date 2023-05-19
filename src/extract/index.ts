@@ -74,7 +74,9 @@ async function createBashConverts() {
       .offset(chunk[0])
       .getMany();
     for (const record of records) {
-      cmds.push(`npm run extract:pdf-to-json -- --id=${record.id}`);
+      cmds.push(
+        `node dist/extract/index.js  --command=convertPdfToJson --id=${record.id}`
+      );
     }
   }
 
