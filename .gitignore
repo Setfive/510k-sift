@@ -37,3 +37,4 @@ lerna-debug.log*
 # Custom
 db.sqlite
 data/
+.env

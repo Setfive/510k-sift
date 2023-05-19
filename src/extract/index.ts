@@ -70,7 +70,7 @@ async function calculateTokens() {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where("u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL")
+      .where(`u.datereceived > '2020-01-01T00:00:00'`)
       .orderBy("u.id", "ASC")
       .limit(1000)
       .offset(chunk[0])
