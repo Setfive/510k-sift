@@ -1,16 +1,9 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
-import {
-  ICommandLineArgs,
-  ICommandLineArgsExtract,
-  ICSVEntry,
-} from "../types/types";
-import axios from "axios";
-import * as moment from "moment";
-import * as yauzl from "yauzl";
-import { v4 as uuidv4 } from "uuid";
-import * as cheerio from "cheerio";
+import { ICommandLineArgsExtract } from "../types/types";
+import { Device } from "../entity/device";
+import { appDataSource } from "../db";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -21,11 +14,6 @@ const process = require("process");
 const util = require("util");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require("child_process").exec);
-import { parse } from "csv-parse/sync";
-import { DataSource } from "typeorm";
-import { Device } from "../entity/device";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { appDataSource } from "../db";
 
 let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdfdata";
 let PDF_TO_TEXT = "/usr/bin/pdftotext";
