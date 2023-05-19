@@ -1,5 +1,9 @@
 export interface ICommandLineArgs {
-  command: "createdb";
+  command: "createdb" | "convertPdfToJson";
+}
+
+export interface ICommandLineArgsExtract extends ICommandLineArgs {
+  id: string;
 }
 
 export interface ICSVEntry {

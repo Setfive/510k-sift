@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
-import { ICommandLineArgs, ICSVEntry } from "./types";
+import { ICommandLineArgs, ICSVEntry } from "../types/types";
 import { CURRENT_MONTH_510k_CSV, HISTORICAL_510k_CSVs } from "./data";
 import axios from "axios";
 import * as moment from "moment";
@@ -16,6 +16,7 @@ import { parse } from "csv-parse/sync";
 import { DataSource } from "typeorm";
 import { Device } from "../entity/device";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { appDataSource } from "../db";
 
 const logger = winston.createLogger({
   level: "info",
@@ -24,16 +25,6 @@ const logger = winston.createLogger({
     winston.format.timestamp() // adds a timestamp property
   ),
   transports: [new winston.transports.Console()],
-});
-
-export const appDataSource = new DataSource({
-  type: "sqlite",
-  database: "db.sqlite",
-  synchronize: true,
-  logging: false,
-  entities: [Device],
-  subscribers: [],
-  migrations: [],
 });
 
 (async () => {

@@ -10,7 +10,8 @@
     "ingest:createdb": "npm run ingest -- --command=createdb",
     "ingest:getDownloadUrls": "npm run ingest -- --command=getDownloadUrls",
     "ingest:download": "npm run ingest -- --command=download",
-    "convert:pdf-to-json": "npm run ingest -- --command=convertPdfToJson"
+    "extract": "ts-node --project tsconfig.json --files src/extract/index.ts",
+    "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson"
   },
   "repository": {
     "type": "git",

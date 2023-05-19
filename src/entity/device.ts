@@ -75,7 +75,13 @@ export class Device {
   summaryStatementURL: string;
 
   @Column({ nullable: true })
+  summaryStatementNeedsOCR: boolean;
+
+  @Column({ nullable: true })
   foiaURL: string;
+
+  @Column({ nullable: true })
+  foiaNeedsOCR: boolean;
 
   @Column({ nullable: true })
   summaryStatementS3Path: string;
