@@ -20,3 +20,13 @@ $ cd unstructured-inference
 $ make install 
 $ make run-app-dev
 ```
+
+If you have a GPU available (and want to use it), you'll need to install NVIDIA drivers and CUDA for your system.
+
+```
+$ sudo apt install ubuntu-drivers-common
+$ sudo ubuntu-drivers autoinstall
+$ wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
+$ sudo dpkg -i cuda-keyring_1.0-1_all.deb
+$ sudo apt-get -y install cuda cuda-drivers
+```

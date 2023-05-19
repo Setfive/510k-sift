@@ -9,7 +9,8 @@
     "ingest": "ts-node --project tsconfig.json --files src/ingest/index.ts",
     "ingest:createdb": "npm run ingest -- --command=createdb",
     "ingest:getDownloadUrls": "npm run ingest -- --command=getDownloadUrls",
-    "ingest:download": "npm run ingest -- --command=download"
+    "ingest:download": "npm run ingest -- --command=download",
+    "convert:pdf-to-json": "npm run ingest -- --command=convertPdfToJson"
   },
   "repository": {
     "type": "git",
