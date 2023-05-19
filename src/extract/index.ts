@@ -131,9 +131,12 @@ async function convertPdfToJson(id: string) {
 
 async function extractTextWithPdfToText(path: string): Promise<string> {
   const pdfPath = DOWNLOADED_PDF_PATH + "/" + path;
-  const { stdout, stderr } = await exec(`${PDF_TO_TEXT} ${pdfPath} -`);
+  const { stdout, stderr } = await exec(
+    `${PDF_TO_TEXT} ${pdfPath} - > /tmp/output.txt`
+  );
   // TODO: probably should do something if theres a stderr?
-  return stdout.trim();
+  const data = fs.readFileSync("/tmp/output.txt", "utf8");
+  return data.trim();
 }
 
 async function extractTextWithOCR(path: string): Promise<string> {
