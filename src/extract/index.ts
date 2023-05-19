@@ -15,7 +15,7 @@ const util = require("util");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require("child_process").exec);
 
-let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdfdata";
+let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdf_data";
 let PDF_TO_TEXT = "/usr/bin/pdftotext";
 
 if (process.env.DOWNLOADED_PDF_PATH) {
