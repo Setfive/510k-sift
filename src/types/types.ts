@@ -1,5 +1,5 @@
 export interface ICommandLineArgs {
-  command: "createdb" | "convertPdfToJson";
+  command: "createdb" | "convertPdfToJson" | "createBashConverts";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {

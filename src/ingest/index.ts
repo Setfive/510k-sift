@@ -55,7 +55,6 @@ async function download() {
   }
 
   const curls: string[] = [];
-  let num = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
@@ -66,9 +65,6 @@ async function download() {
       .offset(chunk[0])
       .getMany();
     for (const record of records) {
-      num += 1;
-      const percent = Math.round((num / totalRecords) * 100);
-
       if (record.summaryStatementURL) {
         curls.push(
           `curl -o statement_${record.knumber}.pdf ${record.summaryStatementURL}`

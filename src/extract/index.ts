@@ -47,8 +47,39 @@ const logger = winston.createLogger({
 
   if (options.command === "convertPdfToJson") {
     await convertPdfToJson(options.id);
+  } else if (options.command === "createBashConverts") {
+    await createBashConverts();
   }
 })();
+
+async function createBashConverts() {
+  const totalRecords = await appDataSource.getRepository(Device).count();
+  const chunks: number[][] = [];
+  let start = 0;
+  let end = 1000;
+  while (end < totalRecords) {
+    chunks.push([start, end]);
+    start += 1000;
+    end += 1000;
+  }
+
+  const cmds: string[] = [];
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where("u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL")
+      .orderBy("u.id", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const record of records) {
+      cmds.push(`npm run extract:pdf-to-json -- --id=${record.id}`);
+    }
+  }
+
+  console.log(cmds.join("\n"));
+}
 
 async function convertPdfToJson(id: string) {
   if (!id) {
