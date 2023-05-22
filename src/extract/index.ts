@@ -51,10 +51,43 @@ const logger = winston.createLogger({
     await createBashConverts();
   } else if (options.command === "calculateTokens") {
     await calculateTokens();
+  } else if (options.command === "extractIFUForm3881") {
+    await extractIFUForm3881();
   }
 })();
 
-async function calculateTokens() {
+async function extractIFUForm3881() {
+  const chunks: number[][] = await getDeviceIdChunks();
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where(
+        `u.summaryStatementNeedsOCR is null AND u.summaryStatementURL is not null`
+      )
+      .orderBy("u.datereceived", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const entry of records) {
+      const path = `statement_${entry.knumber}.pdf`;
+      const statementText = await extractTextWithPdfToText(path);
+      if (!statementText.includes("FORM FDA 3881")) {
+        continue;
+      }
+      const indicationsForUse = statementText.substring(
+        statementText.indexOf("Indications for Use (Describe)"),
+        statementText.indexOf("Type of Use (Select one or both, as applicable)")
+      );
+      entry.indicationsForUse = indicationsForUse;
+      await appDataSource.getRepository(Device).save(entry);
+      logger.info(entry.knumber);
+      logger.info(indicationsForUse);
+    }
+  }
+}
+
+async function getDeviceIdChunks() {
   const totalRecords = await appDataSource.getRepository(Device).count();
   const chunks: number[][] = [];
   let start = 0;
@@ -65,13 +98,19 @@ async function calculateTokens() {
     end += 1000;
   }
 
+  return chunks;
+}
+
+async function calculateTokens() {
+  const chunks: number[][] = await getDeviceIdChunks();
+
   let totalStringLength = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where(`u.datereceived > '2020-01-01T00:00:00'`)
-      .orderBy("u.id", "ASC")
+      .where(`u.datereceived > '2022-01-01T00:00:00'`)
+      .orderBy("u.datereceived", "DESC")
       .limit(1000)
       .offset(chunk[0])
       .getMany();
@@ -92,15 +131,7 @@ async function calculateTokens() {
 }
 
 async function createBashConverts() {
-  const totalRecords = await appDataSource.getRepository(Device).count();
-  const chunks: number[][] = [];
-  let start = 0;
-  let end = 1000;
-  while (end < totalRecords) {
-    chunks.push([start, end]);
-    start += 1000;
-    end += 1000;
-  }
+  const chunks: number[][] = await getDeviceIdChunks();
 
   const cmds: string[] = [];
   for (const chunk of chunks) {

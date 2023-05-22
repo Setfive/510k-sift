@@ -7,7 +7,8 @@ export interface ICommandLineArgs {
     | "createBashConverts"
     | "getDownloadUrls"
     | "download"
-    | "calculateTokens";
+    | "calculateTokens"
+    | "extractIFUForm3881";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {

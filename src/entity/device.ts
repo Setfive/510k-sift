@@ -88,4 +88,7 @@ export class Device {
 
   @Column({ nullable: true })
   foiaUS3Path: string;
+
+  @Column({ nullable: true, type: "text" })
+  indicationsForUse: string;
 }

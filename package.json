@@ -14,7 +14,8 @@
     "extract": "ts-node --project tsconfig.json --files src/extract/index.ts",
     "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson",
     "extract:create-commands": "npm run extract -- --command=createBashConverts",
-    "extract:calculate-tokens": "npm run extract -- --command=calculateTokens"
+    "extract:calculate-tokens": "npm run extract -- --command=calculateTokens",
+    "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881"
   },
   "repository": {
     "type": "git",
