@@ -87,7 +87,7 @@ async function extractIFUForm3881() {
       entry.indicationsForUse = indicationsForUse;
       await appDataSource.getRepository(Device).save(entry);
       logger.info(entry.knumber);
-      logger.info(indicationsForUse);
+      // logger.info(indicationsForUse);
     }
   }
 }
