@@ -75,13 +75,16 @@ async function extractIFUForm3881() {
       if (!statementText.includes("FORM FDA 3881")) {
         continue;
       }
-      const indicationsForUse = statementText.substring(
-        statementText.indexOf("Indications for Use (Describe)"),
-        statementText.indexOf("Type of Use (Select one or both, as applicable)")
-      );
-      entry.indicationsForUse = indicationsForUse
+      const indicationsForUse = statementText
+        .substring(
+          statementText.indexOf("Indications for Use (Describe)"),
+          statementText.indexOf(
+            "Type of Use (Select one or both, as applicable)"
+          )
+        )
         .replace("Indications for Use (Describe)", "")
         .trim();
+      entry.indicationsForUse = indicationsForUse;
       await appDataSource.getRepository(Device).save(entry);
       logger.info(entry.knumber);
       logger.info(indicationsForUse);
