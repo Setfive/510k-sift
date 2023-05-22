@@ -79,7 +79,9 @@ async function extractIFUForm3881() {
         statementText.indexOf("Indications for Use (Describe)"),
         statementText.indexOf("Type of Use (Select one or both, as applicable)")
       );
-      entry.indicationsForUse = indicationsForUse;
+      entry.indicationsForUse = indicationsForUse
+        .replace("Indications for Use (Describe)", "")
+        .trim();
       await appDataSource.getRepository(Device).save(entry);
       logger.info(entry.knumber);
       logger.info(indicationsForUse);
