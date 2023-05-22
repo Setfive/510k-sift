@@ -63,7 +63,7 @@ async function extractIFUForm3881() {
       .getRepository(Device)
       .createQueryBuilder("u")
       .where(
-        `u.summaryStatementNeedsOCR is null AND u.summaryStatementURL is not null`
+        `u.summaryStatementNeedsOCR is null AND u.summaryStatementURL is not null AND u.indicationsForUse IS NULL`
       )
       .orderBy("u.datereceived", "ASC")
       .limit(1000)
@@ -206,12 +206,16 @@ async function convertPdfToJson(id: string) {
 
 async function extractTextWithPdfToText(path: string): Promise<string> {
   const pdfPath = DOWNLOADED_PDF_PATH + "/" + path;
-  const { stdout, stderr } = await exec(
-    `${PDF_TO_TEXT} ${pdfPath} - > /tmp/output.txt`
-  );
-  // TODO: probably should do something if theres a stderr?
-  const data = fs.readFileSync("/tmp/output.txt", "utf8");
-  return data.trim();
+  try {
+    const { stdout, stderr } = await exec(
+      `${PDF_TO_TEXT} ${pdfPath} - > /tmp/output.txt`
+    );
+    // TODO: probably should do something if theres a stderr?
+    const data = fs.readFileSync("/tmp/output.txt", "utf8");
+    return data.trim();
+  } catch (e) {
+    return "";
+  }
 }
 
 async function extractTextWithOCR(path: string): Promise<string> {
