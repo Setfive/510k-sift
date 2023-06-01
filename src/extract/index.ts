@@ -61,6 +61,7 @@ const logger = winston.createLogger({
 
 async function extractIFUEmbeddings() {
   const chunks: number[][] = await getDeviceIdChunks();
+  let numChunk = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
@@ -70,10 +71,14 @@ async function extractIFUEmbeddings() {
       .limit(1000)
       .offset(chunk[0])
       .getMany();
+    let num = 0;
     for (const entry of records) {
       await getIFUEmbedding(entry);
-      process.exit(0);
+      num += 1;
+      logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
     }
+
+    numChunk += 1;
   }
 }
 
