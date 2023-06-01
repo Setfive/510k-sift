@@ -15,7 +15,8 @@
     "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson",
     "extract:create-commands": "npm run extract -- --command=createBashConverts",
     "extract:calculate-tokens": "npm run extract -- --command=calculateTokens",
-    "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881"
+    "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881",
+    "extract:ifu-embeddings": "npm run extract -- --command=extractIFUEmbeddings"
   },
   "repository": {
     "type": "git",

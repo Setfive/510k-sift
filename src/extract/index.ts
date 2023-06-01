@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
+import { v4 as uuidv4 } from "uuid";
 import { ICommandLineArgsExtract, IDeviceJson } from "../types/types";
 import { Device } from "../entity/device";
 import { appDataSource } from "../db";
@@ -53,8 +54,52 @@ const logger = winston.createLogger({
     await calculateTokens();
   } else if (options.command === "extractIFUForm3881") {
     await extractIFUForm3881();
+  } else if (options.command === "extractIFUEmbeddings") {
+    await extractIFUEmbeddings();
   }
 })();
+
+async function extractIFUEmbeddings() {
+  const chunks: number[][] = await getDeviceIdChunks();
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where(`u.indicationsForUse IS NOT NULL`)
+      .orderBy("u.datereceived", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const entry of records) {
+      await getIFUEmbedding(entry);
+      process.exit(0);
+    }
+  }
+}
+
+async function getIFUEmbedding(entry: Device): Promise<void> {
+  return new Promise<void>(async (resolve, reject) => {
+    const pathToFile = `${os.tmpdir()}/${uuidv4()}.txt`;
+    const pathToOutput = `${os.tmpdir()}/${uuidv4()}.txt`;
+    const pathToCmd = process.cwd() + "/py-sentence-transformers/index.py";
+    fs.writeFileSync(pathToFile, entry.indicationsForUse);
+
+    try {
+      const { stdout, stderr } = await exec(
+        `${pathToCmd} ${pathToFile} - > ${pathToOutput}`
+      );
+      const embedding = fs.readFileSync(pathToOutput, "utf8");
+      entry.indicationsForUseEmbedding = embedding;
+      await appDataSource.manager.save(entry);
+    } catch (e) {
+      console.error(e.message);
+    } finally {
+      fs.unlinkSync(pathToFile);
+      fs.unlinkSync(pathToOutput);
+      resolve();
+    }
+  });
+}
 
 async function extractIFUForm3881() {
   const chunks: number[][] = await getDeviceIdChunks();

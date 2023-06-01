@@ -91,4 +91,7 @@ export class Device {
 
   @Column({ nullable: true, type: "text" })
   indicationsForUse: string;
+
+  @Column({ nullable: true, type: "text" })
+  indicationsForUseEmbedding: string;
 }

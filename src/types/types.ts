@@ -8,7 +8,8 @@ export interface ICommandLineArgs {
     | "getDownloadUrls"
     | "download"
     | "calculateTokens"
-    | "extractIFUForm3881";
+    | "extractIFUForm3881"
+    | "extractIFUEmbeddings";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {
