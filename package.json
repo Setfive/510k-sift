@@ -15,8 +15,7 @@
     "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson",
     "extract:create-commands": "npm run extract -- --command=createBashConverts",
     "extract:calculate-tokens": "npm run extract -- --command=calculateTokens",
-    "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881",
-    "llama:inference": "ts-node --project tsconfig.json --files src/llama/inference.ts"
+    "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881"
   },
   "repository": {
     "type": "git",
@@ -41,7 +40,6 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
-    "llama-node": "^0.1.6",
     "moment": "^2.29.4",
     "openai": "^3.2.1",
     "prettier": "^2.8.8",

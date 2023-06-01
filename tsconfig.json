@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ES2020",
-    "moduleResolution": "NodeNext",
+    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

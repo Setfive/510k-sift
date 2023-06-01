@@ -38,4 +38,3 @@ lerna-debug.log*
 db.sqlite
 data/
 .env
-models
