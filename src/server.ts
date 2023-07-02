@@ -42,6 +42,7 @@ export const LOGGER = winston.createLogger({
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
       const searchRequest = req.body as ISearchRequest;
+      LOGGER.info(`/api/search: Search=${searchRequest.search}`);
       const result = await similaritySearchIFUs(searchRequest.search);
       res.send(JSON.stringify(result));
     }
