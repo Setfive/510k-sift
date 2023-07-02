@@ -3,8 +3,9 @@ import * as dotenv from "dotenv";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as winston from "winston";
-import { getDeviceDTOForKNumber } from "./fetch";
+import { getDeviceDTOForKNumber, similaritySearchIFUs } from "./fetch";
 import { appDataSource } from "./db";
+import { ISearchRequest } from "./types/service.types";
 
 dotenv.config();
 
@@ -33,6 +34,16 @@ export const LOGGER = winston.createLogger({
       const deviceDto = await getDeviceDTOForKNumber(knumber);
 
       res.send(JSON.stringify(deviceDto));
+    }
+  );
+
+  server.post(
+    "/api/search",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const searchRequest = req.body as ISearchRequest;
+      const result = await similaritySearchIFUs(searchRequest.search);
+      res.send(JSON.stringify(result));
     }
   );
 

@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
-import { v4 as uuidv4 } from "uuid";
 import { ICommandLineArgsExtract, IDeviceJson } from "../types/types";
 import { Device } from "../entity/device";
 import { appDataSource } from "../db";
+import { getEmbedding } from "./getEmbedding";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,8 +13,6 @@ const fs = require("fs");
 const process = require("process");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require("util");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const exec = util.promisify(require("child_process").exec);
 
 let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdf_data";
 let PDF_TO_TEXT = "/usr/bin/pdftotext";
@@ -84,25 +82,15 @@ async function extractIFUEmbeddings() {
 
 async function getIFUEmbedding(entry: Device): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
-    const pathToFile = `${os.tmpdir()}/${uuidv4()}.txt`;
-    const pathToOutput = `${os.tmpdir()}/${uuidv4()}.txt`;
-    const pathToCmd = process.cwd() + "/py-sentence-transformers/index.py";
-    fs.writeFileSync(pathToFile, entry.indicationsForUse);
-
     try {
-      const { stdout, stderr } = await exec(
-        `${pathToCmd} ${pathToFile} - > ${pathToOutput}`
-      );
-      const embedding = fs.readFileSync(pathToOutput, "utf8");
+      const embedding = await getEmbedding(entry.indicationsForUse);
       entry.indicationsForUseEmbedding = embedding;
       await appDataSource.manager.save(entry);
     } catch (e) {
       console.error(e.message);
-    } finally {
-      fs.unlinkSync(pathToFile);
-      fs.unlinkSync(pathToOutput);
-      resolve();
     }
+
+    resolve();
   });
 }
 

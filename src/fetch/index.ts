@@ -6,6 +6,16 @@ import {
   StatementOrSummary,
   SubmissionType,
 } from "./types";
+import { getEmbedding } from "../extract/getEmbedding";
+
+export async function similaritySearchIFUs(
+  search: string
+): Promise<IDeviceDTO[]> {
+  const result: IDeviceDTO[] = [];
+  const embedding = await getEmbedding(search);
+  console.log(embedding);
+  return result;
+}
 
 export async function getDeviceDTOForKNumber(knumber: string) {
   const item = await appDataSource
