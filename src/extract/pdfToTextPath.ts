@@ -11,3 +11,11 @@ export function getPdfToTextPath() {
   }
   return PDF_TO_TEXT;
 }
+
+export function getPdfTkPath() {
+  let PDF_TK = "/usr/bin/pdftk";
+  if (process.env.PDF_TK) {
+    PDF_TK = process.env.PDF_TK;
+  }
+  return PDF_TK;
+}
