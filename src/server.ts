@@ -1,7 +1,10 @@
+import "reflect-metadata";
 import * as dotenv from "dotenv";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as winston from "winston";
+import { getDeviceDTOForKNumber } from "./fetch";
+import { appDataSource } from "./db";
 
 dotenv.config();
 
@@ -14,23 +17,28 @@ export const LOGGER = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-const server: express.Express = express();
-server.set("port", process.env.PORT || 8080);
-server.use(bodyParser.urlencoded({ limit: "15mb", extended: false }));
-server.use(bodyParser.json({ limit: "15mb" }));
+(async () => {
+  await appDataSource.initialize();
 
-server.get(
-  "/api/get/:knumber",
-  (req: express.Request, res: express.Response) => {
-    const knumber = req.params.knumber;
-    console.log(knumber);
+  const server: express.Express = express();
+  server.set("port", process.env.PORT || 8080);
+  server.use(bodyParser.urlencoded({ limit: "15mb", extended: false }));
+  server.use(bodyParser.json({ limit: "15mb" }));
 
-    res.send(knumber);
-  }
-);
+  server.get(
+    "/api/get/:knumber",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const knumber = req.params.knumber;
+      const deviceDto = await getDeviceDTOForKNumber(knumber);
 
-const srv = server.listen(server.get("port"), async () => {
-  console.log(`> Ready on http://localhost:${server.get("port")}`);
-});
+      res.send(JSON.stringify(deviceDto));
+    }
+  );
 
-srv.setTimeout(30 * 1000);
+  const srv = server.listen(server.get("port"), async () => {
+    console.log(`> Ready on http://localhost:${server.get("port")}`);
+  });
+
+  srv.setTimeout(30 * 1000);
+})();

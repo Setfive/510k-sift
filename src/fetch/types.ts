@@ -8,11 +8,13 @@ export interface IDeviceDTO {
   decisionDate: Date;
   decision: Decision;
   productCode: string;
-  statementOrSummary: "Summary" | "Statement";
+  statementOrSummary: StatementOrSummary;
   type: SubmissionType;
   summaryStatementURL: string;
   indicationsForUse: string;
 }
+
+export type StatementOrSummary = "Summary" | "Statement";
 
 export type SubmissionType =
   | "Post-NSE"
