@@ -3,7 +3,11 @@ import * as dotenv from "dotenv";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as winston from "winston";
-import { getDeviceDTOForKNumber, similaritySearchIFUs } from "./fetch";
+import {
+  getDeviceDTOForKNumber,
+  getEnhancedDeviceDTOForKNumber,
+  similaritySearchIFUs,
+} from "./fetch";
 import { appDataSource } from "./db";
 import { ISearchRequest } from "./types/service.types";
 
@@ -32,6 +36,17 @@ export const LOGGER = winston.createLogger({
       res.setHeader("Content-Type", "application/json");
       const knumber = req.params.knumber;
       const deviceDto = await getDeviceDTOForKNumber(knumber);
+
+      res.send(JSON.stringify(deviceDto));
+    }
+  );
+
+  server.get(
+    "/api/enhanced/:knumber",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const knumber = req.params.knumber;
+      const deviceDto = await getEnhancedDeviceDTOForKNumber(knumber);
 
       res.send(JSON.stringify(deviceDto));
     }

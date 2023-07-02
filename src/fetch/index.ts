@@ -1,3 +1,4 @@
+import axios from "axios";
 import { appDataSource } from "../db";
 import { Device } from "../entity/device";
 import {
@@ -10,7 +11,12 @@ import {
 } from "./types";
 import { getEmbedding } from "../extract/getEmbedding";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const os = require("os");
+import { v4 as uuidv4 } from "uuid";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require("fs");
 
 export async function similaritySearchIFUs(
   search: string
@@ -67,6 +73,33 @@ export async function similaritySearchIFUs(
   }
 
   return result;
+}
+
+export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
+  const item = await appDataSource
+    .getRepository(Device)
+    .findOneByOrFail({ knumber });
+
+  if (!item.indicationsForUse && item.summaryStatementURL) {
+    let pathToFile = "";
+
+    try {
+      const axioResult = await axios.get<string>(item.summaryStatementURL, {
+        responseType: "arraybuffer",
+      });
+      pathToFile = `${os.tmpdir()}/${uuidv4()}.pdf`;
+      fs.writeFileSync(pathToFile, axioResult.data);
+
+      console.log(pathToFile);
+    } catch (e) {
+    } finally {
+      fs.unlinkSync(pathToFile);
+    }
+  }
+
+  const deviceDto = deviceToDTO(item);
+
+  return deviceDto;
 }
 
 export async function getDeviceDTOForKNumber(knumber: string) {

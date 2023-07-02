@@ -5,6 +5,7 @@ import { ICommandLineArgsExtract, IDeviceJson } from "../types/types";
 import { Device } from "../entity/device";
 import { appDataSource } from "../db";
 import { getEmbedding } from "./getEmbedding";
+import { extractTextWithPdfToText } from "./pdfToText";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,16 +14,12 @@ const fs = require("fs");
 const process = require("process");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require("util");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const exec = util.promisify(require("child_process").exec);
 
 let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdf_data";
-let PDF_TO_TEXT = "/usr/bin/pdftotext";
-
 if (process.env.DOWNLOADED_PDF_PATH) {
   DOWNLOADED_PDF_PATH = process.env.DOWNLOADED_PDF_PATH;
-}
-
-if (process.env.PDF_TO_TEXT) {
-  PDF_TO_TEXT = process.env.PDF_TO_TEXT;
 }
 
 const logger = winston.createLogger({
@@ -109,7 +106,9 @@ async function extractIFUForm3881() {
       .getMany();
     for (const entry of records) {
       const path = `statement_${entry.knumber}.pdf`;
-      const statementText = await extractTextWithPdfToText(path);
+      const statementText = await extractTextWithPdfToText(
+        `${DOWNLOADED_PDF_PATH}/${path}`
+      );
       if (!statementText.includes("FORM FDA 3881")) {
         continue;
       }
@@ -217,7 +216,9 @@ async function convertPdfToJson(id: string) {
   let foiaText = "";
   if (entry.summaryStatementURL) {
     const path = `statement_${entry.knumber}.pdf`;
-    statementText = await extractTextWithPdfToText(path);
+    statementText = await extractTextWithPdfToText(
+      `${DOWNLOADED_PDF_PATH}/${path}`
+    );
     if (!statementText) {
       entry.summaryStatementNeedsOCR = true;
     }
@@ -225,7 +226,7 @@ async function convertPdfToJson(id: string) {
 
   if (entry.foiaURL) {
     const path = `foia_${entry.knumber}.pdf`;
-    foiaText = await extractTextWithPdfToText(path);
+    foiaText = await extractTextWithPdfToText(`${DOWNLOADED_PDF_PATH}/${path}`);
     if (!foiaText) {
       entry.foiaNeedsOCR = true;
     }
@@ -240,20 +241,6 @@ async function convertPdfToJson(id: string) {
   const jsonFile = `${dataDir}/${entry.knumber}.json`;
   fs.writeFileSync(jsonFile, JSON.stringify(entryJson, null, 4));
   logger.info(`Wrote ${jsonFile}`);
-}
-
-async function extractTextWithPdfToText(path: string): Promise<string> {
-  const pdfPath = DOWNLOADED_PDF_PATH + "/" + path;
-  try {
-    const { stdout, stderr } = await exec(
-      `${PDF_TO_TEXT} ${pdfPath} - > /tmp/output.txt`
-    );
-    // TODO: probably should do something if theres a stderr?
-    const data = fs.readFileSync("/tmp/output.txt", "utf8");
-    return data.trim();
-  } catch (e) {
-    return "";
-  }
 }
 
 async function extractTextWithOCR(path: string): Promise<string> {
