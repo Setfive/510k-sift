@@ -15,6 +15,7 @@ import { LOGGER } from "../server";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_ORGANIZATION,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -29,18 +30,16 @@ export async function getIFUOpenAI(device: Device): Promise<string> {
     fs.writeFileSync(pathToFile, axioResult.data);
 
     const texts = await extractTextAsPagesWithPdfToText(pathToFile);
-    console.log(texts);
 
-    /*
-    const textChunks: string[] = [];
-    for (let i = 0; i < text.length; i += 2000) {
-      textChunks.push(text.substring(i, i + 2000));
-    }
+    for (const text of texts) {
+      if (!text.toLowerCase().includes("indications for use")) {
+        continue;
+      }
 
-    for (const text of textChunks) {
       const prompt = `You're an expert FDA consultant.
-This is an extract from the summary or statement of a 510(k).
-Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text. 
+This is a page from the summary or statement of a 510(k).
+Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.
+Only consider the text in the prompt, do not consider any other information.
 If none is present reply with None.
 Text: ${text}      
       `;
@@ -48,15 +47,16 @@ Text: ${text}
       const completion = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: prompt,
+        max_tokens: 1000,
       });
 
+      LOGGER.info(`getIFUOpenAI: Trying ${text.substring(0, 100)}`);
       const ifuText = `${completion.data.choices[0].text}`.trim();
-      console.log(ifuText);
+
       if (!ifuText.includes("None")) {
         return `${ifuText}`;
       }
     }
-     */
   } catch (e) {
     console.error(e);
     LOGGER.error(e);

@@ -13,6 +13,7 @@ import { getEmbedding } from "../extract/getEmbedding";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
+import { LOGGER } from "../server";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -82,6 +83,7 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
 
   if (!item.indicationsForUse && item.summaryStatementURL) {
     const indicationsForUse = await getIFUOpenAI(item);
+    LOGGER.info(`IFU: ${indicationsForUse}`);
   }
 
   const deviceDto = deviceToDTO(item);

@@ -67,5 +67,5 @@ export const LOGGER = winston.createLogger({
     console.log(`> Ready on http://localhost:${server.get("port")}`);
   });
 
-  srv.setTimeout(30 * 1000);
+  srv.setTimeout(90 * 1000);
 })();
