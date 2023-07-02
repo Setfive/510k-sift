@@ -12,7 +12,7 @@ import {
 import { getEmbedding } from "../extract/getEmbedding";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
-import { v4 as uuidv4 } from "uuid";
+import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -81,20 +81,7 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     .findOneByOrFail({ knumber });
 
   if (!item.indicationsForUse && item.summaryStatementURL) {
-    let pathToFile = "";
-
-    try {
-      const axioResult = await axios.get<string>(item.summaryStatementURL, {
-        responseType: "arraybuffer",
-      });
-      pathToFile = `${os.tmpdir()}/${uuidv4()}.pdf`;
-      fs.writeFileSync(pathToFile, axioResult.data);
-
-      console.log(pathToFile);
-    } catch (e) {
-    } finally {
-      fs.unlinkSync(pathToFile);
-    }
+    const indicationsForUse = await getIFUOpenAI(item);
   }
 
   const deviceDto = deviceToDTO(item);
