@@ -1,3 +1,5 @@
+import { Device } from "../entity/device";
+
 export interface IDeviceDTO {
   knumber: string;
   deviceName: string;
@@ -36,3 +38,13 @@ export type Decision =
   | "SI"
   | "SN"
   | "ST";
+
+export interface IDeviceDotResult {
+  data: number;
+  device: Device;
+}
+
+export interface IDeviceDTODotResult {
+  data: number;
+  device: IDeviceDTO;
+}
