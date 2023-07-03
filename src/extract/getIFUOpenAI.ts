@@ -41,7 +41,7 @@ This is a page from the summary or statement of a 510(k).
 Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.
 Only consider the text in the prompt, do not consider any other information.
 If none is present reply with None.
-Text: ${text}      
+Text: ${text.trim()}      
       `;
 
       const completion = await openai.createCompletion({
