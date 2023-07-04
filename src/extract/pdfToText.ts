@@ -43,14 +43,17 @@ export async function extractTextWithPdfToText(
   pdfPath: string
 ): Promise<string> {
   const PDF_TO_TEXT = getPdfToTextPath();
+  const pathToFile = `${os.tmpdir()}/${uuidv4()}.pdf`;
   try {
     const { stdout, stderr } = await exec(
-      `${PDF_TO_TEXT} ${pdfPath} - > /tmp/output.txt`
+      `${PDF_TO_TEXT} ${pdfPath} - > ${pathToFile}`
     );
     // TODO: probably should do something if theres a stderr?
-    const data = fs.readFileSync("/tmp/output.txt", "utf8");
+    const data = fs.readFileSync(pathToFile, "utf8");
     return data.trim();
   } catch (e) {
     return "";
+  } finally {
+    fs.unlinkSync(pathToFile);
   }
 }

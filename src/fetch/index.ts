@@ -1,4 +1,3 @@
-import axios from "axios";
 import { appDataSource } from "../db";
 import { Device } from "../entity/device";
 import {
@@ -15,6 +14,7 @@ const os = require("os");
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 import { LOGGER } from "../server";
 import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
+import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -107,6 +107,11 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     await appDataSource.manager.save(item);
   }
 
+  if (!item.relatedKNumbers && item.summaryStatementURL) {
+    const relatedKs = await getRelatedKNumbers(item);
+    item.relatedKNumbers = JSON.stringify(relatedKs);
+  }
+
   const deviceDto = deviceToDTO(item);
 
   return deviceDto;
@@ -144,6 +149,11 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     type: device.type as SubmissionType,
     summaryStatementURL: device.summaryStatementURL,
     indicationsForUse: device.indicationsForUse,
+    deviceMarketingAudience: device.deviceMarketingAudience,
   };
+
+  if (device.relatedKNumbers) {
+    item.relatedKNumbers = JSON.parse(device.relatedKNumbers);
+  }
   return item;
 }

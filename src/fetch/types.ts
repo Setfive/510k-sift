@@ -13,7 +13,9 @@ export interface IDeviceDTO {
   statementOrSummary: StatementOrSummary;
   type: SubmissionType;
   summaryStatementURL: string;
-  indicationsForUse: string;
+  indicationsForUse?: string;
+  deviceMarketingAudience?: string;
+  relatedKNumbers?: string[];
 }
 
 export type StatementOrSummary = "Summary" | "Statement";

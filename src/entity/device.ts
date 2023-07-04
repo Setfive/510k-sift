@@ -97,4 +97,7 @@ export class Device {
 
   @Column({ nullable: true, type: "text" })
   deviceMarketingAudience: string;
+
+  @Column({ nullable: true, type: "text" })
+  relatedKNumbers: string;
 }

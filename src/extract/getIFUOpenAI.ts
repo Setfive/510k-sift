@@ -13,6 +13,10 @@ export async function getIFUOpenAI(device: Device): Promise<string> {
   const openai = getOpenAI();
   let pathToFile = "";
 
+  if (!device.summaryStatementURL) {
+    return "";
+  }
+
   try {
     const axioResult = await axios.get<string>(device.summaryStatementURL, {
       responseType: "arraybuffer",
