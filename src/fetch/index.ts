@@ -19,8 +19,6 @@ import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
 
 const PER_PAGE = 100;
 

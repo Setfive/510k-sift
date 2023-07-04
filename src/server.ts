@@ -11,6 +11,8 @@ import {
 import { appDataSource } from "./db";
 import { LOGGER } from "./logger";
 import { ISearchRequest, ISemanticSearchRequest } from "./types/types";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require("fs");
 
 dotenv.config();
 
@@ -21,6 +23,11 @@ dotenv.config();
   server.set("port", process.env.PORT || 8080);
   server.use(bodyParser.urlencoded({ limit: "15mb", extended: false }));
   server.use(bodyParser.json({ limit: "15mb" }));
+
+  server.get("/", async (req: express.Request, res: express.Response) => {
+    const html = fs.readFileSync(`${__dirname}/index.html`, "utf8");
+    res.send(html);
+  });
 
   server.get(
     "/api/get/:knumber",
