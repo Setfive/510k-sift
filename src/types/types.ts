@@ -77,7 +77,7 @@ export interface ISearchRequest {
   knumber?: string;
   applicant?: string;
   decisionDate?: string;
-  productCode?: string;
+  productCodes?: string[];
   deviceName?: string;
 }
 

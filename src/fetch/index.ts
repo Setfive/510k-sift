@@ -38,6 +38,18 @@ export async function searchDevices(
       .setParameter("devicename", `%${request.deviceName}%`);
   }
 
+  if (request.knumber) {
+    query
+      .andWhere("u.knumber = :knumber")
+      .setParameter("knumber", request.knumber);
+  }
+
+  if (request.productCodes) {
+    query
+      .andWhere("u.productcode IN (:...codes)")
+      .setParameter("codes", request.productCodes);
+  }
+
   const result: IDeviceDTO[] = [];
   const devicesAndCount = await query.getManyAndCount();
   for (const device of devicesAndCount[0]) {
