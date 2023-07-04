@@ -24,11 +24,6 @@ dotenv.config();
   server.use(bodyParser.urlencoded({ limit: "15mb", extended: false }));
   server.use(bodyParser.json({ limit: "15mb" }));
 
-  server.get("/", async (req: express.Request, res: express.Response) => {
-    const html = fs.readFileSync(`${__dirname}/index.html`, "utf8");
-    res.send(html);
-  });
-
   server.get(
     "/api/get/:knumber",
     async (req: express.Request, res: express.Response) => {
