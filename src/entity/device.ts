@@ -96,6 +96,9 @@ export class Device {
   indicationsForUseEmbedding: string;
 
   @Column({ nullable: true, type: "text" })
+  indicationsForUseAI: string;
+
+  @Column({ nullable: true, type: "text" })
   deviceMarketingAudience: string;
 
   @Column({ nullable: true, type: "text" })

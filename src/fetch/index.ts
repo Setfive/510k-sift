@@ -82,14 +82,14 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     .getRepository(Device)
     .findOneByOrFail({ knumber });
 
-  if (!item.indicationsForUse && item.summaryStatementURL) {
+  if (!item.indicationsForUseAI && item.summaryStatementURL) {
     const indicationsForUse = await getIFUOpenAI(item);
     if (indicationsForUse) {
       const embedding = await getEmbedding(indicationsForUse);
-      item.indicationsForUse = indicationsForUse;
+      item.indicationsForUseAI = indicationsForUse;
       item.indicationsForUseEmbedding = embedding;
     } else {
-      item.indicationsForUse = "N/A";
+      item.indicationsForUseAI = "N/A";
     }
     await appDataSource.manager.save(item);
     LOGGER.info(
@@ -97,7 +97,11 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     );
   }
 
-  if (!item.deviceMarketingAudience && item.indicationsForUse) {
+  if (
+    !item.deviceMarketingAudience &&
+    item.indicationsForUseAI &&
+    item.indicationsForUseAI !== "N/A"
+  ) {
     const deviceMarketingAudience = await generateMarketingAudienceOpenAI(item);
     if (deviceMarketingAudience) {
       item.deviceMarketingAudience = deviceMarketingAudience;
@@ -148,7 +152,7 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     statementOrSummary: device.stateorsumm as StatementOrSummary,
     type: device.type as SubmissionType,
     summaryStatementURL: device.summaryStatementURL,
-    indicationsForUse: device.indicationsForUse,
+    indicationsForUse: device.indicationsForUseAI,
     deviceMarketingAudience: device.deviceMarketingAudience,
   };
 
