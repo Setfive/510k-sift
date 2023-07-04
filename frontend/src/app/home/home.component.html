@@ -8,21 +8,26 @@
     <div class="card">
       <div class="card-header">Search</div>
       <div class="card-body">
-        <form>
+        <form [formGroup]="form" (submit)="submit()">
           <div class="row">
-            <div class="col-md-9">
+            <div class="col-9">
               <label for="deviceName" class="form-label">Device Name</label>
-              <input type="text" class="form-control" id="deviceName" />
+              <input type="text" class="form-control" id="deviceName" formControlName="deviceName" />
             </div>
-            <div class="col-md-3">
+            <div class="col-3">
               <label for="kNumber" class="form-label">KNumber</label>
-              <input type="text" class="form-control" id="kNumber" />
+              <input type="text" class="form-control" id="kNumber" formControlName="kNumber" />
             </div>
           </div>
           <div class="row mt-3">
-            <div class="col-md-12">
+            <div class="col-12">
               <label for="company" class="form-label">Company</label>
-              <input type="text" class="form-control" id="company" />
+              <input type="text" class="form-control" id="company" formControlName="company" />
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">Search</button>
             </div>
           </div>
         </form>
