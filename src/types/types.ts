@@ -68,3 +68,15 @@ export interface ICSVProductCodeEntry {
   Life_Sustain_support_flag: string;
   SummaryMalfunctionReporting: string;
 }
+
+export interface ISemanticSearchRequest {
+  search: string;
+}
+
+export interface ISearchRequest {
+  knumber?: string;
+  applicant?: string;
+  decisionDate?: string;
+  productCode?: string;
+  deviceName?: string;
+}

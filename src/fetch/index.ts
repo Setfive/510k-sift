@@ -15,10 +15,35 @@ import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { LOGGER } from "../logger";
+import { ISearchRequest } from "../types/types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
+
+export async function searchDevices(
+  request: ISearchRequest
+): Promise<IDeviceDTO[]> {
+  const query = await appDataSource
+    .getRepository(Device)
+    .createQueryBuilder("u")
+    .limit(500)
+    .orderBy("u.devicename", "ASC");
+
+  if (request.deviceName) {
+    query
+      .andWhere("u.devicename LIKE :devicename")
+      .setParameter("devicename", `%${request.deviceName}%`);
+  }
+
+  const result: IDeviceDTO[] = [];
+  const devices = await query.getMany();
+  for (const device of devices) {
+    const item = await deviceToDTO(device);
+    result.push(item);
+  }
+  return result;
+}
 
 export async function similaritySearchIFUs(
   search: string

@@ -5,11 +5,12 @@ import * as bodyParser from "body-parser";
 import {
   getDeviceDTOForKNumber,
   getEnhancedDeviceDTOForKNumber,
+  searchDevices,
   similaritySearchIFUs,
 } from "./fetch";
 import { appDataSource } from "./db";
-import { ISearchRequest } from "./types/service.types";
 import { LOGGER } from "./logger";
+import { ISearchRequest, ISemanticSearchRequest } from "./types/types";
 
 dotenv.config();
 
@@ -48,7 +49,18 @@ dotenv.config();
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
       const searchRequest = req.body as ISearchRequest;
-      LOGGER.info(`/api/search: Search=${searchRequest.search}`);
+      LOGGER.info(`/api/search: Search=${JSON.stringify(searchRequest)}`);
+      const result = await searchDevices(searchRequest);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/semantic",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const searchRequest = req.body as ISemanticSearchRequest;
+      LOGGER.info(`/api/search/semantic: Search=${searchRequest.search}`);
       const result = await similaritySearchIFUs(searchRequest.search);
       res.send(JSON.stringify(result));
     }
