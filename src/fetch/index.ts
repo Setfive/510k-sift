@@ -16,6 +16,7 @@ import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAu
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { LOGGER } from "../logger";
 import { IPagerResponse, ISearchRequest } from "../types/types";
+import * as moment from "moment";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,6 +49,15 @@ export async function searchDevices(
     query
       .andWhere("u.productcode IN (:...codes)")
       .setParameter("codes", request.productCodes);
+  }
+
+  if (request.decisionDateGte) {
+    const decisionDateGte = moment(request.decisionDateGte, "YYYY-MM-DD");
+    if (decisionDateGte.isValid()) {
+      query
+        .andWhere("u.decisiondate >= :decisionsDateGte")
+        .setParameter("decisionsDateGte", decisionDateGte);
+    }
   }
 
   const result: IDeviceDTO[] = [];

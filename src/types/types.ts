@@ -76,7 +76,8 @@ export interface ISemanticSearchRequest {
 export interface ISearchRequest {
   knumber?: string;
   applicant?: string;
-  decisionDate?: string;
+  decisionDateGte?: string;
+  decisionDateLte?: string;
   productCodes?: string[];
   deviceName?: string;
 }
