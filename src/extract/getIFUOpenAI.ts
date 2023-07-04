@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 import { extractTextAsPagesWithPdfToText } from "./pdfToText";
-import { LOGGER } from "../server";
 import { getOpenAI } from "../openai";
+import { LOGGER } from "../logger";
 
 export async function getIFUOpenAI(device: Device): Promise<string> {
   const openai = getOpenAI();

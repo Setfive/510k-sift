@@ -1,13 +1,10 @@
-import * as dotenv from "dotenv";
 import { getPdfTkPath, getPdfToTextPath } from "./pdfToTextPath";
-import { LOGGER } from "../server";
 import { v4 as uuidv4 } from "uuid";
+import { LOGGER } from "../logger";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const process = require("process");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require("util");
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -1,6 +1,6 @@
 import { Device } from "../entity/device";
 import { getOpenAI } from "../openai";
-import { LOGGER } from "../server";
+import { LOGGER } from "../logger";
 
 export async function generateMarketingAudienceOpenAI(
   device: Device

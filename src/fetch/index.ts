@@ -12,9 +12,9 @@ import { getEmbedding } from "../extract/getEmbedding";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
-import { LOGGER } from "../server";
 import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
+import { LOGGER } from "../logger";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -1,5 +1,4 @@
 import { Device } from "../entity/device";
-import { LOGGER } from "../server";
 import axios from "axios";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
@@ -24,7 +23,6 @@ export async function getRelatedKNumbers(device: Device) {
     return [...new Set<string>(matches)];
   } catch (e) {
     console.error(e);
-    LOGGER.error(e);
   } finally {
     fs.unlinkSync(pathToFile);
   }

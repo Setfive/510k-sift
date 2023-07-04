@@ -18,7 +18,8 @@
     "extract:create-commands": "npm run extract -- --command=createBashConverts",
     "extract:calculate-tokens": "npm run extract -- --command=calculateTokens",
     "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881",
-    "extract:ifu-embeddings": "npm run extract -- --command=extractIFUEmbeddings"
+    "extract:ifu-embeddings": "npm run extract -- --command=extractIFUEmbeddings",
+    "extract:related-ks": "npm run extract -- --command=extractRelatedKNumbers"
   },
   "repository": {
     "type": "git",

@@ -2,7 +2,6 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import * as winston from "winston";
 import {
   getDeviceDTOForKNumber,
   getEnhancedDeviceDTOForKNumber,
@@ -10,17 +9,9 @@ import {
 } from "./fetch";
 import { appDataSource } from "./db";
 import { ISearchRequest } from "./types/service.types";
+import { LOGGER } from "./logger";
 
 dotenv.config();
-
-export const LOGGER = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(
-    winston.format.cli(),
-    winston.format.timestamp() // adds a timestamp property
-  ),
-  transports: [new winston.transports.Console()],
-});
 
 (async () => {
   await appDataSource.initialize();

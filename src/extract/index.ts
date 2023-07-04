@@ -6,6 +6,7 @@ import { Device } from "../entity/device";
 import { appDataSource } from "../db";
 import { getEmbedding } from "./getEmbedding";
 import { extractTextWithPdfToText } from "./pdfToText";
+import { getRelatedKNumbers } from "./getRelatedKNumbers";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -51,8 +52,33 @@ const logger = winston.createLogger({
     await extractIFUForm3881();
   } else if (options.command === "extractIFUEmbeddings") {
     await extractIFUEmbeddings();
+  } else if (options.command === "extractRelatedKNumbers") {
+    await extractRelatedKNumbers();
   }
 })();
+
+async function extractRelatedKNumbers() {
+  const chunks: number[][] = await getDeviceIdChunks();
+  let numChunk = 0;
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where(`u.indicationsForUse IS NOT NULL`)
+      .orderBy("u.datereceived", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    let num = 0;
+    for (const entry of records) {
+      const relatedKs = await getRelatedKNumbers(entry);
+      entry.relatedKNumbers = JSON.stringify(relatedKs);
+      num += 1;
+      logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
+    }
+    numChunk += 1;
+  }
+}
 
 async function extractIFUEmbeddings() {
   const chunks: number[][] = await getDeviceIdChunks();
@@ -72,7 +98,6 @@ async function extractIFUEmbeddings() {
       num += 1;
       logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
     }
-
     numChunk += 1;
   }
 }
