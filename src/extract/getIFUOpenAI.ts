@@ -5,21 +5,12 @@ const os = require("os");
 import { v4 as uuidv4 } from "uuid";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
-import {
-  extractTextAsPagesWithPdfToText,
-  extractTextWithPdfToText,
-} from "./pdfToText";
-
-import { Configuration, OpenAIApi } from "openai";
+import { extractTextAsPagesWithPdfToText } from "./pdfToText";
 import { LOGGER } from "../server";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-  organization: process.env.OPENAI_ORGANIZATION,
-});
-const openai = new OpenAIApi(configuration);
+import { getOpenAI } from "../openai";
 
 export async function getIFUOpenAI(device: Device): Promise<string> {
+  const openai = getOpenAI();
   let pathToFile = "";
 
   try {
@@ -36,7 +27,7 @@ export async function getIFUOpenAI(device: Device): Promise<string> {
         continue;
       }
 
-      const prompt = `You're an expert FDA consultant.
+      const prompt = `You're an expert FDA consultant working on a 510(k).
 This is a page from the summary or statement of a 510(k).
 Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.
 Only consider the text in the prompt, do not consider any other information.

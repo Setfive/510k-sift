@@ -14,6 +14,7 @@ import { getEmbedding } from "../extract/getEmbedding";
 const os = require("os");
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 import { LOGGER } from "../server";
+import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -87,11 +88,23 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
       const embedding = await getEmbedding(indicationsForUse);
       item.indicationsForUse = indicationsForUse;
       item.indicationsForUseEmbedding = embedding;
-      await appDataSource.manager.save(item);
+    } else {
+      item.indicationsForUse = "N/A";
     }
+    await appDataSource.manager.save(item);
     LOGGER.info(
       `getEnhancedDeviceDTOForKNumber: KNumber=${knumber}, IFU=${indicationsForUse}`
     );
+  }
+
+  if (!item.deviceMarketingAudience && item.indicationsForUse) {
+    const deviceMarketingAudience = await generateMarketingAudienceOpenAI(item);
+    if (deviceMarketingAudience) {
+      item.deviceMarketingAudience = deviceMarketingAudience;
+    } else {
+      item.deviceMarketingAudience = "N/A";
+    }
+    await appDataSource.manager.save(item);
   }
 
   const deviceDto = deviceToDTO(item);
