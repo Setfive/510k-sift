@@ -15,19 +15,21 @@ import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { LOGGER } from "../logger";
-import { ISearchRequest } from "../types/types";
+import { IPagerResponse, ISearchRequest } from "../types/types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
+const PER_PAGE = 100;
+
 export async function searchDevices(
   request: ISearchRequest
-): Promise<IDeviceDTO[]> {
+): Promise<IPagerResponse<IDeviceDTO>> {
   const query = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")
-    .limit(500)
+    .limit(PER_PAGE)
     .orderBy("u.devicename", "ASC");
 
   if (request.deviceName) {
@@ -37,12 +39,19 @@ export async function searchDevices(
   }
 
   const result: IDeviceDTO[] = [];
-  const devices = await query.getMany();
-  for (const device of devices) {
+  const devicesAndCount = await query.getManyAndCount();
+  for (const device of devicesAndCount[0]) {
     const item = await deviceToDTO(device);
     result.push(item);
   }
-  return result;
+
+  const pagerResult: IPagerResponse<IDeviceDTO> = {
+    data: result,
+    total: devicesAndCount[1],
+    paginated: devicesAndCount[1] > PER_PAGE,
+  };
+
+  return pagerResult;
 }
 
 export async function similaritySearchIFUs(

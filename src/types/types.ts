@@ -80,3 +80,9 @@ export interface ISearchRequest {
   productCode?: string;
   deviceName?: string;
 }
+
+export interface IPagerResponse<T> {
+  data: T[];
+  total: number;
+  paginated: boolean;
+}
