@@ -91,7 +91,6 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     } else {
       item.indicationsForUseAI = "N/A";
     }
-    await appDataSource.manager.save(item);
     LOGGER.info(
       `getEnhancedDeviceDTOForKNumber: KNumber=${knumber}, IFU=${indicationsForUse}`
     );
@@ -108,13 +107,14 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
     } else {
       item.deviceMarketingAudience = "N/A";
     }
-    await appDataSource.manager.save(item);
   }
 
   if (!item.relatedKNumbers && item.summaryStatementURL) {
     const relatedKs = await getRelatedKNumbers(item);
     item.relatedKNumbers = JSON.stringify(relatedKs);
   }
+
+  await appDataSource.manager.save(item);
 
   const deviceDto = deviceToDTO(item);
 
