@@ -13,6 +13,7 @@
     "ingest:createdb": "npm run ingest -- --command=createdb",
     "ingest:getDownloadUrls": "npm run ingest -- --command=getDownloadUrls",
     "ingest:download": "npm run ingest -- --command=download",
+    "ingest:download-codes": "npm run ingest -- --command=downloadProductCodes",
     "extract": "ts-node --project tsconfig.json --files src/extract/index.ts",
     "extract:pdf-to-json": "npm run extract -- --command=convertPdfToJson",
     "extract:create-commands": "npm run extract -- --command=createBashConverts",

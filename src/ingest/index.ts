@@ -2,7 +2,11 @@ import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
 import { ICommandLineArgs, ICSVEntry } from "../types/types";
-import { CURRENT_MONTH_510k_CSV, HISTORICAL_510k_CSVs } from "./data";
+import {
+  CURRENT_MONTH_510k_CSV,
+  CURRENT_PRODUCT_CODES_CSV,
+  HISTORICAL_510k_CSVs,
+} from "./data";
 import axios from "axios";
 import * as moment from "moment";
 import * as yauzl from "yauzl";
@@ -40,8 +44,29 @@ const logger = winston.createLogger({
     await getDownloadUrls();
   } else if (options.command === "download") {
     await download();
+  } else if (options.command === "downloadProductCodes") {
+    await downloadProductCodes();
   }
 })();
+
+async function downloadProductCodes(): Promise<void> {
+  return new Promise<void>(async (resolve) => {
+    logger.info(`Fetching ${CURRENT_PRODUCT_CODES_CSV}`);
+    const result = await axios.get<string>(CURRENT_PRODUCT_CODES_CSV, {
+      responseType: "arraybuffer",
+    });
+    const pathToFile = `${os.tmpdir()}/${uuidv4()}.zip`;
+    const pathToCSV = `${os.tmpdir()}/${uuidv4()}.csv`;
+    fs.writeFileSync(pathToFile, result.data);
+    yauzl.open(pathToFile, { lazyEntries: true }, (err, zipfile) => {
+      if (err) {
+        throw err;
+      }
+
+      console.log(pathToCSV);
+    });
+  });
+}
 
 async function download() {
   const totalRecords = await appDataSource.getRepository(Device).count();

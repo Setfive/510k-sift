@@ -8,3 +8,6 @@ export const HISTORICAL_510k_CSVs = [
 
 export const CURRENT_MONTH_510k_CSV =
   "https://www.accessdata.fda.gov/premarket/ftparea/pmnlstmn.zip";
+
+export const CURRENT_PRODUCT_CODES_CSV =
+  "https://www.accessdata.fda.gov/premarket/ftparea/foiclass.zip";

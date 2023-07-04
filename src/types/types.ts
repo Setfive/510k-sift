@@ -10,7 +10,8 @@ export interface ICommandLineArgs {
     | "calculateTokens"
     | "extractIFUForm3881"
     | "extractIFUEmbeddings"
-    | "extractRelatedKNumbers";
+    | "extractRelatedKNumbers"
+    | "downloadProductCodes";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {
