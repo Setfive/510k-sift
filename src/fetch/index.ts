@@ -84,7 +84,9 @@ export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
   if (!item.indicationsForUse && item.summaryStatementURL) {
     const indicationsForUse = await getIFUOpenAI(item);
     if (indicationsForUse) {
+      const embedding = await getEmbedding(indicationsForUse);
       item.indicationsForUse = indicationsForUse;
+      item.indicationsForUseEmbedding = embedding;
       await appDataSource.manager.save(item);
     }
     LOGGER.info(
