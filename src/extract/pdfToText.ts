@@ -51,6 +51,8 @@ export async function extractTextWithPdfToText(
   } catch (e) {
     return "";
   } finally {
-    fs.unlinkSync(pathToFile);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile);
+    }
   }
 }

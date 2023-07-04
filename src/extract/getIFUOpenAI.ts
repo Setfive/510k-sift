@@ -56,7 +56,9 @@ Text: ${text.trim()}
     console.error(e);
     LOGGER.error(e);
   } finally {
-    fs.unlinkSync(pathToFile);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile);
+    }
   }
 
   return "";

@@ -223,8 +223,12 @@ async function fetch510kCSV(url: string): Promise<string> {
           readStream.pipe(writeStream);
           writeStream.on("close", () => {
             const csvData = fs.readFileSync(pathToCSV, "utf8");
-            fs.unlinkSync(pathToFile);
-            fs.unlinkSync(pathToCSV);
+            if (fs.existsSync(pathToFile)) {
+              fs.unlinkSync(pathToFile);
+            }
+            if (fs.existsSync(pathToCSV)) {
+              fs.unlinkSync(pathToCSV);
+            }
             resolve(csvData);
           });
         });

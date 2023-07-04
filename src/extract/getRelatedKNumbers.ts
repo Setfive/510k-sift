@@ -22,9 +22,11 @@ export async function getRelatedKNumbers(device: Device) {
     const matches = pdfText.match(re);
     return [...new Set<string>(matches)];
   } catch (e) {
-    console.error(e);
+    console.error(e.message);
   } finally {
-    fs.unlinkSync(pathToFile);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile);
+    }
   }
 
   return [];

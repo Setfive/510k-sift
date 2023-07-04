@@ -25,8 +25,13 @@ export async function getEmbedding(val: string): Promise<string> {
   } catch (e) {
     console.error(e.message);
   } finally {
-    fs.unlinkSync(pathToFile);
-    fs.unlinkSync(pathToOutput);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile);
+    }
+
+    if (fs.existsSync(pathToOutput)) {
+      fs.unlinkSync(pathToOutput);
+    }
   }
 
   return "";
