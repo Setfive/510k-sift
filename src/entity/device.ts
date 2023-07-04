@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class Device {
@@ -103,4 +109,10 @@ export class Device {
 
   @Column({ nullable: true, type: "text" })
   relatedKNumbers: string;
+
+  @CreateDateColumn({ type: "datetime" })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ type: "datetime" })
+  updatedAt!: Date;
 }

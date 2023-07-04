@@ -1,7 +1,11 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
 import * as winston from "winston";
-import { ICommandLineArgs, ICSVEntry } from "../types/types";
+import {
+  ICommandLineArgs,
+  ICSVEntry,
+  ICSVProductCodeEntry,
+} from "../types/types";
 import {
   CURRENT_MONTH_510k_CSV,
   CURRENT_PRODUCT_CODES_CSV,
@@ -21,6 +25,7 @@ import { DataSource } from "typeorm";
 import { Device } from "../entity/device";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { appDataSource } from "../db";
+import { ProductCode } from "../entity/productCode";
 
 const logger = winston.createLogger({
   level: "info",
@@ -58,13 +63,65 @@ async function downloadProductCodes(): Promise<void> {
     const pathToFile = `${os.tmpdir()}/${uuidv4()}.zip`;
     const pathToCSV = `${os.tmpdir()}/${uuidv4()}.csv`;
     fs.writeFileSync(pathToFile, result.data);
-    yauzl.open(pathToFile, { lazyEntries: true }, (err, zipfile) => {
-      if (err) {
-        throw err;
+
+    const productCSV = await new Promise<string>(async (csvResolve) => {
+      yauzl.open(pathToFile, { lazyEntries: true }, (err, zipfile) => {
+        if (err) {
+          throw err;
+        }
+
+        zipfile.readEntry();
+        zipfile.on("entry", (entry) => {
+          zipfile.openReadStream(entry, (errInner, readStream) => {
+            if (errInner) {
+              throw errInner;
+            }
+            const writeStream = fs.createWriteStream(pathToCSV);
+            readStream.pipe(writeStream);
+            writeStream.on("close", () => {
+              const csvData = fs.readFileSync(pathToCSV, "utf8");
+              if (fs.existsSync(pathToFile)) {
+                fs.unlinkSync(pathToFile);
+              }
+              if (fs.existsSync(pathToCSV)) {
+                fs.unlinkSync(pathToCSV);
+              }
+              csvResolve(csvData);
+            });
+          });
+        });
+      });
+    });
+
+    const records: ICSVProductCodeEntry[] = parse(productCSV, {
+      columns: true,
+      skip_empty_lines: true,
+      delimiter: "|",
+      quote: false,
+    });
+
+    let num = 0;
+    for (const r of records) {
+      let productCode = await appDataSource
+        .getRepository(ProductCode)
+        .findOneBy({ productCode: r.PRODUCTCODE });
+      if (!productCode) {
+        productCode = new ProductCode();
       }
 
-      console.log(pathToCSV);
-    });
+      productCode.productCode = r.PRODUCTCODE;
+      productCode.deviceName = r.DEVICENAME;
+      productCode.deviceClass = r.DEVICECLASS;
+      productCode.reviewPanel = r.REVIEW_PANEL;
+      productCode.medicalSpeciality = r.MEDICALSPECIALTY;
+      productCode.regulationNumber = r.REGULATIONNUMBER;
+
+      await appDataSource.manager.save(productCode);
+      num += 1;
+      logger.info(`downloadProductCodes: ${num}/${records.length}`);
+    }
+
+    resolve();
   });
 }
 

@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class ProductCode {
@@ -22,4 +28,10 @@ export class ProductCode {
 
   @Column({ nullable: true })
   regulationNumber: string;
+
+  @CreateDateColumn({ type: "datetime" })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ type: "datetime" })
+  updatedAt!: Date;
 }

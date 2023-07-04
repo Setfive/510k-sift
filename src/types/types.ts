@@ -47,3 +47,24 @@ export interface IDeviceJson extends Device {
   statementText: string;
   foiaText: string;
 }
+
+export interface ICSVProductCodeEntry {
+  REVIEW_PANEL: string;
+  MEDICALSPECIALTY: string;
+  PRODUCTCODE: string;
+  DEVICENAME: string;
+  DEVICECLASS: string;
+  UNCLASSIFIED_REASON: string;
+  GMPEXEMPTFLAG: string;
+  THIRDPARTYFLAG: string;
+  REVIEWCODE: string;
+  REGULATIONNUMBER: string;
+  SUBMISSION_TYPE_ID: string;
+  DEFINITION: string;
+  PHYSICALSTATE: string;
+  TECHNICALMETHOD: string;
+  TARGETAREA: string;
+  Implant_Flag: string;
+  Life_Sustain_support_flag: string;
+  SummaryMalfunctionReporting: string;
+}
