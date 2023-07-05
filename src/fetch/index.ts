@@ -49,6 +49,12 @@ export async function searchDevices(
       .setParameter("codes", request.productCodes);
   }
 
+  if (request.applicant) {
+    query
+      .andWhere("u.applicant LIKE :applicant")
+      .setParameter("applicant", `${request.applicant}%`);
+  }
+
   if (request.decisionDateGte) {
     const decisionDateGte = moment(request.decisionDateGte, "YYYY-MM-DD");
     if (decisionDateGte.isValid()) {

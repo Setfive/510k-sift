@@ -12,6 +12,7 @@ import {ApiService} from "../service/api.service";
 export class HomeComponent implements OnInit {
   form: FormGroup;
   result?: IPagerResponse<IDeviceDTO>;
+  loading = false;
 
   constructor(
     private router: Router,
@@ -45,8 +46,10 @@ export class HomeComponent implements OnInit {
       request.knumber = this.form.value.knumber;
     }
 
+    this.loading = true;
     this.apiService.search(request).subscribe(result => {
       this.result = result;
+      this.loading = false;
     });
   }
 }

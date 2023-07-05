@@ -26,12 +26,36 @@
             </div>
           </div>
           <div class="row mt-3">
-            <div class="col-12 text-end">
+            <div class="col-12 d-flex justify-content-end">
+               <div *ngIf="loading" class="me-2">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
               <button type="submit" class="btn btn-primary">Search</button>
             </div>
           </div>
         </form>
       </div>
     </div>
+  </div>
+
+  <div class="col-12 mt-5" *ngIf="result">
+    <table class="table table-bordered table-striped table-sm">
+      <thead>
+        <tr>
+          <th>KNumber</th>
+          <th>Applicant</th>
+          <th>Device</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of result.data">
+          <td [innerHTML]="row.knumber"></td>
+          <td [innerHTML]="row.applicant"></td>
+          <td [innerHTML]="row.deviceName"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
