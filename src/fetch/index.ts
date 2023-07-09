@@ -64,6 +64,10 @@ export async function searchDevices(
     }
   }
 
+  if (request.page > 1) {
+    query.offset(request.page * PER_PAGE);
+  }
+
   const result: IDeviceDTO[] = [];
   const devicesAndCount = await query.getManyAndCount();
   for (const device of devicesAndCount[0]) {
@@ -75,6 +79,7 @@ export async function searchDevices(
     data: result,
     total: devicesAndCount[1],
     paginated: devicesAndCount[1] > PER_PAGE,
+    pages: Math.floor(devicesAndCount[1] / PER_PAGE),
   };
 
   return pagerResult;

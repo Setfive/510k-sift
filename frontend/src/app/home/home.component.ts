@@ -13,6 +13,9 @@ export class HomeComponent implements OnInit {
   form: FormGroup;
   result?: IPagerResponse<IDeviceDTO>;
   loading = false;
+  noResults = false;
+  page = 1;
+  pages: number[] = [];
 
   constructor(
     private router: Router,
@@ -47,9 +50,23 @@ export class HomeComponent implements OnInit {
     }
 
     this.loading = true;
+    this.noResults = false;
+    request.page = this.page;
     this.apiService.search(request).subscribe(result => {
       this.result = result;
       this.loading = false;
+      if(this.result.total === 0) {
+        this.noResults = true;
+      }
+      this.pages = [];
+      for(let i = 0; i < this.result.pages; i++) {
+        this.pages.push(i + 1);
+      }
     });
+  }
+
+  go(val: number) {
+    this.page = val;
+    this.submit();
   }
 }

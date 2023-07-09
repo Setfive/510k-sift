@@ -15,7 +15,7 @@
               <input type="text" class="form-control" id="deviceName" formControlName="deviceName" />
             </div>
             <div class="col-3">
-              <label for="kNumber" class="form-label">KNumber</label>
+              <label for="kNumber" class="form-label">510K Number</label>
               <input type="text" class="form-control" id="kNumber" formControlName="kNumber" />
             </div>
           </div>
@@ -41,15 +41,21 @@
   </div>
 
   <div class="col-12 mt-5" *ngIf="result">
-    <table class="table table-bordered table-striped table-sm">
+    <table class="table table-bordered table-striped table-sm data-table">
       <thead>
+        <tr *ngIf="!noResults">
+          <td colspan="3">{{ result.total }} results</td>
+        </tr>
         <tr>
-          <th>KNumber</th>
+          <th class="wd-10">510K Number</th>
           <th>Applicant</th>
           <th>Device</th>
         </tr>
       </thead>
       <tbody>
+        <tr *ngIf="noResults">
+          <td colspan="3" class="text-center">No Results</td>
+        </tr>
         <tr *ngFor="let row of result.data">
           <td [innerHTML]="row.knumber"></td>
           <td [innerHTML]="row.applicant"></td>
@@ -57,5 +63,14 @@
         </tr>
       </tbody>
     </table>
+    <div *ngIf="result.paginated" class="d-flex justify-content-center">
+      <ul class="pagination">
+        <li class="page-item" *ngIf="page > 1"><button (click)="go(page - 1)" class="page-link">Previous</button></li>
+        <li *ngFor="let p of pages" class="page-item" [class.current]="p === page">
+          <button (click)="go(p)" class="page-link" [innerHTML]="p"></button>
+        </li>
+        <li class="page-item" *ngIf="page < pages[pages.length - 1]"><button (click)="go(page + 1)" class="page-link">Next</button></li>
+      </ul>
+    </div>
   </div>
 </div>

@@ -5,12 +5,14 @@ export interface ISearchRequest {
   decisionDateLte?: string;
   productCodes?: string[];
   deviceName?: string;
+  page?: number;
 }
 
 export interface IPagerResponse<T> {
   data: T[];
   total: number;
   paginated: boolean;
+  pages: number;
 }
 
 export interface IDeviceDTO {
