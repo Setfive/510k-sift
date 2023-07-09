@@ -20,13 +20,15 @@ export class ViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    const knumber = `${this.activatedRoute.snapshot.paramMap.get('knumber')}`;
-    this.apiService.getDevice(knumber).subscribe(result => {
-      this.loading = false;
-      this.device = result;
-      if(this.device.productCodeDto) {
-        this.productCodeDto = this.device.productCodeDto;
-      }
+    this.activatedRoute.paramMap.subscribe(paramMap => {
+      const knumber = `${paramMap.get('knumber')}`;
+      this.apiService.getDevice(knumber).subscribe(result => {
+        this.loading = false;
+        this.device = result;
+        if(this.device.productCodeDto) {
+          this.productCodeDto = this.device.productCodeDto;
+        }
+      });
     });
   }
 
