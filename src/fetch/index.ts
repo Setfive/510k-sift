@@ -145,6 +145,22 @@ export async function similaritySearchIFUs(
   return result;
 }
 
+export async function getMarketingAudienceForDevice(knumber: string) {
+  const item = await appDataSource
+    .getRepository(Device)
+    .findOneByOrFail({ knumber });
+  const deviceMarketingAudience = await generateMarketingAudienceOpenAI(item);
+  if (deviceMarketingAudience) {
+    item.deviceMarketingAudience = deviceMarketingAudience;
+  } else {
+    item.deviceMarketingAudience = "N/A";
+  }
+
+  await appDataSource.manager.save(item);
+
+  return deviceToDTO(item);
+}
+
 export async function getIFUForDeviceKNumber(
   knumber: string,
   ee: EventEmitter

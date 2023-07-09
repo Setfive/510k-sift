@@ -6,6 +6,7 @@ import {
   getDeviceDTOForKNumber,
   getEnhancedDeviceDTOForKNumber,
   getIFUForDeviceKNumber,
+  getMarketingAudienceForDevice,
   searchDevices,
   similaritySearchIFUs,
 } from "./fetch";
@@ -35,6 +36,16 @@ dotenv.config();
       const knumber = req.params.knumber;
       const deviceDto = await getDeviceDTOForKNumber(knumber);
 
+      res.send(JSON.stringify(deviceDto));
+    }
+  );
+
+  server.post(
+    "/api/enhance/marketing/:knumber",
+    async (req: express.Request, res: express.Response) => {
+      const knumber = req.params.knumber;
+      const deviceDto = await getMarketingAudienceForDevice(knumber);
+      res.setHeader("Content-Type", "application/json");
       res.send(JSON.stringify(deviceDto));
     }
   );

@@ -49,6 +49,11 @@
               <a [routerLink]="['/view', k]" [innerHTML]="k"></a>
             </li>
           </ul>
+
+          <p>
+            <strong>Summary/Statement:</strong><br>
+            <a target="_blank" href="{{ device?.summaryStatementURL }}" [innerHTML]="device?.summaryStatementURL"></a>
+          </p>
         </div>
       </div>
 
@@ -60,6 +65,21 @@
           <div *ngIf="!device?.indicationsForUseAI" class="text-end">
             <button (click)="extractIFU()" class="btn btn-primary">Extract with ChatGPT</button>
           </div>
+
+          <div class="text-end text-secondary small" *ngIf="device?.indicationsForUseAI">From ChatGPT</div>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-header">Target Market Audience</div>
+        <div class="card-body">
+          <p [innerHTML]="device?.deviceMarketingAudience"></p>
+
+          <div *ngIf="!device?.deviceMarketingAudience" class="text-end">
+            <button (click)="getMarketingAudience()" class="btn btn-primary">Ask ChatGPT</button>
+          </div>
+
+          <div class="text-end text-secondary small" *ngIf="device?.deviceMarketingAudience">From ChatGPT</div>
         </div>
       </div>
     </div>

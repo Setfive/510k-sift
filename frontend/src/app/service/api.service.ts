@@ -19,4 +19,8 @@ export class ApiService {
   public getDevice(knumber: string) {
     return this.httpClient.get<IDeviceDTO>(`/api/get/${knumber}`);
   }
+
+  public generateMarketingAudience(knumber: string) {
+    return this.httpClient.post<IDeviceDTO>(`/api/enhance/marketing/${knumber}`, {});
+  }
 }

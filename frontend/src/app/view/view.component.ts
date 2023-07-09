@@ -32,6 +32,17 @@ export class ViewComponent implements OnInit {
     });
   }
 
+  async getMarketingAudience() {
+    this.progressMessages.push('Getting marketing audience from ChatGPT...');
+    this.popProgressMessage();
+
+    this.apiService.generateMarketingAudience(`${this.device?.knumber}`).subscribe(result => {
+      if(this.device) {
+        this.device.deviceMarketingAudience = result.deviceMarketingAudience;
+      }
+    });
+  }
+
   async extractIFU() {
     const response = await fetch(`http://localhost:8080/api/enhance/ifu/${this.device?.knumber}`, {
       headers: {
@@ -64,7 +75,6 @@ export class ViewComponent implements OnInit {
 
         this.popProgressMessage();
       }
-
     }
   }
 
@@ -72,6 +82,8 @@ export class ViewComponent implements OnInit {
     if(this.progressMessages.length) {
       this.progressMessage = `${this.progressMessages.shift()}`;
       setTimeout(() => this.popProgressMessage(), 1000);
+    }else{
+      this.progressMessage = '';
     }
   }
 }

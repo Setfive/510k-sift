@@ -1,22 +1,26 @@
 import { Device } from "../entity/device";
 import { getOpenAI } from "../openai";
 import { LOGGER } from "../logger";
+import { appDataSource } from "../db";
+import { ProductCode } from "../entity/productCode";
 
 export async function generateMarketingAudienceOpenAI(
   device: Device
 ): Promise<string> {
-  if (!device.indicationsForUse) {
-    LOGGER.error(
-      `generateMarketingAudience: Device has no IFU. knumber=${device.knumber}`
-    );
-    return "";
-  }
   try {
+    let productCodeDescription = "";
+    const productCode = await appDataSource
+      .getRepository(ProductCode)
+      .findOneBy({ productCode: device.productcode });
+    if (productCode) {
+      productCodeDescription = productCode.deviceName;
+    }
     const openai = getOpenAI();
     const prompt = `You're an expert FDA consultant working with data from 510(k).
-Use only the provided indications for use (IFU) for the device and the device name.
+Use only the provided indications for use (IFU) for the device, the device name, and product code details.
 In 1 paragraph, describe the best audience of medical professionals to market this device to. For example, a stent would best be marketed to cardiologists.
 Device Name: ${device.devicename}
+Product Code Description: ${productCodeDescription}
 Indications for use:
 ${device.indicationsForUse?.trim()}`;
 
