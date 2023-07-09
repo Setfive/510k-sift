@@ -19,6 +19,7 @@ import { LOGGER } from "../logger";
 import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
 import { ProductCode } from "../entity/productCode";
+import EventEmitter from "events";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 
@@ -144,6 +145,37 @@ export async function similaritySearchIFUs(
   return result;
 }
 
+export async function getIFUForDeviceKNumber(
+  knumber: string,
+  ee: EventEmitter
+): Promise<IDeviceDTO> {
+  const item = await appDataSource
+    .getRepository(Device)
+    .findOneByOrFail({ knumber });
+
+  if (!item.indicationsForUseAI && item.summaryStatementURL) {
+    const indicationsForUse = await getIFUOpenAI(item, ee);
+    if (indicationsForUse) {
+      ee.emit("progress", `Extracted IFU. Generating search embedding...`);
+
+      const embedding = await getEmbedding(indicationsForUse);
+      item.indicationsForUseAI = indicationsForUse;
+      item.indicationsForUseEmbedding = embedding;
+    } else {
+      item.indicationsForUseAI = "N/A";
+    }
+    LOGGER.info(
+      `getIFUForDeviceKNumber: KNumber=${knumber}, IFU=${indicationsForUse}`
+    );
+  }
+
+  await appDataSource.manager.save(item);
+
+  const deviceDto = deviceToDTO(item);
+
+  return deviceDto;
+}
+
 export async function getEnhancedDeviceDTOForKNumber(knumber: string) {
   const item = await appDataSource
     .getRepository(Device)
@@ -242,6 +274,7 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     summaryStatementURL: device.summaryStatementURL,
     indicationsForUse: device.indicationsForUseAI,
     deviceMarketingAudience: device.deviceMarketingAudience,
+    indicationsForUseAI: device.indicationsForUseAI,
   };
 
   if (device.relatedKNumbers) {

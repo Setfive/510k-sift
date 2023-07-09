@@ -5,6 +5,7 @@ import * as bodyParser from "body-parser";
 import {
   getDeviceDTOForKNumber,
   getEnhancedDeviceDTOForKNumber,
+  getIFUForDeviceKNumber,
   searchDevices,
   similaritySearchIFUs,
 } from "./fetch";
@@ -13,6 +14,9 @@ import { LOGGER } from "./logger";
 import { ISearchRequest, ISemanticSearchRequest } from "./types/types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const EventEmitter = require("events");
 
 dotenv.config();
 
@@ -36,13 +40,36 @@ dotenv.config();
   );
 
   server.get(
-    "/api/enhanced/:knumber",
+    "/api/enhance/ifu/:knumber",
     async (req: express.Request, res: express.Response) => {
-      res.setHeader("Content-Type", "application/json");
-      const knumber = req.params.knumber;
-      const deviceDto = await getEnhancedDeviceDTOForKNumber(knumber);
+      res.writeHead(200, {
+        Connection: "keep-alive",
+        "Cache-Control": "no-cache",
+        "Content-Type": "text/event-stream",
+        "Access-Control-Allow-Origin": "*",
+      });
 
-      res.send(JSON.stringify(deviceDto));
+      res.write(
+        JSON.stringify({ type: "progress", data: "Starting..." }) + "\n\n"
+      );
+      res.on("close", () => {
+        res.end();
+      });
+
+      LOGGER.info("In getIFUForDeviceKNumber");
+
+      const ee = new EventEmitter();
+      ee.on("progress", (data: unknown) => {
+        const payload = { type: "progress", data: data };
+        LOGGER.info(JSON.stringify(payload));
+        res.write(JSON.stringify(payload) + "\n\n");
+      });
+      const knumber = req.params.knumber;
+      const deviceDto = await getIFUForDeviceKNumber(knumber, ee);
+
+      const payload = { type: "device", data: deviceDto };
+      res.write(JSON.stringify(payload) + "\n\n");
+      res.end();
     }
   );
 

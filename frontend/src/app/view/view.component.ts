@@ -27,4 +27,24 @@ export class ViewComponent implements OnInit {
       }
     });
   }
+
+  async extractIFU() {
+    const response = await fetch(`http://localhost:8080/api/enhance/ifu/${this.device?.knumber}`, {
+      headers: {
+        "Accept": "text/event-stream",
+      },
+    });
+
+    for (const reader = response.body?.getReader();; ) {
+      if(!reader) {
+        break;
+      }
+      const {value, done} = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunk = new TextDecoder().decode(value).trim();
+      console.log(chunk);
+    }
+  }
 }

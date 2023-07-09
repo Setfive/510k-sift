@@ -40,6 +40,17 @@
           </p>
         </div>
       </div>
+
+      <div class="card mt-5">
+        <div class="card-header">Indications for use</div>
+        <div class="card-body">
+          <p [innerHTML]="device?.indicationsForUseAI"></p>
+
+          <div *ngIf="!device?.indicationsForUseAI" class="text-end">
+            <button (click)="extractIFU()" class="btn btn-primary">Extract with ChatGPT</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-4" *ngIf="productCodeDto">
       <div class="card">

@@ -48,18 +48,20 @@
         </tr>
         <tr>
           <th class="wd-10">510K Number</th>
+          <th>Decision Date</th>
           <th>Applicant</th>
           <th>Device</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngIf="noResults">
-          <td colspan="3" class="text-center">No Results</td>
+          <td colspan="4" class="text-center">No Results</td>
         </tr>
         <tr *ngFor="let row of result.data">
           <td>
             <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
           </td>
+          <td [innerHTML]="row.decisionDate"></td>
           <td [innerHTML]="row.applicant"></td>
           <td [innerHTML]="row.deviceName"></td>
         </tr>

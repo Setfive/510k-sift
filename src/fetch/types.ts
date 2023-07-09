@@ -17,6 +17,7 @@ export interface IDeviceDTO {
   deviceMarketingAudience?: string;
   relatedKNumbers?: string[];
   productCodeDto?: IProductCodeDTO;
+  indicationsForUseAI?: string;
 }
 
 export interface IProductCodeDTO {
