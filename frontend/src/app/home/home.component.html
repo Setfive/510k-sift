@@ -57,7 +57,9 @@
           <td colspan="3" class="text-center">No Results</td>
         </tr>
         <tr *ngFor="let row of result.data">
-          <td [innerHTML]="row.knumber"></td>
+          <td>
+            <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
+          </td>
           <td [innerHTML]="row.applicant"></td>
           <td [innerHTML]="row.deviceName"></td>
         </tr>
