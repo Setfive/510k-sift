@@ -73,6 +73,7 @@ async function extractRelatedKNumbers() {
     for (const entry of records) {
       const relatedKs = await getRelatedKNumbers(entry);
       entry.relatedKNumbers = JSON.stringify(relatedKs);
+      await appDataSource.manager.save(entry);
       num += 1;
       logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
     }
