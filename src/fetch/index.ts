@@ -5,6 +5,7 @@ import {
   IDeviceDotResult,
   IDeviceDTO,
   IDeviceDTODotResult,
+  IProductCodeDTO,
   StatementOrSummary,
   SubmissionType,
 } from "./types";
@@ -17,6 +18,7 @@ import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { LOGGER } from "../logger";
 import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
+import { ProductCode } from "../entity/productCode";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 
@@ -193,6 +195,19 @@ export async function getDeviceDTOForKNumber(knumber: string) {
   return deviceToDTO(item);
 }
 
+async function productCodeToDTO(
+  productCode: ProductCode
+): Promise<IProductCodeDTO> {
+  return {
+    productCode: productCode.productCode,
+    reviewPanel: productCode.reviewPanel,
+    medicalSpeciality: productCode.medicalSpeciality,
+    deviceName: productCode.deviceName,
+    deviceClass: productCode.deviceClass,
+    regulationNumber: productCode.regulationNumber,
+  };
+}
+
 async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
   const addressParts: string[] = [
     device.street1,
@@ -203,6 +218,14 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     device.country_code,
   ];
 
+  const decisionDateFormatted = moment(device.decisiondate).format(
+    "MMMM Do YYYY"
+  );
+
+  const receivedDateFormatted = moment(device.datereceived).format(
+    "MMMM Do YYYY"
+  );
+
   const address = addressParts.filter((item) => item?.trim().length).join(" ");
   const item: IDeviceDTO = {
     knumber: device.knumber,
@@ -210,8 +233,8 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     applicant: device.applicant,
     contact: device.contact,
     address: address,
-    dateReceived: device.datereceived,
-    decisionDate: device.decisiondate,
+    dateReceived: receivedDateFormatted,
+    decisionDate: decisionDateFormatted,
     decision: device.decision as Decision,
     productCode: device.productcode,
     statementOrSummary: device.stateorsumm as StatementOrSummary,
@@ -223,6 +246,13 @@ async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
 
   if (device.relatedKNumbers) {
     item.relatedKNumbers = JSON.parse(device.relatedKNumbers);
+  }
+
+  const productCode = await appDataSource
+    .getRepository(ProductCode)
+    .findOneBy({ productCode: device.productcode });
+  if (productCode) {
+    item.productCodeDto = await productCodeToDTO(productCode);
   }
   return item;
 }

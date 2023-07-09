@@ -6,8 +6,8 @@ export interface IDeviceDTO {
   applicant: string;
   contact: string;
   address: string;
-  dateReceived: Date;
-  decisionDate: Date;
+  dateReceived: string;
+  decisionDate: string;
   decision: Decision;
   productCode: string;
   statementOrSummary: StatementOrSummary;
@@ -16,6 +16,16 @@ export interface IDeviceDTO {
   indicationsForUse?: string;
   deviceMarketingAudience?: string;
   relatedKNumbers?: string[];
+  productCodeDto?: IProductCodeDTO;
+}
+
+export interface IProductCodeDTO {
+  productCode: string;
+  reviewPanel: string;
+  medicalSpeciality: string;
+  deviceName: string;
+  deviceClass: string;
+  regulationNumber: string;
 }
 
 export type StatementOrSummary = "Summary" | "Statement";

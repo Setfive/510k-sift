@@ -31,4 +31,14 @@ export interface IDeviceDTO {
   indicationsForUse?: string;
   deviceMarketingAudience?: string;
   relatedKNumbers?: string[];
+  productCodeDto?: IProductCodeDTO;
+}
+
+export interface IProductCodeDTO {
+  productCode: string;
+  reviewPanel: string;
+  medicalSpeciality: string;
+  deviceName: string;
+  deviceClass: string;
+  regulationNumber: string;
 }

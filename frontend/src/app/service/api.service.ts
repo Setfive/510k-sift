@@ -15,4 +15,8 @@ export class ApiService {
   public search(request: ISearchRequest) {
     return this.httpClient.post<IPagerResponse<IDeviceDTO>>(`/api/search`, request);
   }
+
+  public getDevice(knumber: string) {
+    return this.httpClient.get<IDeviceDTO>(`/api/get/${knumber}`);
+  }
 }

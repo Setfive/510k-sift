@@ -1,1 +1,72 @@
-<p>view works!</p>
+<div class="container my-5" *ngIf="loading">
+  <div class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="container my-5">
+  <div class="row">
+    <div class="col-8">
+      <div class="card">
+        <div class="card-header" [innerHTML]="device?.knumber"></div>
+        <div class="card-body">
+          <p>
+            <strong>510(k) Number:</strong><br>
+            {{ device?.knumber }}
+          </p>
+          <p>
+            <strong>Applicant:</strong><br>
+            {{ device?.applicant }}<br>
+            {{ device?.contact }}<br>
+            {{ device?.address }}
+          </p>
+          <p>
+            <strong>Device Name:</strong><br>
+            {{ device?.deviceName }}
+          </p>
+          <p>
+            <strong>Date Received:</strong><br>
+            {{ device?.dateReceived }}
+          </p>
+          <p>
+            <strong>Decision Date:</strong><br>
+            {{ device?.decisionDate }}
+          </p>
+          <p>
+            <strong>Produce Code:</strong><br>
+            {{ device?.productCode }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-4" *ngIf="productCodeDto">
+      <div class="card">
+        <div class="card-header">Product Code Details</div>
+        <div class="card-body">
+          <p>
+            <strong>Produce Code:</strong><br>
+            {{ productCodeDto.productCode }}
+          </p>
+          <p>
+            <strong>Name:</strong><br>
+            {{ productCodeDto.deviceName }}
+          </p>
+          <p>
+            <strong>Class:</strong><br>
+            {{ productCodeDto.deviceClass }}
+          </p>
+          <p>
+            <strong>Regulation:</strong><br>
+            {{ productCodeDto.regulationNumber }}
+          </p>
+          <p>
+            <strong>Review Panel:</strong><br>
+            {{ productCodeDto.reviewPanel }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
