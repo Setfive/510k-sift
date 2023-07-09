@@ -56,12 +56,9 @@ dotenv.config();
         res.end();
       });
 
-      LOGGER.info("In getIFUForDeviceKNumber");
-
       const ee = new EventEmitter();
       ee.on("progress", (data: unknown) => {
         const payload = { type: "progress", data: data };
-        LOGGER.info(JSON.stringify(payload));
         res.write(JSON.stringify(payload) + "\n\n");
       });
       const knumber = req.params.knumber;

@@ -43,3 +43,13 @@ export interface IProductCodeDTO {
   deviceClass: string;
   regulationNumber: string;
 }
+
+export interface IDeviceSSEEvent {
+  type: 'device';
+  data: IDeviceDTO;
+}
+
+export interface IProgressSSEEvent {
+  type: 'progress';
+  data: string;
+}

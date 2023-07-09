@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {IDeviceDTO, IProductCodeDTO} from "../service/types";
+import {IDeviceDTO, IDeviceSSEEvent, IProductCodeDTO, IProgressSSEEvent} from "../service/types";
 import {ApiService} from "../service/api.service";
 
 @Component({
@@ -13,6 +13,8 @@ export class ViewComponent implements OnInit {
   loading = true;
   device?: IDeviceDTO;
   productCodeDto?: IProductCodeDTO;
+  progressMessage = '';
+  progressMessages: string[] = [];
 
   public constructor(private activatedRoute: ActivatedRoute, private apiService: ApiService,) {
   }
@@ -35,7 +37,7 @@ export class ViewComponent implements OnInit {
       },
     });
 
-    for (const reader = response.body?.getReader();; ) {
+    for (const reader = response.body?.getReader();;) {
       if(!reader) {
         break;
       }
@@ -43,8 +45,31 @@ export class ViewComponent implements OnInit {
       if (done) {
         break;
       }
-      const chunk = new TextDecoder().decode(value).trim();
-      console.log(chunk);
+      const chunks = new TextDecoder().decode(value).trim().split('\n');
+
+      for(const chunk of chunks) {
+        if(chunk.trim().length === 0) {
+          continue;
+        }
+
+        const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk);
+        if (event.type === 'device' && this.device) {
+          this.device.indicationsForUseAI = event.data.indicationsForUseAI;
+          setTimeout(() => this.progressMessage = '', 2000);
+        } else if (event.type === 'progress') {
+          this.progressMessages.push(event.data);
+        }
+
+        this.popProgressMessage();
+      }
+
+    }
+  }
+
+  popProgressMessage() {
+    if(this.progressMessages.length) {
+      this.progressMessage = `${this.progressMessages.shift()}`;
+      setTimeout(() => this.popProgressMessage(), 1000);
     }
   }
 }

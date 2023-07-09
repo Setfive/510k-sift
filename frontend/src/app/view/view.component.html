@@ -6,6 +6,8 @@
   </div>
 </div>
 
+<div class="alert alert-info alert-progress" role="alert" *ngIf="progressMessage" [innerHTML]="progressMessage"></div>
+
 <div *ngIf="!loading" class="container my-5">
   <div class="row">
     <div class="col-8">
@@ -38,6 +40,15 @@
             <strong>Produce Code:</strong><br>
             {{ device?.productCode }}
           </p>
+
+          <p *ngIf="device?.relatedKNumbers">
+            <strong>Related Submissions:</strong><br>
+          </p>
+          <ul *ngIf="device?.relatedKNumbers">
+            <li *ngFor="let k of device?.relatedKNumbers">
+              <a [routerLink]="['/view', k]" [innerHTML]="k"></a>
+            </li>
+          </ul>
         </div>
       </div>
 
