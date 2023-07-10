@@ -34,11 +34,11 @@ export class ViewComponent implements OnInit {
 
   async getMarketingAudience() {
     this.progressMessages.push('Getting marketing audience from ChatGPT...');
-    this.popProgressMessage();
 
     this.apiService.generateMarketingAudience(`${this.device?.knumber}`).subscribe(result => {
       if(this.device) {
         this.device.deviceMarketingAudience = result.deviceMarketingAudience;
+        this.progressMessage = '';
       }
     });
   }
@@ -68,12 +68,14 @@ export class ViewComponent implements OnInit {
         const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk);
         if (event.type === 'device' && this.device) {
           this.device.indicationsForUseAI = event.data.indicationsForUseAI;
+          this.progressMessage = '';
         } else if (event.type === 'progress') {
           this.progressMessages.push(event.data);
+          this.progressMessage = event.data;
         }
 
-        this.popProgressMessage();
-        setTimeout(() => this.popProgressMessage(), 2000);
+        // this.popProgressMessage();
+        // setTimeout(() => this.popProgressMessage(), 2000);
       }
     }
   }
