@@ -17,20 +17,26 @@ export async function generateMarketingAudienceOpenAI(
     }
     const openai = getOpenAI();
     const prompt = `You're an expert FDA consultant working with data from 510(k).
-Use only the provided indications for use (IFU) for the device, the device name, and product code details.
-In 1 paragraph, describe the best audience of medical professionals to market this device to. For example, a stent would best be marketed to cardiologists.
+Use only the provided indications for use (IFU) for the device, the device name, and product code details.`;
+    const user = `In 1 paragraph, describe the best audience of medical professionals to market this device to. For example, a stent would best be marketed to cardiologists.
 Device Name: ${device.devicename}
 Product Code Description: ${productCodeDescription}
 Indications for use:
 ${device.indicationsForUse?.trim()}`;
 
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
+    const completion = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: prompt },
+        {
+          role: "user",
+          content: user,
+        },
+      ],
       max_tokens: 1000,
     });
 
-    const text = `${completion.data.choices[0].text}`.trim();
+    const text = `${completion.data.choices[0].message?.content}`.trim();
     return text;
   } catch (e) {
     console.error(e);

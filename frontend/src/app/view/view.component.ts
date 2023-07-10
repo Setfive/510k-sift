@@ -50,7 +50,7 @@ export class ViewComponent implements OnInit {
       },
     });
 
-    for (const reader = response.body?.getReader();;) {
+    for (const reader= response.body?.getReader();;) {
       if(!reader) {
         break;
       }
@@ -68,12 +68,12 @@ export class ViewComponent implements OnInit {
         const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk);
         if (event.type === 'device' && this.device) {
           this.device.indicationsForUseAI = event.data.indicationsForUseAI;
-          setTimeout(() => this.progressMessage = '', 2000);
         } else if (event.type === 'progress') {
           this.progressMessages.push(event.data);
         }
 
         this.popProgressMessage();
+        setTimeout(() => this.popProgressMessage(), 2000);
       }
     }
   }
@@ -81,7 +81,6 @@ export class ViewComponent implements OnInit {
   popProgressMessage() {
     if(this.progressMessages.length) {
       this.progressMessage = `${this.progressMessages.shift()}`;
-      setTimeout(() => this.popProgressMessage(), 1000);
     }else{
       this.progressMessage = '';
     }

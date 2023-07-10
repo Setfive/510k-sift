@@ -20,6 +20,23 @@
             </div>
           </div>
           <div class="row mt-3">
+            <div class="col-6">
+              <label for="decisionDate" class="form-label">Decision Date</label>
+              <div class="d-flex">
+                <input type="text" class="form-control" id="decisionDate" placeholder="2000-01-01" formControlName="decisionDateGte" />
+                <div class="mx-2">to</div>
+                <input type="text" class="form-control" placeholder="2000-01-01" formControlName="decisionDateLte" />
+              </div>
+            </div>
+            <div class="col-6">
+              <label for="productCodes" class="form-label">Product Codes</label>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" id="productCodes" formControlName="produceCodes">
+                <button class="input-group-text">🔎</button>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
             <div class="col-12">
               <label for="company" class="form-label">Company</label>
               <input type="text" class="form-control" id="company" formControlName="company" />

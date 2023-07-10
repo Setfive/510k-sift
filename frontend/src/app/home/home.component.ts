@@ -27,6 +27,9 @@ export class HomeComponent implements OnInit {
       deviceName: [],
       kNumber: [],
       company: [],
+      decisionDateGte: [],
+      decisionDateLte: [],
+      produceCodes: []
     });
   }
 
@@ -47,6 +50,18 @@ export class HomeComponent implements OnInit {
 
     if(this.form.value.knumber) {
       request.knumber = this.form.value.knumber;
+    }
+
+    if(this.form.value.decisionDateGte) {
+      request.decisionDateGte = this.form.value.decisionDateGte;
+    }
+
+    if(this.form.value.decisionDateLte) {
+      request.decisionDateLte = this.form.value.decisionDateLte;
+    }
+
+    if(this.form.value.produceCodes) {
+      request.productCodes = `${this.form.value.produceCodes}`.split(',').map(item => item.trim());
     }
 
     this.loading = true;

@@ -62,8 +62,17 @@ export async function searchDevices(
     const decisionDateGte = moment(request.decisionDateGte, "YYYY-MM-DD");
     if (decisionDateGte.isValid()) {
       query
-        .andWhere("u.decisiondate >= :decisionsDateGte")
-        .setParameter("decisionsDateGte", decisionDateGte);
+        .andWhere("u.decisiondate >= :decisionDateGte")
+        .setParameter("decisionDateGte", request.decisionDateGte);
+    }
+  }
+
+  if (request.decisionDateLte) {
+    const decisionDateLte = moment(request.decisionDateLte, "YYYY-MM-DD");
+    if (decisionDateLte.isValid()) {
+      query
+        .andWhere("u.decisiondate <= :decisionDateLte")
+        .setParameter("decisionDateLte", decisionDateLte.toDate());
     }
   }
 

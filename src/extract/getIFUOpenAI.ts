@@ -53,10 +53,10 @@ export async function getIFUOpenAI(
       const prompt = `You're an expert FDA consultant working on a 510(k).
 This is a page from the summary or statement of a 510(k).
 Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.
+The indications for use starts with "Indications for Use:" and then is followed by a description of how the device is used.
 Only consider the text in the prompt, do not consider any other information.
 Do not include the phrase "Indications for Use" in the response.
 If none is present reply with None.
-Text: ${text.trim()}      
       `;
 
       if (ee) {
@@ -66,14 +66,21 @@ Text: ${text.trim()}
         );
       }
 
-      const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
+      const completion = await openai.createChatCompletion({
+        model: "gpt-4",
+        messages: [
+          { role: "system", content: prompt },
+          {
+            role: "user",
+            content: `What is the indications for use in this text?${text.trim()}`,
+          },
+        ],
         max_tokens: 1000,
       });
 
-      LOGGER.info(`getIFUOpenAI: Trying ${text.substring(0, 100)}`);
-      const ifuText = `${completion.data.choices[0].text}`.trim();
+      LOGGER.info(`getIFUOpenAI: Trying ${prompt}`);
+      const ifuText = `${completion.data.choices[0].message?.content}`.trim();
+      LOGGER.info(`getIFUOpenAI: Got ${ifuText}`);
 
       if (!ifuText.includes("None")) {
         return `${ifuText.replace("Indications for Use:", "")}`;
