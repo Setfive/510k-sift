@@ -110,6 +110,9 @@ export class Device {
   @Column({ nullable: true, type: "text" })
   relatedKNumbers: string;
 
+  @Column({ nullable: true, type: "text" })
+  deviceNameEmbedding: string;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 

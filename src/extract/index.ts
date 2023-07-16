@@ -61,11 +61,38 @@ const logger = winston.createLogger({
   } else if (options.command === "importFromJson") {
     await importFromJson();
   } else if (options.command === "createDeviceNameEmbeddings") {
+    await createDeviceNameEmbeddings(options.id);
+  } else if (options.command === "createDeviceEmbeddingBash") {
+    await createDeviceEmbeddingBash();
   }
 })();
 
-async function createDeviceNameEmbeddings() {
-  console.log("todo");
+async function createDeviceEmbeddingBash() {
+  const chunks: number[][] = await getDeviceIdChunks();
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .orderBy("u.id", "ASC")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    for (const record of records) {
+      console.log(
+        `node dist/extract/index.js  --command=createDeviceNameEmbeddings --id=${record.id}`
+      );
+    }
+  }
+}
+
+async function createDeviceNameEmbeddings(id: string) {
+  const device = await appDataSource
+    .getRepository(Device)
+    .findOneByOrFail({ id: parseInt(id) });
+  const embedding = await getEmbedding(`${device.devicename}`);
+  device.deviceNameEmbedding = embedding;
+  await appDataSource.manager.save(device);
+  process.exit(0);
 }
 
 async function importFromJson() {

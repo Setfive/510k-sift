@@ -22,7 +22,8 @@
     "extract:ifu-embeddings": "npm run extract -- --command=extractIFUEmbeddings",
     "extract:related-ks": "npm run extract -- --command=extractRelatedKNumbers",
     "extract:dump-json": "npm run extract -- --command=dumpToJson",
-    "extract:import-json": "npm run extract -- --command=importFromJson"
+    "extract:import-json": "npm run extract -- --command=importFromJson",
+    "extract:create-device-embeddings": "npm run extract -- --command=createDeviceEmbeddingBash"
   },
   "repository": {
     "type": "git",
