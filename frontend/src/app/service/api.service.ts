@@ -27,4 +27,16 @@ export class ApiService {
   public searchProductCodes(request: IProductCodeSearchRequest) {
     return this.httpClient.post<IPagerResponse<IProductCodeDTO>>(`/api/search/product-codes`, request);
   }
+
+  public async getProductCodeMedicalSpecialities() {
+    return new Promise<string[]>((resolve, reject) => {
+      this.httpClient.get<string[]>(`/api/search/product-codes/specialities`).subscribe(resolve);
+    });
+  }
+
+  public async getProductCodeReviewPanels() {
+    return new Promise<string[]>((resolve, reject) => {
+      this.httpClient.get<string[]>(`/api/search/product-codes/panels`).subscribe(resolve);
+    });
+  }
 }

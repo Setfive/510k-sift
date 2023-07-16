@@ -15,23 +15,35 @@ export class ProductCodeListComponent implements OnInit {
   noResults = false;
   page = 1;
   pages: number[] = [];
+  reviewPanels: string[] = [];
 
   public constructor(private formBuilder: FormBuilder,
                      private apiService: ApiService) {
     this.form = this.formBuilder.group({
       productCode: [],
       reviewPanel: [],
-      medicalSpeciality: [],
       deviceName: [],
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.reviewPanels = await this.apiService.getProductCodeReviewPanels();
     this.submit();
   }
 
   async submit() {
     const request: IProductCodeSearchRequest = {};
+    if(this.form.value.productCode) {
+      request.productCode = this.form.value.productCode;
+    }
+
+    if(this.form.value.reviewPanel) {
+      request.reviewPanel = this.form.value.reviewPanel;
+    }
+
+    if(this.form.value.deviceName) {
+      request.deviceName = this.form.value.deviceName;
+    }
 
     this.loading = true;
     this.noResults = false;

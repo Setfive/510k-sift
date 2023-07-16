@@ -9,23 +9,20 @@
       <div class="card-body">
         <form [formGroup]="form" (submit)="submit()">
           <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <label for="productCode" class="form-label">Product Code</label>
               <input type="text" class="form-control" id="productCode" formControlName="productCode" />
             </div>
-            <div class="col-8">
+            <div class="col-3">
+              <label for="reviewPanel" class="form-label">Review Panel</label>
+              <select class="form-control" id="reviewPanel" formControlName="reviewPanel">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let item of reviewPanels" [ngValue]="item" [innerHTML]="item"></option>
+              </select>
+            </div>
+            <div class="col-6">
               <label for="deviceName" class="form-label">Description</label>
               <input type="text" class="form-control" id="deviceName" formControlName="deviceName" />
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-6">
-              <label for="reviewPanel" class="form-label">Review Panel</label>
-              <input type="text" class="form-control" id="reviewPanel" formControlName="reviewPanel" />
-            </div>
-            <div class="col-6">
-              <label for="medicalSpeciality" class="form-label">Medical Speciality</label>
-              <input type="text" class="form-control" id="medicalSpeciality" formControlName="medicalSpeciality" />
             </div>
           </div>
           <div class="row mt-3">
@@ -53,7 +50,6 @@
         <th class="wd-10">Product Code</th>
         <th>Description</th>
         <th>Review Panel</th>
-        <th>Medical Speciality</th>
       </tr>
       </thead>
       <tbody>
@@ -65,9 +61,7 @@
           <a [innerHTML]="row.productCode" [routerLink]="['/view/', row.productCode]"></a>
         </td>
         <td [innerHTML]="row.deviceName"></td>
-        <td [innerHTML]="row.reviewPanel"></td>
-        <td [innerHTML]="row.medicalSpeciality"></td>
-      </tr>
+        <td [innerHTML]="row.reviewPanel"></td></tr>
       </tbody>
     </table>
     <div *ngIf="result.paginated" class="d-flex justify-content-center">

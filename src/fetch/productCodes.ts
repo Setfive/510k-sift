@@ -12,7 +12,7 @@ export async function getProductCodeReviewPanels() {
     .orderBy("u.reviewPanel", "ASC")
     .getRawMany<{ pc: string }>();
 
-  return queryResult.map((item) => item.pc);
+  return queryResult.map((item) => item.pc).filter((item) => item.length);
 }
 
 export async function getProductCodeMedicalSpecialities() {
@@ -23,7 +23,7 @@ export async function getProductCodeMedicalSpecialities() {
     .orderBy("u.medicalSpeciality", "ASC")
     .getRawMany<{ pc: string }>();
 
-  return queryResult.map((item) => item.pc);
+  return queryResult.map((item) => item.pc).filter((item) => item.length);
 }
 
 export async function searchProductCodes(
