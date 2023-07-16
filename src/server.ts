@@ -12,7 +12,12 @@ import {
 } from "./fetch";
 import { appDataSource } from "./db";
 import { LOGGER } from "./logger";
-import { ISearchRequest, ISemanticSearchRequest } from "./types/types";
+import {
+  IProductCodeSearchRequest,
+  ISearchRequest,
+  ISemanticSearchRequest,
+} from "./types/types";
+import { searchProductCodes } from "./fetch/productCodes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -100,6 +105,19 @@ dotenv.config();
       const searchRequest = req.body as ISemanticSearchRequest;
       LOGGER.info(`/api/search/semantic: Search=${searchRequest.search}`);
       const result = await similaritySearchIFUs(searchRequest.search);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/product-codes",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const searchRequest = req.body as IProductCodeSearchRequest;
+      LOGGER.info(
+        `/api/search/product-codes: Search=${JSON.stringify(searchRequest)}`
+      );
+      const result = await searchProductCodes(searchRequest);
       res.send(JSON.stringify(result));
     }
   );

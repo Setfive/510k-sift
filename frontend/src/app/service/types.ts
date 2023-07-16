@@ -53,3 +53,11 @@ export interface IProgressSSEEvent {
   type: 'progress';
   data: string;
 }
+
+export interface IProductCodeSearchRequest {
+  productCode?: string;
+  reviewPanel?: string;
+  medicalSpeciality?: string;
+  deviceName?: string;
+  page?: number;
+}

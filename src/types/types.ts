@@ -93,3 +93,11 @@ export interface IPagerResponse<T> {
   paginated: boolean;
   pages: number;
 }
+
+export interface IProductCodeSearchRequest {
+  productCode: string;
+  reviewPanel: string;
+  medicalSpeciality: string;
+  deviceName: string;
+  page: number;
+}

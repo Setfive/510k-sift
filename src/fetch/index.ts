@@ -5,13 +5,10 @@ import {
   IDeviceDotResult,
   IDeviceDTO,
   IDeviceDTODotResult,
-  IProductCodeDTO,
   StatementOrSummary,
   SubmissionType,
 } from "./types";
 import { getEmbedding } from "../extract/getEmbedding";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const os = require("os");
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
 import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
@@ -20,10 +17,13 @@ import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
 import { ProductCode } from "../entity/productCode";
 import EventEmitter from "events";
+import { productCodeToDTO } from "./productCodes";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 
-const PER_PAGE = 100;
+export const PER_PAGE = 100;
 
 export async function searchDevices(
   request: ISearchRequest
@@ -250,19 +250,6 @@ export async function getDeviceDTOForKNumber(knumber: string) {
     .getRepository(Device)
     .findOneByOrFail({ knumber });
   return deviceToDTO(item);
-}
-
-async function productCodeToDTO(
-  productCode: ProductCode
-): Promise<IProductCodeDTO> {
-  return {
-    productCode: productCode.productCode,
-    reviewPanel: productCode.reviewPanel,
-    medicalSpeciality: productCode.medicalSpeciality,
-    deviceName: productCode.deviceName,
-    deviceClass: productCode.deviceClass,
-    regulationNumber: productCode.regulationNumber,
-  };
 }
 
 async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
