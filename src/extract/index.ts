@@ -65,6 +65,8 @@ const logger = winston.createLogger({
   } else if (options.command === "createDeviceEmbeddingBash") {
     await createDeviceEmbeddingBash();
   }
+
+  process.exit(0);
 })();
 
 async function createDeviceEmbeddingBash() {
@@ -92,7 +94,6 @@ async function createDeviceNameEmbeddings(id: string) {
   const embedding = await getEmbedding(`${device.devicename}`);
   device.deviceNameEmbedding = embedding;
   await appDataSource.manager.save(device);
-  process.exit(0);
 }
 
 async function importFromJson() {
@@ -141,8 +142,6 @@ async function importFromJson() {
     .into(Device)
     .values(itemsForInsert)
     .execute();
-
-  process.exit(0);
 }
 
 async function dumpToJson() {
