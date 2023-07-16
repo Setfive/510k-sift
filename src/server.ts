@@ -18,6 +18,7 @@ import {
   ISemanticSearchRequest,
 } from "./types/types";
 import {
+  getProductCode,
   getProductCodeMedicalSpecialities,
   getProductCodeReviewPanels,
   searchProductCodes,
@@ -122,6 +123,15 @@ dotenv.config();
         `/api/search/product-codes: Search=${JSON.stringify(searchRequest)}`
       );
       const result = await searchProductCodes(searchRequest);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.get(
+    "/api/search/product-codes/:code",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCode(req.params.code);
       res.send(JSON.stringify(result));
     }
   );

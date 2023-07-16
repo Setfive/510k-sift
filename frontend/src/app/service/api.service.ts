@@ -39,4 +39,8 @@ export class ApiService {
       this.httpClient.get<string[]>(`/api/search/product-codes/panels`).subscribe(resolve);
     });
   }
+
+  public getProductCode(code: string) {
+    return this.httpClient.get<IProductCodeDTO>(`/api/search/product-codes/${code}`);
+  }
 }

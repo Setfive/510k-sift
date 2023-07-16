@@ -58,7 +58,7 @@
       </tr>
       <tr *ngFor="let row of result.data">
         <td>
-          <a [innerHTML]="row.productCode" [routerLink]="['/view/', row.productCode]"></a>
+          <a [innerHTML]="row.productCode" [routerLink]="['/product-codes/', row.productCode]"></a>
         </td>
         <td [innerHTML]="row.deviceName"></td>
         <td [innerHTML]="row.reviewPanel"></td></tr>

@@ -4,6 +4,13 @@ import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
 import { PER_PAGE } from "./index";
 
+export async function getProductCode(code: string) {
+  const productCode = await appDataSource
+    .getRepository(ProductCode)
+    .findOneByOrFail({ productCode: code });
+  return productCodeToDTO(productCode);
+}
+
 export async function getProductCodeReviewPanels() {
   const queryResult = await appDataSource
     .getRepository(ProductCode)

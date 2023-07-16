@@ -1,1 +1,16 @@
-<p>product-code-detail works!</p>
+<div class="container my-5" *ngIf="!productCode">
+  <div class="row">
+    <div class="col-12 text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5" *ngIf="productCode">
+  <div class="mb-3">
+    <h1>Product Code: {{ productCode.productCode }}</h1>
+    <p class="text-secondary" [innerHTML]="productCode.deviceName"></p>
+  </div>
+</div>
