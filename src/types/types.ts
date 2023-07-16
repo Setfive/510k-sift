@@ -12,7 +12,8 @@ export interface ICommandLineArgs {
     | "extractIFUEmbeddings"
     | "extractRelatedKNumbers"
     | "downloadProductCodes"
-    | "dumpToJson";
+    | "dumpToJson"
+    | "importFromJson";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {

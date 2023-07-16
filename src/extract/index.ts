@@ -57,8 +57,40 @@ const logger = winston.createLogger({
     await extractRelatedKNumbers();
   } else if (options.command === "dumpToJson") {
     await dumpToJson();
+  } else if (options.command === "importFromJson") {
+    await importFromJson();
   }
 })();
+
+async function importFromJson() {
+  const dataDir = process.cwd() + "/data/json";
+  const files = fs.readdirSync(dataDir);
+
+  let num = 0;
+  for (const f of files) {
+    const data: Record<string, string> = JSON.parse(
+      fs.readFileSync(`${dataDir}/${f}`)
+    );
+    const device = new Device();
+
+    for (const [key, val] of Object.entries(data)) {
+      (device as any)[key] = val;
+    }
+
+    if (data.datereceived) {
+      device.datereceived = moment(data.datereceived, "YYYY-MM-DD").toDate();
+    }
+
+    if (data.decisiondate) {
+      device.decisiondate = moment(data.decisiondate, "YYYY-MM-DD").toDate();
+    }
+
+    await appDataSource.manager.save(device);
+
+    num += 1;
+    logger.info(`${num} / ${files.length}`);
+  }
+}
 
 async function dumpToJson() {
   const dataDir = process.cwd() + "/data/json";
