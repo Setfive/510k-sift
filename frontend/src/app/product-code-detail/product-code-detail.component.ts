@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {IProductCodeDTO} from "../service/types";
+import {IProductCodeDTO, IProductCodeDTOWithDevices} from "../service/types";
 import {FormBuilder} from "@angular/forms";
 import {ApiService} from "../service/api.service";
 import {ActivatedRoute} from "@angular/router";
@@ -11,7 +11,7 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class ProductCodeDetailComponent implements OnInit {
   loading = false;
-  productCode?: IProductCodeDTO;
+  productCode?: IProductCodeDTOWithDevices;
   public constructor(private activatedRoute: ActivatedRoute,
                      private apiService: ApiService) {
 

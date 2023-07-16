@@ -1,14 +1,32 @@
 import { IPagerResponse, IProductCodeSearchRequest } from "../types/types";
-import { IProductCodeDTO } from "./types";
+import {
+  IDeviceDTO,
+  IProductCodeDTO,
+  IProductCodeDTOWithDevices,
+} from "./types";
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
-import { PER_PAGE } from "./index";
+import { deviceToDTO, PER_PAGE } from "./index";
+import { Device } from "../entity/device";
 
 export async function getProductCode(code: string) {
   const productCode = await appDataSource
     .getRepository(ProductCode)
     .findOneByOrFail({ productCode: code });
-  return productCodeToDTO(productCode);
+  const productCodeDTO = await productCodeToDTO(productCode);
+
+  const devices = await appDataSource
+    .getRepository(Device)
+    .findBy({ productcode: code });
+  const deviceDTOs: IDeviceDTO[] = [];
+  for (const item of devices) {
+    deviceDTOs.push(await deviceToDTO(item));
+  }
+  const result: IProductCodeDTOWithDevices = Object.assign(
+    { devices: deviceDTOs },
+    productCodeDTO
+  );
+  return result;
 }
 
 export async function getProductCodeReviewPanels() {

@@ -4,7 +4,14 @@ import {
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
-import {IDeviceDTO, IPagerResponse, IProductCodeDTO, IProductCodeSearchRequest, ISearchRequest} from "./types";
+import {
+  IDeviceDTO,
+  IPagerResponse,
+  IProductCodeDTO,
+  IProductCodeDTOWithDevices,
+  IProductCodeSearchRequest,
+  ISearchRequest
+} from "./types";
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +48,6 @@ export class ApiService {
   }
 
   public getProductCode(code: string) {
-    return this.httpClient.get<IProductCodeDTO>(`/api/search/product-codes/${code}`);
+    return this.httpClient.get<IProductCodeDTOWithDevices>(`/api/search/product-codes/${code}`);
   }
 }

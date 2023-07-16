@@ -29,6 +29,10 @@ export interface IProductCodeDTO {
   regulationNumber: string;
 }
 
+export interface IProductCodeDTOWithDevices extends IProductCodeDTO {
+  devices: IDeviceDTO[];
+}
+
 export type StatementOrSummary = "Summary" | "Statement";
 
 export type SubmissionType =

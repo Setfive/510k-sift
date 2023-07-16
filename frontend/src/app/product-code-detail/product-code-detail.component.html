@@ -9,8 +9,56 @@
 </div>
 
 <div class="container my-5" *ngIf="productCode">
-  <div class="mb-3">
-    <h1>Product Code: {{ productCode.productCode }}</h1>
-    <p class="text-secondary" [innerHTML]="productCode.deviceName"></p>
+  <div class="row">
+    <div class="col-12">
+      <div class="mb-3">
+        <h1>Product Code: {{ productCode.productCode }}</h1>
+        <p class="text-secondary" [innerHTML]="productCode.deviceName"></p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-9">
+      <div class="device-table">
+        <strong>Devices:</strong>
+        <table class="table table-bordered table-striped table-sm">
+          <thead>
+          <tr>
+            <td colspan="4">{{ productCode.devices.length }} results</td>
+          </tr>
+          <tr>
+            <th class="wd-10">510K Number</th>
+            <th>Decision Date</th>
+            <th>Applicant</th>
+            <th>Device</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="productCode.devices.length === 0">
+            <td colspan="4" class="text-center">No Devices</td>
+          </tr>
+          <tr *ngFor="let row of productCode.devices">
+            <td>
+              <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
+            </td>
+            <td [innerHTML]="row.decisionDate"></td>
+            <td [innerHTML]="row.applicant"></td>
+            <td [innerHTML]="row.deviceName"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <ul class="m-0 list-unstyled">
+            <li *ngIf="productCode.reviewPanel"><strong>Review Panel:</strong> {{ productCode.reviewPanel }}</li>
+            <li *ngIf="productCode.medicalSpeciality"><strong>Medical Speciality:</strong> {{ productCode.medicalSpeciality }}</li>
+            <li *ngIf="productCode.regulationNumber"><strong>CFR:</strong> {{ productCode.regulationNumber }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

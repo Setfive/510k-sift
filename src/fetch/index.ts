@@ -252,7 +252,7 @@ export async function getDeviceDTOForKNumber(knumber: string) {
   return deviceToDTO(item);
 }
 
-async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
+export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
   const addressParts: string[] = [
     device.street1,
     device.street2,

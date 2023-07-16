@@ -61,3 +61,7 @@ export interface IProductCodeSearchRequest {
   deviceName?: string;
   page?: number;
 }
+
+export interface IProductCodeDTOWithDevices extends IProductCodeDTO {
+  devices: IDeviceDTO[];
+}
