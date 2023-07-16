@@ -73,14 +73,17 @@ export class HomeComponent implements OnInit {
       if(this.result.total === 0) {
         this.noResults = true;
       }
+      const min = this.page - 5 > 0 ? this.page - 5 : 0;
+      const max = this.page + 5 < this.result.pages ? this.page + 5 : this.result.pages;
       this.pages = [];
-      for(let i = 0; i < this.result.pages; i++) {
+      for(let i = min; i < max; i++) {
         this.pages.push(i + 1);
       }
     });
   }
 
   go(val: number) {
+    window.scrollTo(0, 0);
     this.page = val;
     this.submit();
   }
