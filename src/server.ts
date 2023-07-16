@@ -17,7 +17,11 @@ import {
   ISearchRequest,
   ISemanticSearchRequest,
 } from "./types/types";
-import { searchProductCodes } from "./fetch/productCodes";
+import {
+  getProductCodeMedicalSpecialities,
+  getProductCodeReviewPanels,
+  searchProductCodes,
+} from "./fetch/productCodes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -118,6 +122,24 @@ dotenv.config();
         `/api/search/product-codes: Search=${JSON.stringify(searchRequest)}`
       );
       const result = await searchProductCodes(searchRequest);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.get(
+    "/api/search/product-codes/panels",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCodeReviewPanels();
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.get(
+    "/api/search/product-codes/specialities",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCodeMedicalSpecialities();
       res.send(JSON.stringify(result));
     }
   );

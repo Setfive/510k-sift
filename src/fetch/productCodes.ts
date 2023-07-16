@@ -4,6 +4,28 @@ import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
 import { PER_PAGE } from "./index";
 
+export async function getProductCodeReviewPanels() {
+  const queryResult = await appDataSource
+    .getRepository(ProductCode)
+    .createQueryBuilder("u")
+    .select("DISTINCT u.reviewPanel AS pc")
+    .orderBy("u.reviewPanel", "ASC")
+    .getRawMany<{ pc: string }>();
+
+  return queryResult.map((item) => item.pc);
+}
+
+export async function getProductCodeMedicalSpecialities() {
+  const queryResult = await appDataSource
+    .getRepository(ProductCode)
+    .createQueryBuilder("u")
+    .select("DISTINCT u.medicalSpeciality AS pc")
+    .orderBy("u.medicalSpeciality", "ASC")
+    .getRawMany<{ pc: string }>();
+
+  return queryResult.map((item) => item.pc);
+}
+
 export async function searchProductCodes(
   request: IProductCodeSearchRequest
 ): Promise<IPagerResponse<IProductCodeDTO>> {
