@@ -7,6 +7,7 @@ import { appDataSource } from "../db";
 import { getEmbedding } from "./getEmbedding";
 import { extractTextWithPdfToText } from "./pdfToText";
 import { getRelatedKNumbers } from "./getRelatedKNumbers";
+import * as moment from "moment";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -54,8 +55,43 @@ const logger = winston.createLogger({
     await extractIFUEmbeddings();
   } else if (options.command === "extractRelatedKNumbers") {
     await extractRelatedKNumbers();
+  } else if (options.command === "dumpToJson") {
+    await dumpToJson();
   }
 })();
+
+async function dumpToJson() {
+  const dataDir = process.cwd() + "/data/json";
+  const chunks: number[][] = await getDeviceIdChunks();
+  let numChunk = 0;
+  for (const chunk of chunks) {
+    const records = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .limit(1000)
+      .offset(chunk[0])
+      .getMany();
+    let num = 0;
+    for (const entry of records) {
+      if (entry.datereceived) {
+        entry.datereceived = moment(entry.datereceived).format(
+          "YYYY-MM-DD"
+        ) as any;
+      }
+
+      if (entry.decisiondate) {
+        entry.decisiondate = moment(entry.decisiondate).format(
+          "YYYY-MM-DD"
+        ) as any;
+      }
+      const data = JSON.stringify(entry);
+      fs.writeFileSync(`${dataDir}/${entry.knumber}.json`, data);
+      num += 1;
+      logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
+    }
+    numChunk += 1;
+  }
+}
 
 async function extractRelatedKNumbers() {
   const chunks: number[][] = await getDeviceIdChunks();
