@@ -19,36 +19,50 @@
   </div>
   <div class="row">
     <div class="col-9">
-      <div class="device-table">
-        <div class="mb-2">
-          <strong>Devices:</strong>
+      <div class="card">
+        <div class="card-header">Devices</div>
+        <div class="card-body p-0">
+          <div class="device-table">
+            <table class="table table-bordered table-striped table-sm">
+              <thead>
+              <tr>
+                <td colspan="4">{{ productCode.devices.length }} results</td>
+              </tr>
+              <tr>
+                <th class="wd-10">510K Number</th>
+                <th>Decision Date</th>
+                <th>Applicant</th>
+                <th>Device</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngIf="productCode.devices.length === 0">
+                <td colspan="4" class="text-center">No Devices</td>
+              </tr>
+              <tr *ngFor="let row of productCode.devices">
+                <td>
+                  <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
+                </td>
+                <td [innerHTML]="row.decisionDate"></td>
+                <td [innerHTML]="row.applicant"></td>
+                <td [innerHTML]="row.deviceName"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <table class="table table-bordered table-striped table-sm">
-          <thead>
-          <tr>
-            <td colspan="4">{{ productCode.devices.length }} results</td>
-          </tr>
-          <tr>
-            <th class="wd-10">510K Number</th>
-            <th>Decision Date</th>
-            <th>Applicant</th>
-            <th>Device</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngIf="productCode.devices.length === 0">
-            <td colspan="4" class="text-center">No Devices</td>
-          </tr>
-          <tr *ngFor="let row of productCode.devices">
-            <td>
-              <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
-            </td>
-            <td [innerHTML]="row.decisionDate"></td>
-            <td [innerHTML]="row.applicant"></td>
-            <td [innerHTML]="row.deviceName"></td>
-          </tr>
-          </tbody>
-        </table>
+      </div>
+      <div class="card mt-5">
+        <div class="card-header">AI Description</div>
+        <div class="card-body p-0">
+          <p [innerHTML]="productCode?.aiDescription"></p>
+
+          <div *ngIf="!productCode?.aiDescription && !loadingAIDescription" class="text-end">
+            <button (click)="getAIDescription()" class="btn btn-primary">Ask ChatGPT</button>
+          </div>
+
+          <div class="text-end text-secondary small" *ngIf="productCode?.aiDescription">From ChatGPT</div>
+        </div>
       </div>
     </div>
     <div class="col-3">

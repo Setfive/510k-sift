@@ -75,6 +75,7 @@ async function createDeviceEmbeddingBash() {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
+      .where("u.deviceNameEmbedding IS NULL")
       .orderBy("u.id", "ASC")
       .limit(1000)
       .offset(chunk[0])

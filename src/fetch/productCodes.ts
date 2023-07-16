@@ -120,5 +120,6 @@ export async function productCodeToDTO(
     deviceName: productCode.deviceName,
     deviceClass: productCode.deviceClass,
     regulationNumber: productCode.regulationNumber,
+    aiDescription: productCode.aiDescription,
   };
 }

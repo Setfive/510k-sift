@@ -12,6 +12,8 @@ import {ActivatedRoute} from "@angular/router";
 export class ProductCodeDetailComponent implements OnInit {
   loading = false;
   productCode?: IProductCodeDTOWithDevices;
+  loadingAIDescription = false;
+
   public constructor(private activatedRoute: ActivatedRoute,
                      private apiService: ApiService) {
 
@@ -22,5 +24,9 @@ export class ProductCodeDetailComponent implements OnInit {
       const code = `${paramMap.get('code')}`;
       this.apiService.getProductCode(code).subscribe(result => this.productCode = result);
     });
+  }
+
+  getAIDescription() {
+
   }
 }

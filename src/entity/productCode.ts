@@ -29,6 +29,9 @@ export class ProductCode {
   @Column({ nullable: true })
   regulationNumber: string;
 
+  @Column({ nullable: true, type: "text" })
+  aiDescription: string;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 

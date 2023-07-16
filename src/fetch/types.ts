@@ -27,6 +27,7 @@ export interface IProductCodeDTO {
   deviceName: string;
   deviceClass: string;
   regulationNumber: string;
+  aiDescription: string;
 }
 
 export interface IProductCodeDTOWithDevices extends IProductCodeDTO {
