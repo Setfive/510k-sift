@@ -75,7 +75,7 @@
         <div class="card-body">
           <p [innerHTML]="device?.deviceMarketingAudience"></p>
 
-          <div *ngIf="!device?.deviceMarketingAudience" class="text-end">
+          <div *ngIf="!device?.deviceMarketingAudience && !loadingMarketingAudience" class="text-end">
             <button (click)="getMarketingAudience()" class="btn btn-primary">Ask ChatGPT</button>
           </div>
 

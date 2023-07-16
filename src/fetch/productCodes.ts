@@ -17,7 +17,12 @@ export async function getProductCode(code: string) {
 
   const devices = await appDataSource
     .getRepository(Device)
-    .findBy({ productcode: code });
+    .createQueryBuilder("u")
+    .where("u.productCode = :productCode")
+    .orderBy("u.decisionDate", "DESC")
+    .setParameter("productCode", code)
+    .getMany();
+
   const deviceDTOs: IDeviceDTO[] = [];
   for (const item of devices) {
     deviceDTOs.push(await deviceToDTO(item));

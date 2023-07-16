@@ -15,6 +15,7 @@ export class ViewComponent implements OnInit {
   productCodeDto?: IProductCodeDTO;
   progressMessage = '';
   progressMessages: string[] = [];
+  loadingMarketingAudience = false;
 
   public constructor(private activatedRoute: ActivatedRoute, private apiService: ApiService,) {
   }
@@ -33,13 +34,15 @@ export class ViewComponent implements OnInit {
   }
 
   async getMarketingAudience() {
-    this.progressMessages.push('Getting marketing audience from ChatGPT...');
+    this.progressMessage = 'Getting marketing audience from ChatGPT...';
+    this.loadingMarketingAudience = true;
 
     this.apiService.generateMarketingAudience(`${this.device?.knumber}`).subscribe(result => {
       if(this.device) {
         this.device.deviceMarketingAudience = result.deviceMarketingAudience;
         this.progressMessage = '';
       }
+      this.loadingMarketingAudience = false;
     });
   }
 
