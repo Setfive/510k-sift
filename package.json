@@ -20,7 +20,8 @@
     "extract:calculate-tokens": "npm run extract -- --command=calculateTokens",
     "extract:ifu-form-3881": "npm run extract -- --command=extractIFUForm3881",
     "extract:ifu-embeddings": "npm run extract -- --command=extractIFUEmbeddings",
-    "extract:related-ks": "npm run extract -- --command=extractRelatedKNumbers"
+    "extract:related-ks": "npm run extract -- --command=extractRelatedKNumbers",
+    "extract:dump-json": "npm run extract -- --command=dumpToJson"
   },
   "repository": {
     "type": "git",
