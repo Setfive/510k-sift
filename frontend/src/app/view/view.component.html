@@ -89,7 +89,7 @@
         <div class="card-body">
           <p>
             <strong>Produce Code:</strong><br>
-            {{ productCodeDto.productCode }}
+            <a [innerHTML]="productCodeDto.productCode" [routerLink]="['/product-codes/', productCodeDto.productCode]"></a>
           </p>
           <p>
             <strong>Name:</strong><br>
