@@ -60,8 +60,13 @@ const logger = winston.createLogger({
     await dumpToJson();
   } else if (options.command === "importFromJson") {
     await importFromJson();
+  } else if (options.command === "createDeviceNameEmbeddings") {
   }
 })();
+
+async function createDeviceNameEmbeddings() {
+  console.log("todo");
+}
 
 async function importFromJson() {
   const dataDir = process.cwd() + "/data/json";
@@ -97,6 +102,8 @@ async function importFromJson() {
       itemsForInsert = [];
     }
 
+    itemsForInsert.push(device);
+
     num += 1;
     logger.info(`${num} / ${files.length}`);
   }
@@ -107,6 +114,8 @@ async function importFromJson() {
     .into(Device)
     .values(itemsForInsert)
     .execute();
+
+  process.exit(0);
 }
 
 async function dumpToJson() {

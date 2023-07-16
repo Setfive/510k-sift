@@ -13,7 +13,8 @@ export interface ICommandLineArgs {
     | "extractRelatedKNumbers"
     | "downloadProductCodes"
     | "dumpToJson"
-    | "importFromJson";
+    | "importFromJson"
+    | "createDeviceNameEmbeddings";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {
