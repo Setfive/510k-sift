@@ -8,6 +8,7 @@ import { getEmbedding } from "./getEmbedding";
 import { extractTextWithPdfToText } from "./pdfToText";
 import { getRelatedKNumbers } from "./getRelatedKNumbers";
 import * as moment from "moment";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -66,6 +67,7 @@ async function importFromJson() {
   const dataDir = process.cwd() + "/data/json";
   const files = fs.readdirSync(dataDir);
 
+  let itemsForInsert: QueryDeepPartialEntity<Device>[] = [];
   let num = 0;
   for (const f of files) {
     const data: Record<string, string> = JSON.parse(
@@ -85,11 +87,26 @@ async function importFromJson() {
       device.decisiondate = moment(data.decisiondate, "YYYY-MM-DD").toDate();
     }
 
-    await appDataSource.manager.save(device);
+    if (itemsForInsert.length === 5000) {
+      await appDataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Device)
+        .values(itemsForInsert)
+        .execute();
+      itemsForInsert = [];
+    }
 
     num += 1;
     logger.info(`${num} / ${files.length}`);
   }
+
+  await appDataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Device)
+    .values(itemsForInsert)
+    .execute();
 }
 
 async function dumpToJson() {
