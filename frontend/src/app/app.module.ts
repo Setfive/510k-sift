@@ -8,12 +8,20 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {HttpClientModule} from "@angular/common/http";
 import { ViewComponent } from './view/view.component';
+import { ProductCodeListComponent } from './product-code-list/product-code-list.component';
+import { ProductCodeDetailComponent } from './product-code-detail/product-code-detail.component';
+import { CompanyListComponent } from './company-list/company-list.component';
+import { CompanyDetailComponent } from './company-detail/company-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ViewComponent
+    ViewComponent,
+    ProductCodeListComponent,
+    ProductCodeDetailComponent,
+    CompanyListComponent,
+    CompanyDetailComponent
   ],
   imports: [
     BrowserModule,
