@@ -8,6 +8,19 @@ import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
 import { deviceToDTO, PER_PAGE } from "./index";
 import { Device } from "../entity/device";
+import { generateAIDescriptionForProductCode } from "../generate/generateAIDescriptionForProductCode";
+import { nl2br } from "../openai/utility";
+
+export async function getProductCodeWithAIDescription(code: string) {
+  const productCode = await appDataSource
+    .getRepository(ProductCode)
+    .findOneByOrFail({ productCode: code });
+  const description = await generateAIDescriptionForProductCode(code);
+  productCode.aiDescription = nl2br(description);
+  await appDataSource.manager.save(productCode);
+
+  return getProductCode(code);
+}
 
 export async function getProductCode(code: string) {
   const productCode = await appDataSource

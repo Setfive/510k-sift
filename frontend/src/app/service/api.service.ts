@@ -50,4 +50,8 @@ export class ApiService {
   public getProductCode(code: string) {
     return this.httpClient.get<IProductCodeDTOWithDevices>(`/api/search/product-codes/${code}`);
   }
+
+  public getProductCodeWithAIDescription(code: string) {
+    return this.httpClient.post<IProductCodeDTOWithDevices>(`/api/search/product-codes/${code}/description`, {});
+  }
 }

@@ -27,6 +27,12 @@ export class ProductCodeDetailComponent implements OnInit {
   }
 
   getAIDescription() {
-
+    this.loadingAIDescription = true;
+    this.apiService
+        .getProductCodeWithAIDescription(`${this.productCode?.productCode}`)
+        .subscribe(result => {
+          this.loadingAIDescription = false;
+          this.productCode = result;
+        });
   }
 }

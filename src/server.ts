@@ -21,8 +21,10 @@ import {
   getProductCode,
   getProductCodeMedicalSpecialities,
   getProductCodeReviewPanels,
+  getProductCodeWithAIDescription,
   searchProductCodes,
 } from "./fetch/productCodes";
+import { generateAIDescriptionForProductCode } from "./generate/generateAIDescriptionForProductCode";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -132,6 +134,15 @@ dotenv.config();
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
       const result = await getProductCode(req.params.code);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/product-codes/:code/description",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCodeWithAIDescription(req.params.code);
       res.send(JSON.stringify(result));
     }
   );

@@ -54,14 +54,20 @@
       </div>
       <div class="card mt-5">
         <div class="card-header">AI Description</div>
-        <div class="card-body p-0">
-          <p [innerHTML]="productCode?.aiDescription"></p>
+        <div class="card-body">
+          <p [innerHTML]="productCode.aiDescription"></p>
 
-          <div *ngIf="!productCode?.aiDescription && !loadingAIDescription" class="text-end">
+          <div *ngIf="!productCode.aiDescription && !loadingAIDescription" class="text-end">
             <button (click)="getAIDescription()" class="btn btn-primary">Ask ChatGPT</button>
           </div>
 
-          <div class="text-end text-secondary small" *ngIf="productCode?.aiDescription">From ChatGPT</div>
+          <div *ngIf="loadingAIDescription" class="text-end">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <div class="text-end text-secondary small" *ngIf="productCode.aiDescription">From ChatGPT</div>
         </div>
       </div>
     </div>
