@@ -130,24 +130,6 @@ dotenv.config();
   );
 
   server.get(
-    "/api/search/product-codes/:code",
-    async (req: express.Request, res: express.Response) => {
-      res.setHeader("Content-Type", "application/json");
-      const result = await getProductCode(req.params.code);
-      res.send(JSON.stringify(result));
-    }
-  );
-
-  server.post(
-    "/api/search/product-codes/:code/description",
-    async (req: express.Request, res: express.Response) => {
-      res.setHeader("Content-Type", "application/json");
-      const result = await getProductCodeWithAIDescription(req.params.code);
-      res.send(JSON.stringify(result));
-    }
-  );
-
-  server.get(
     "/api/search/product-codes/panels",
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
@@ -161,6 +143,24 @@ dotenv.config();
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
       const result = await getProductCodeMedicalSpecialities();
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.get(
+    "/api/search/product-codes/:code",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCode(req.params.code);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/product-codes/:code/description",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const result = await getProductCodeWithAIDescription(req.params.code);
       res.send(JSON.stringify(result));
     }
   );
