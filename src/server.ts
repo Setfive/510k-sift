@@ -13,6 +13,7 @@ import {
 import { appDataSource } from "./db";
 import { LOGGER } from "./logger";
 import {
+  ICompanySearchRequest,
   IProductCodeSearchRequest,
   ISearchRequest,
   ISemanticSearchRequest,
@@ -25,6 +26,7 @@ import {
   searchProductCodes,
 } from "./fetch/productCodes";
 import { generateAIDescriptionForProductCode } from "./generate/generateAIDescriptionForProductCode";
+import { fetchCompanies } from "./fetch/companies";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -161,6 +163,19 @@ dotenv.config();
     async (req: express.Request, res: express.Response) => {
       res.setHeader("Content-Type", "application/json");
       const result = await getProductCodeWithAIDescription(req.params.code);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/companies",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const searchRequest = req.body as ICompanySearchRequest;
+      LOGGER.info(
+        `/api/search/companies: Search=${JSON.stringify(searchRequest)}`
+      );
+      const result = await fetchCompanies(searchRequest);
       res.send(JSON.stringify(result));
     }
   );

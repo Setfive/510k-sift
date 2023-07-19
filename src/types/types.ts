@@ -101,3 +101,8 @@ export interface IProductCodeSearchRequest {
   deviceName: string;
   page: number;
 }
+
+export interface ICompanySearchRequest {
+  name: string;
+  page: number;
+}

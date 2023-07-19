@@ -10,6 +10,7 @@ import { deviceToDTO, PER_PAGE } from "./index";
 import { Device } from "../entity/device";
 import { generateAIDescriptionForProductCode } from "../generate/generateAIDescriptionForProductCode";
 import { nl2br } from "../openai/utility";
+import { LOGGER } from "../logger";
 
 export async function getProductCodeWithAIDescription(code: string) {
   const productCode = await appDataSource

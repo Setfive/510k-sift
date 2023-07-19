@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -44,6 +45,7 @@ export class Device {
   @Column()
   datereceived: Date;
 
+  @Index()
   @Column()
   decisiondate: Date;
 
@@ -53,6 +55,7 @@ export class Device {
   @Column()
   reviewadvisecomm: string;
 
+  @Index()
   @Column()
   productcode: string;
 
