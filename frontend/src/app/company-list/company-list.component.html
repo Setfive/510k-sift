@@ -1,1 +1,65 @@
-<p>company-list works!</p>
+<div class="container my-5">
+  <div class="mb-3">
+    <h1>Companies</h1>
+  </div>
+
+  <div class="col-md-8 offset-md-2">
+    <div class="card">
+      <div class="card-header">Search</div>
+      <div class="card-body">
+        <form [formGroup]="form" (submit)="submit()">
+          <div class="row">
+            <div class="col-12">
+              <label for="name" class="form-label">Company Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name" />
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12 d-flex justify-content-end">
+              <div *ngIf="loading" class="me-2">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 mt-5" *ngIf="result">
+    <table class="table table-bordered table-striped table-sm data-table">
+      <thead>
+      <tr *ngIf="!noResults">
+        <td colspan="3">{{ result.total }} results</td>
+      </tr>
+      <tr>
+        <th>Company Name</th>
+        <th># Submissions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngIf="noResults">
+        <td colspan="4" class="text-center">No Results</td>
+      </tr>
+      <tr *ngFor="let row of result.data">
+        <td>
+          <a [innerHTML]="row.name"></a>
+        </td>
+        <td [innerHTML]="row.cnt"></td>
+      </tr>
+      </tbody>
+    </table>
+    <div *ngIf="result.paginated" class="d-flex justify-content-center">
+      <ul class="pagination">
+        <li class="page-item" *ngIf="page > 1"><button (click)="go(page - 1)" class="page-link">Previous</button></li>
+        <li *ngFor="let p of pages" class="page-item" [class.current]="p === page">
+          <button (click)="go(p)" class="page-link" [innerHTML]="p"></button>
+        </li>
+        <li class="page-item" *ngIf="page < pages[pages.length - 1]"><button (click)="go(page + 1)" class="page-link">Next</button></li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -66,3 +66,8 @@ export interface IDeviceDTODotResult {
   data: number;
   device: IDeviceDTO;
 }
+
+export interface ICompanyDTO {
+  name: string;
+  cnt: number;
+}

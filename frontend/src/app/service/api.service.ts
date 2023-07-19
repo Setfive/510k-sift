@@ -5,6 +5,8 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import {
+  ICompanyDTO,
+  ICompanySearchRequest,
   IDeviceDTO,
   IPagerResponse,
   IProductCodeDTO,
@@ -53,5 +55,9 @@ export class ApiService {
 
   public getProductCodeWithAIDescription(code: string) {
     return this.httpClient.post<IProductCodeDTOWithDevices>(`/api/search/product-codes/${code}/description`, {});
+  }
+
+  public searchCompanies(request: ICompanySearchRequest) {
+    return this.httpClient.post<IPagerResponse<ICompanyDTO>>(`/api/search/companies`, request);
   }
 }

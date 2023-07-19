@@ -45,6 +45,11 @@ export interface IProductCodeDTO {
   aiDescription: string;
 }
 
+export interface ICompanyDTO {
+  name: string;
+  cnt: number;
+}
+
 export interface IDeviceSSEEvent {
   type: 'device';
   data: IDeviceDTO;
@@ -65,4 +70,9 @@ export interface IProductCodeSearchRequest {
 
 export interface IProductCodeDTOWithDevices extends IProductCodeDTO {
   devices: IDeviceDTO[];
+}
+
+export interface ICompanySearchRequest {
+  name?: string;
+  page?: number;
 }
