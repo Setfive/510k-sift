@@ -116,6 +116,9 @@ export class Device {
   @Column({ nullable: true, type: "text" })
   deviceNameEmbedding: string;
 
+  @Column({ nullable: true, type: "text" })
+  similarDevicesByName: string;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 

@@ -17,7 +17,7 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
   const targetEmbedding = JSON.parse(device.deviceNameEmbedding) as number[];
   const njTargetEmbedding = nj.array(targetEmbedding);
   const chunks: number[][] = await getDeviceIdChunks();
-  const results: ISimilarDeviceDotProduct[] = [];
+  let results: ISimilarDeviceDotProduct[] = [];
 
   for (const chunk of chunks) {
     const records = await appDataSource
@@ -32,6 +32,24 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
       const njEmbedding = nj.array(embedding);
       const dot = nj.dot(njTargetEmbedding, njEmbedding);
       results.push({ distance: dot.selection.data[0], device: record });
+      results.sort((a, b) => {
+        if (a.distance < b.distance) {
+          return -1;
+        }
+
+        if (a.distance > b.distance) {
+          return 1;
+        }
+
+        return 0;
+      });
     }
+
+    results = results.slice(0, 5);
   }
+
+  const names = results.map((i) => i.device.devicename);
+
+  console.log(device.devicename);
+  console.log(names);
 }
