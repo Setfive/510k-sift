@@ -45,7 +45,7 @@ export class Device {
   @Column()
   datereceived: Date;
 
-  // @Index()
+  @Index()
   @Column()
   decisiondate: Date;
 
@@ -55,7 +55,7 @@ export class Device {
   @Column()
   reviewadvisecomm: string;
 
-  // @Index()
+  @Index()
   @Column()
   productcode: string;
 

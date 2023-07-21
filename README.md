@@ -4,6 +4,35 @@ ChatGPT came up with the name:
 
 > SIFT: Searchable Insights from FDA's Treasure
 
+## Python venv
+
+The py-sentence-transformers library from Hugging Face is used for embeddings.
+
+You'll need to setup a Python virtual environment and install the requirements from the py-sentence-transformers/ folder to generate encodings.
+
+**Create Python venv**
+
+```
+cd py-sentence-transformers
+python3 -m venv venv
+```
+
+**Activate Python venv**
+
+```
+cd py-sentence-transformers
+source venv/bin/activate
+```
+
+**Install requirements**
+
+```
+cd py-sentence-transformers
+pip install -r requirements.txt
+```
+
+
+
 ## Unstructured
 
 This project uses the [Unstructured-inference](https://github.com/Unstructured-IO/unstructured-inference) HTTP service to 

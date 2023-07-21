@@ -9,6 +9,7 @@ import { extractTextWithPdfToText } from "./pdfToText";
 import { getRelatedKNumbers } from "./getRelatedKNumbers";
 import * as moment from "moment";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { generateSimilarDevicesByDeviceName } from "../generate/generateSimilarDeviceNames";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -64,6 +65,8 @@ const logger = winston.createLogger({
     await createDeviceNameEmbeddings(options.id);
   } else if (options.command === "createDeviceEmbeddingBash") {
     await createDeviceEmbeddingBash();
+  } else if (options.command === "generateSimilarDeviceNames") {
+    await generateSimilarDevicesByDeviceName(options.id);
   }
 
   process.exit(0);
@@ -276,7 +279,7 @@ async function extractIFUForm3881() {
   }
 }
 
-async function getDeviceIdChunks() {
+export async function getDeviceIdChunks() {
   const totalRecords = await appDataSource.getRepository(Device).count();
   const chunks: number[][] = [];
   let start = 0;
