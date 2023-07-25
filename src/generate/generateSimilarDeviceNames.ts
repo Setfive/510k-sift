@@ -1,7 +1,8 @@
 import { Device } from "../entity/device";
 import { getEmbedding } from "../extract/getEmbedding";
 import { appDataSource } from "../db";
-import { getDeviceIdChunks } from "../extract";
+import { getDeviceIdPKChunks } from "../extract";
+import { LOGGER } from "../logger";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 
@@ -16,17 +17,18 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
     .findOneByOrFail({ id: parseInt(id) });
   const targetEmbedding = JSON.parse(device.deviceNameEmbedding) as number[];
   const njTargetEmbedding = nj.array(targetEmbedding);
-  const chunks: number[][] = await getDeviceIdChunks();
+
+  const idChunks = await getDeviceIdPKChunks();
   let results: ISimilarDeviceDotProduct[] = [];
 
-  for (const chunk of chunks) {
+  for (const chunk of idChunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .orderBy("u.id", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .where("u.id IN (:...ids)")
+      .setParameter("ids", chunk)
       .getMany();
+
     for (const record of records) {
       const embedding = JSON.parse(record.deviceNameEmbedding) as number[];
       const njEmbedding = nj.array(embedding);

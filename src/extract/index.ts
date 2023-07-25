@@ -73,15 +73,13 @@ const logger = winston.createLogger({
 })();
 
 async function createDeviceEmbeddingBash() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where("u.deviceNameEmbedding IS NULL")
-      .orderBy("u.id", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .where("u.deviceNameEmbedding IS NULL AND u.id IN (:...ids)")
+      .setParameter("ids", chunk)
       .getMany();
     for (const record of records) {
       console.log(
@@ -150,14 +148,14 @@ async function importFromJson() {
 
 async function dumpToJson() {
   const dataDir = process.cwd() + "/data/json";
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
   let numChunk = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .limit(1000)
-      .offset(chunk[0])
+      .where("u.id IN (:...ids)")
+      .setParameter("ids", chunk)
       .getMany();
     let num = 0;
     for (const entry of records) {
@@ -182,16 +180,15 @@ async function dumpToJson() {
 }
 
 async function extractRelatedKNumbers() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
   let numChunk = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where(`u.indicationsForUse IS NOT NULL`)
+      .where(`u.indicationsForUse IS NOT NULL AND u.id IN (:...ids)`)
       .orderBy("u.datereceived", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .setParameter("ids", chunk)
       .getMany();
     let num = 0;
     for (const entry of records) {
@@ -206,16 +203,15 @@ async function extractRelatedKNumbers() {
 }
 
 async function extractIFUEmbeddings() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
   let numChunk = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where(`u.indicationsForUse IS NOT NULL`)
+      .where(`u.indicationsForUse IS NOT NULL AND u.id IN (:...ids)`)
       .orderBy("u.datereceived", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .setParameter("ids", chunk)
       .getMany();
     let num = 0;
     for (const entry of records) {
@@ -242,17 +238,16 @@ async function getIFUEmbedding(entry: Device): Promise<void> {
 }
 
 async function extractIFUForm3881() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
       .where(
-        `u.summaryStatementNeedsOCR is null AND u.summaryStatementURL is not null AND u.indicationsForUse IS NULL`
+        `u.id IN (:...ids) AND u.summaryStatementNeedsOCR is null AND u.summaryStatementURL is not null AND u.indicationsForUse IS NULL`
       )
       .orderBy("u.datereceived", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .setParameter("ids", chunk)
       .getMany();
     for (const entry of records) {
       const path = `statement_${entry.knumber}.pdf`;
@@ -279,13 +274,21 @@ async function extractIFUForm3881() {
   }
 }
 
-export async function getDeviceIdChunks() {
-  const totalRecords = await appDataSource.getRepository(Device).count();
+export async function getDeviceIdPKChunks() {
+  const rows = await appDataSource
+    .getRepository(Device)
+    .createQueryBuilder("u")
+    .orderBy("u.id", "ASC")
+    .select("u.id AS id")
+    .getRawMany<{ id: number }>();
+
+  const ids = rows.map((item) => item.id);
   const chunks: number[][] = [];
+
   let start = 0;
   let end = 1000;
-  while (end < totalRecords) {
-    chunks.push([start, end]);
+  while (end < ids.length) {
+    chunks.push(ids.slice(start, end));
     start += 1000;
     end += 1000;
   }
@@ -294,17 +297,16 @@ export async function getDeviceIdChunks() {
 }
 
 async function calculateTokens() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
 
   let totalStringLength = 0;
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where(`u.datereceived > '2022-01-01T00:00:00'`)
+      .where(`u.datereceived > '2022-01-01T00:00:00' AND u.id IN (:...ids)`)
       .orderBy("u.datereceived", "DESC")
-      .limit(1000)
-      .offset(chunk[0])
+      .setParameter("ids", chunk)
       .getMany();
     for (const record of records) {
       const file = `${process.cwd()}/data/json/${record.knumber}.json`;
@@ -323,17 +325,17 @@ async function calculateTokens() {
 }
 
 async function createBashConverts() {
-  const chunks: number[][] = await getDeviceIdChunks();
+  const chunks: number[][] = await getDeviceIdPKChunks();
 
   const cmds: string[] = [];
   for (const chunk of chunks) {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where("u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL")
-      .orderBy("u.id", "ASC")
-      .limit(1000)
-      .offset(chunk[0])
+      .where(
+        "u.id IN (:...ids) AND u.summaryStatementURL IS NOT NULL OR u.foiaURL IS NOT NULL"
+      )
+      .setParameter("ids", chunk)
       .getMany();
     for (const record of records) {
       cmds.push(
