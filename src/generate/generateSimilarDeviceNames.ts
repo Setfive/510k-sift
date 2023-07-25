@@ -34,20 +34,23 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
       const njEmbedding = nj.array(embedding);
       const dot = nj.dot(njTargetEmbedding, njEmbedding);
       results.push({ distance: dot.selection.data[0], device: record });
-      results.sort((a, b) => {
-        if (a.distance < b.distance) {
-          return -1;
-        }
+      results
+        .sort((a, b) => {
+          if (a.distance < b.distance) {
+            return -1;
+          }
 
-        if (a.distance > b.distance) {
-          return 1;
-        }
+          if (a.distance > b.distance) {
+            return 1;
+          }
 
-        return 0;
-      });
+          return 0;
+        })
+        .reverse();
     }
 
     results = results.slice(0, 5);
+    // console.log(results.map((item) => item.distance));
   }
 
   const names = results.map((i) => i.device.devicename);
