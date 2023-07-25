@@ -3,6 +3,7 @@ import { getEmbedding } from "../extract/getEmbedding";
 import { appDataSource } from "../db";
 import { getDeviceIdPKChunks } from "../extract";
 import { LOGGER } from "../logger";
+import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 
@@ -18,7 +19,7 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
   const targetEmbedding = JSON.parse(device.deviceNameEmbedding) as number[];
   const njTargetEmbedding = nj.array(targetEmbedding);
 
-  const idChunks = await getDeviceIdPKChunks();
+  const idChunks = await getDeviceIdPKChunks(10000);
   let results: ISimilarDeviceDotProduct[] = [];
 
   for (const chunk of idChunks) {
@@ -50,11 +51,17 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
     }
 
     results = results.slice(0, 5);
-    // console.log(results.map((item) => item.distance));
   }
 
   const names = results.map((i) => i.device.devicename);
 
   console.log(device.devicename);
   console.log(names);
+
+  for (const d of results) {
+    const rd = new DeviceRelatedDevice();
+    rd.sDevice = device;
+    rd.sDevice = d.device;
+    await appDataSource.manager.save(rd);
+  }
 }

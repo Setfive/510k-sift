@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { DeviceRelatedDevice } from "./deviceRelatedDevice";
 
 @Entity()
 export class Device {
@@ -116,12 +118,15 @@ export class Device {
   @Column({ nullable: true, type: "text" })
   deviceNameEmbedding: string;
 
-  @Column({ nullable: true, type: "text" })
-  similarDevicesByName: string;
-
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 
   @UpdateDateColumn({ type: "datetime" })
   updatedAt!: Date;
+
+  @OneToMany(
+    () => DeviceRelatedDevice,
+    (deviceRelatedDevice) => deviceRelatedDevice.sDevice
+  )
+  deviceRelatedDevices: DeviceRelatedDevice;
 }

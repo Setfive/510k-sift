@@ -107,3 +107,5 @@ export interface ICompanySearchRequest {
   name: string;
   page: number;
 }
+
+export type RelatedDeviceType = "similar_device_name" | "referenced_knumber";

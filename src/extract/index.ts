@@ -274,7 +274,7 @@ async function extractIFUForm3881() {
   }
 }
 
-export async function getDeviceIdPKChunks() {
+export async function getDeviceIdPKChunks(step = 1000) {
   const rows = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")
@@ -286,11 +286,11 @@ export async function getDeviceIdPKChunks() {
   const chunks: number[][] = [];
 
   let start = 0;
-  let end = 1000;
+  let end = step;
   while (end < ids.length) {
     chunks.push(ids.slice(start, end));
-    start += 1000;
-    end += 1000;
+    start += step;
+    end += step;
   }
 
   return chunks;
