@@ -67,10 +67,23 @@ const logger = winston.createLogger({
     await createDeviceEmbeddingBash();
   } else if (options.command === "generateSimilarDeviceNames") {
     await generateSimilarDevicesByDeviceName(options.id);
+  } else if (options.command === "createGenerateSimilarDeviceNamesBash") {
+    await createGenerateSimilarDeviceNamesBash();
   }
 
   process.exit(0);
 })();
+
+async function createGenerateSimilarDeviceNamesBash() {
+  const chunks: number[][] = await getDeviceIdPKChunks();
+  for (const chunk of chunks) {
+    for (const id of chunk) {
+      console.log(
+        `node dist/extract/index.js  --command=generateSimilarDeviceNames --id=${id}`
+      );
+    }
+  }
+}
 
 async function createDeviceEmbeddingBash() {
   const chunks: number[][] = await getDeviceIdPKChunks();
