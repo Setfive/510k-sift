@@ -124,6 +124,10 @@ export class Device {
   @UpdateDateColumn({ type: "datetime" })
   updatedAt!: Date;
 
+  // NOTE: This is unused
+  @Column({ nullable: true, type: "text" })
+  similarDevicesByName: string;
+
   @OneToMany(
     () => DeviceRelatedDevice,
     (deviceRelatedDevice) => deviceRelatedDevice.sDevice

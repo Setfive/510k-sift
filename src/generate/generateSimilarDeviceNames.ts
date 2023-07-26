@@ -55,13 +55,17 @@ export async function generateSimilarDevicesByDeviceName(id: string) {
 
   const names = results.map((i) => i.device.devicename);
 
-  console.log(device.devicename);
-  console.log(names);
+  LOGGER.info(device.devicename);
+  LOGGER.info(names.join(", "));
 
   for (const d of results) {
+    if (d.device.id === device.id) {
+      continue;
+    }
     const rd = new DeviceRelatedDevice();
     rd.sDevice = device;
-    rd.sDevice = d.device;
+    rd.dDevice = d.device;
+    rd.relatedType = "similar_device_name";
     await appDataSource.manager.save(rd);
   }
 }
