@@ -63,6 +63,11 @@ export interface IProgressSSEEvent {
   data: string;
 }
 
+export interface ISearchResultsSSEEvent {
+  type: 'results';
+  data: IPagerResponse<IDeviceDTO>;
+}
+
 export interface IProductCodeSearchRequest {
   productCode?: string;
   reviewPanel?: string;

@@ -29,8 +29,11 @@ import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
 export const PER_PAGE = 100;
 
 export async function searchDevices(
-  request: ISearchRequest
+  request: ISearchRequest,
+  ee: EventEmitter
 ): Promise<IPagerResponse<IDeviceDTO>> {
+  ee.emit("progress", `Building your query...`);
+
   const query = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")
@@ -38,6 +41,8 @@ export async function searchDevices(
     .orderBy("u.devicename", "ASC");
 
   if (request.deviceName) {
+    ee.emit("progress", `Vector searching for similar devices...`);
+
     const client = new QdrantClient({ url: process.env.QDRANT_URL });
     const embedding = await getEmbedding(request.deviceName);
     const decodedEmbedding = JSON.parse(embedding) as number[];
@@ -97,7 +102,11 @@ export async function searchDevices(
   }
 
   const result: IDeviceDTO[] = [];
+
+  ee.emit("progress", `Searching the database...`);
   const devicesAndCount = await query.getManyAndCount();
+
+  ee.emit("progress", `Building your results...`);
   for (const device of devicesAndCount[0]) {
     const item = await shallowDeviceToDTO(device);
     result.push(item);

@@ -48,7 +48,7 @@ export class ViewComponent implements OnInit {
   }
 
   async extractIFU() {
-    const response = await fetch(`http://localhost:8080/api/enhance/ifu/${this.device?.knumber}`, {
+    const response = await fetch(`/api/enhance/ifu/${this.device?.knumber}`, {
       headers: {
         "Accept": "text/event-stream",
       },
@@ -79,6 +79,7 @@ export class ViewComponent implements OnInit {
         }
       }
     }
+
   }
 
   popProgressMessage() {

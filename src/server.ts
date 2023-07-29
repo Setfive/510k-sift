@@ -102,8 +102,28 @@ dotenv.config();
       res.setHeader("Content-Type", "application/json");
       const searchRequest = req.body as ISearchRequest;
       LOGGER.info(`/api/search: Search=${JSON.stringify(searchRequest)}`);
-      const result = await searchDevices(searchRequest);
-      res.send(JSON.stringify(result));
+      res.writeHead(200, {
+        Connection: "keep-alive",
+        "Cache-Control": "no-cache",
+        "Content-Type": "text/event-stream",
+        "Access-Control-Allow-Origin": "*",
+      });
+
+      res.on("close", () => {
+        res.end();
+      });
+
+      const ee = new EventEmitter();
+      ee.on("progress", (data: unknown) => {
+        const payload = { type: "progress", data: data };
+        LOGGER.info(JSON.stringify(payload));
+        res.write(JSON.stringify(payload) + "\n\n");
+      });
+
+      const result = await searchDevices(searchRequest, ee);
+      const payload = { type: "results", data: result };
+      res.write(JSON.stringify(payload) + "\n\n");
+      res.end();
     }
   );
 
