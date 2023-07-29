@@ -23,7 +23,8 @@
     "extract:related-ks": "npm run extract -- --command=extractRelatedKNumbers",
     "extract:dump-json": "npm run extract -- --command=dumpToJson",
     "extract:import-json": "npm run extract -- --command=importFromJson",
-    "extract:create-device-embeddings": "npm run extract -- --command=createDeviceEmbeddingBash"
+    "extract:create-device-embeddings": "npm run extract -- --command=createDeviceEmbeddingBash",
+    "extract:create-vectordb": "npm run extract -- --command=createVectorDB"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "@angular/cli": "^16.1.3",
     "@aws-sdk/client-s3": "^3.332.0",
     "@aws-sdk/s3-request-presigner": "^3.332.0",
+    "@qdrant/js-client-rest": "^1.3.0",
     "@types/cheerio": "^0.22.31",
     "@types/ndarray": "^1.0.11",
     "@types/numjs": "^0.16.1",

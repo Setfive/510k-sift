@@ -17,7 +17,8 @@ export interface ICommandLineArgs {
     | "createDeviceNameEmbeddings"
     | "createDeviceEmbeddingBash"
     | "generateSimilarDeviceNames"
-    | "createGenerateSimilarDeviceNamesBash";
+    | "createGenerateSimilarDeviceNamesBash"
+    | "createVectorDB";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {

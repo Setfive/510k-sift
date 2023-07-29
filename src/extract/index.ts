@@ -20,6 +20,8 @@ const process = require("process");
 const util = require("util");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require("child_process").exec);
+import { QdrantClient } from "@qdrant/js-client-rest";
+import { LOGGER } from "../logger";
 
 let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdf_data";
 if (process.env.DOWNLOADED_PDF_PATH) {
@@ -69,10 +71,42 @@ const logger = winston.createLogger({
     await generateSimilarDevicesByDeviceName(options.id);
   } else if (options.command === "createGenerateSimilarDeviceNamesBash") {
     await createGenerateSimilarDeviceNamesBash();
+  } else if (options.command === "createVectorDB") {
+    await createVectorDB();
   }
 
   process.exit(0);
 })();
+
+async function createVectorDB() {
+  const client = new QdrantClient({ url: "http://127.0.0.1:6333" });
+  const chunks: number[][] = await getDeviceIdPKChunks();
+
+  LOGGER.info("Creating collection...");
+
+  await client.createCollection("device_names", {
+    vectors: { size: 768, distance: "Cosine" },
+  });
+
+  LOGGER.info("Created collection...");
+
+  for (const chunk of chunks.slice(0, 3)) {
+    for (const id of chunk) {
+      const device = await appDataSource
+        .getRepository(Device)
+        .findOneByOrFail({ id });
+      const points = [
+        {
+          id,
+          vector: JSON.parse(device.deviceNameEmbedding) as number[],
+          payload: {},
+        },
+      ];
+      await client.upsert("device_names", { wait: true, points });
+      LOGGER.info(id);
+    }
+  }
+}
 
 async function createGenerateSimilarDeviceNamesBash() {
   const chunks: number[][] = await getDeviceIdPKChunks();
