@@ -83,28 +83,34 @@ async function createVectorDB() {
   const chunks: number[][] = await getDeviceIdPKChunks();
 
   LOGGER.info("Creating collection...");
-
+  await client.deleteCollection("device_names");
   await client.createCollection("device_names", {
     vectors: { size: 768, distance: "Cosine" },
   });
 
   LOGGER.info("Created collection...");
 
-  for (const chunk of chunks.slice(0, 3)) {
-    for (const id of chunk) {
-      const device = await appDataSource
-        .getRepository(Device)
-        .findOneByOrFail({ id });
-      const points = [
-        {
-          id,
-          vector: JSON.parse(device.deviceNameEmbedding) as number[],
-          payload: {},
-        },
-      ];
-      await client.upsert("device_names", { wait: true, points });
-      LOGGER.info(id);
-    }
+  let num = 0;
+  for (const chunk of chunks) {
+    LOGGER.info(`${num} / ${chunks.length}`);
+
+    const devices = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where("u.id IN (:...ids)")
+      .setParameter("ids", chunk)
+      .getMany();
+    const points = devices.map((item) => {
+      return {
+        id: item.id,
+        vector: JSON.parse(item.deviceNameEmbedding) as number[],
+        payload: {},
+      };
+    });
+
+    await client.upsert("device_names", { wait: true, points });
+
+    num += 1;
   }
 }
 
