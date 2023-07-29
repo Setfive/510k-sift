@@ -9,6 +9,7 @@ export interface IDeviceDTO {
   dateReceived: string;
   decisionDate: string;
   decision: Decision;
+  decisionLabel: string;
   productCode: string;
   statementOrSummary: StatementOrSummary;
   type: SubmissionType;
@@ -18,6 +19,7 @@ export interface IDeviceDTO {
   relatedKNumbers?: string[];
   productCodeDto?: IProductCodeDTO;
   indicationsForUseAI?: string;
+  similarDevices: IDeviceDTO[];
 }
 
 export interface IProductCodeDTO {

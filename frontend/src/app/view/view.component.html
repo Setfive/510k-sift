@@ -19,14 +19,18 @@
             {{ device?.knumber }}
           </p>
           <p>
+            <strong>Device Name:</strong><br>
+            {{ device?.deviceName }}
+          </p>
+          <p>
             <strong>Applicant:</strong><br>
             {{ device?.applicant }}<br>
             {{ device?.contact }}<br>
             {{ device?.address }}
           </p>
           <p>
-            <strong>Device Name:</strong><br>
-            {{ device?.deviceName }}
+            <strong>Decision:</strong><br>
+            {{ device?.decisionLabel }} ({{ device?.decision }})
           </p>
           <p>
             <strong>Date Received:</strong><br>
@@ -41,19 +45,33 @@
             {{ device?.productCode }}
           </p>
 
-          <p *ngIf="device?.relatedKNumbers">
-            <strong>Related Submissions:</strong><br>
-          </p>
-          <ul *ngIf="device?.relatedKNumbers">
-            <li *ngFor="let k of device?.relatedKNumbers">
-              <a [routerLink]="['/view', k]" [innerHTML]="k"></a>
-            </li>
-          </ul>
-
           <p>
             <strong>Summary/Statement:</strong><br>
             <a target="_blank" href="{{ device?.summaryStatementURL }}" [innerHTML]="device?.summaryStatementURL"></a>
           </p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-header">Similar Devices</div>
+        <div class="card-body">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>510(k) Number</th>
+                <th>Product Code</th>
+                <th>Device Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of device?.similarDevices">
+                <td><a [innerHTML]="item.knumber" [routerLink]="['/view/', item.knumber]"></a></td>
+                <td>{{ item.productCode }}</td>
+                <td>{{ item.deviceName }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-secondary small">Derived by finding the most similar device name embeddings.</p>
         </div>
       </div>
 
@@ -107,6 +125,17 @@
             <strong>Review Panel:</strong><br>
             {{ productCodeDto.reviewPanel }}
           </p>
+        </div>
+      </div>
+      <div class="card mt-5" *ngIf="device?.relatedKNumbers">
+        <div class="card-header">Related Submissions</div>
+        <div class="card-body">
+          <ul>
+            <li *ngFor="let k of device?.relatedKNumbers">
+              <a [routerLink]="['/view', k]" [innerHTML]="k"></a>
+            </li>
+          </ul>
+          <p class="text-secondary small">These are the K numbers referenced in the statement or summary.</p>
         </div>
       </div>
     </div>

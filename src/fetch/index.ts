@@ -23,6 +23,8 @@ const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { DECISIONS } from "./decisions";
+import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
 
 export const PER_PAGE = 100;
 
@@ -260,6 +262,22 @@ export async function getDeviceDTOForKNumber(knumber: string) {
 }
 
 export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
+  const result = await shallowDeviceToDTO(device);
+  const similarDevices = await appDataSource
+    .getRepository(DeviceRelatedDevice)
+    .createQueryBuilder("u")
+    .leftJoinAndSelect("u.dDevice", "dDevice")
+    .where("u.sDevice.id = :id")
+    .setParameter("id", device.id)
+    .getMany();
+  for (const d of similarDevices) {
+    const dto = await shallowDeviceToDTO(d.dDevice);
+    result.similarDevices.push(dto);
+  }
+  return result;
+}
+
+async function shallowDeviceToDTO(device: Device): Promise<IDeviceDTO> {
   const addressParts: string[] = [
     device.street1,
     device.street2,
@@ -277,6 +295,10 @@ export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     "MMMM Do YYYY"
   );
 
+  const decisionLabel = DECISIONS.find(
+    (item) => item.key === device.decision
+  )?.value;
+
   const address = addressParts.filter((item) => item?.trim().length).join(" ");
   const item: IDeviceDTO = {
     knumber: device.knumber,
@@ -287,6 +309,7 @@ export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     dateReceived: receivedDateFormatted,
     decisionDate: decisionDateFormatted,
     decision: device.decision as Decision,
+    decisionLabel: `${decisionLabel}`,
     productCode: device.productcode,
     statementOrSummary: device.stateorsumm as StatementOrSummary,
     type: device.type as SubmissionType,
@@ -294,6 +317,7 @@ export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     indicationsForUse: device.indicationsForUseAI,
     deviceMarketingAudience: device.deviceMarketingAudience,
     indicationsForUseAI: device.indicationsForUseAI,
+    similarDevices: [],
   };
 
   if (device.relatedKNumbers) {
