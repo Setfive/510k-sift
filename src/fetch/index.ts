@@ -29,8 +29,6 @@ export const PER_PAGE = 100;
 export async function searchDevices(
   request: ISearchRequest
 ): Promise<IPagerResponse<IDeviceDTO>> {
-  const client = new QdrantClient({ url: process.env.QDRANT_URL });
-
   const query = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")
@@ -38,9 +36,15 @@ export async function searchDevices(
     .orderBy("u.devicename", "ASC");
 
   if (request.deviceName) {
-    query
-      .andWhere("u.devicename LIKE :devicename")
-      .setParameter("devicename", `%${request.deviceName}%`);
+    const client = new QdrantClient({ url: process.env.QDRANT_URL });
+    const embedding = await getEmbedding(request.deviceName);
+    const decodedEmbedding = JSON.parse(embedding) as number[];
+    const result = await client.search("device_names", {
+      vector: decodedEmbedding,
+      limit: 500,
+    });
+    const ids = result.map((item) => item.id);
+    query.where("u.id IN (:...ids)").setParameter("ids", ids);
   }
 
   if (request.knumber) {

@@ -79,6 +79,8 @@ export class HomeComponent implements OnInit {
       for(let i = min; i < max; i++) {
         this.pages.push(i + 1);
       }
+    }, (err) => {
+      alert('Sorry! There was an error processing your request.');
     });
   }
 
