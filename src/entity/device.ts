@@ -79,6 +79,7 @@ export class Device {
   @Column()
   expeditedreview: string;
 
+  @Index()
   @Column()
   devicename: string;
 

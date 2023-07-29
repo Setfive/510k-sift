@@ -84,49 +84,17 @@ export class HomeComponent implements OnInit {
     this.noResults = false;
     request.page = this.page;
 
-    const response = await fetch(`/api/search`, {
-      method: "POST",
-      body: JSON.stringify(request),
-      headers: {
-        "Accept": "text/event-stream",
-        "Content-Type": "application/json"
-      },
-    });
-
-    for (const reader= response.body?.getReader();;) {
-      if(!reader) {
-        break;
-      }
-      const {value, done} = await reader.read();
-      if (done) {
-        break;
-      }
-      const chunks = new TextDecoder().decode(value).trim().split('\n');
-
-      for(const chunk of chunks) {
-        if(chunk.trim().length === 0) {
-          continue;
-        }
-
-        const event: ISearchResultsSSEEvent | IProgressSSEEvent = JSON.parse(chunk.trim());
-        if (event.type === 'results') {
-          this.toastService.progressMessage = '';
-          this.result = event.data;
-          this.loading = false;
-          if(this.result.total === 0) {
-            this.noResults = true;
-          }
-          const min = this.page - 5 > 0 ? this.page - 5 : 0;
-          const max = this.page + 5 < this.result.pages ? this.page + 5 : this.result.pages;
-          this.pages = [];
-          for(let i = min; i < max; i++) {
-            this.pages.push(i + 1);
-          }
-        } else if (event.type === 'progress') {
-          this.toastService.progressMessages.push(event.data);
-          this.toastService.progressMessage = event.data;
-        }
-      }
+    this.result = await this.apiService.search(request);
+    this.toastService.progressMessage = '';
+    this.loading = false;
+    if(this.result.total === 0) {
+      this.noResults = true;
+    }
+    const min = this.page - 5 > 0 ? this.page - 5 : 0;
+    const max = this.page + 5 < this.result.pages ? this.page + 5 : this.result.pages;
+    this.pages = [];
+    for(let i = min; i < max; i++) {
+      this.pages.push(i + 1);
     }
   }
 

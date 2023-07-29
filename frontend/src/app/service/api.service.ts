@@ -11,18 +11,52 @@ import {
   IPagerResponse,
   IProductCodeDTO,
   IProductCodeDTOWithDevices,
-  IProductCodeSearchRequest,
-  ISearchRequest
+  IProductCodeSearchRequest, IProgressSSEEvent,
+  ISearchRequest, ISearchResultsSSEEvent
 } from "./types";
+import {ToastService} from "./toast.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private toastService: ToastService) {}
 
   public search(request: ISearchRequest) {
-    return this.httpClient.post<IPagerResponse<IDeviceDTO>>(`/api/search`, request);
+    return new Promise<IPagerResponse<IDeviceDTO>>(async (resolve, reject) => {
+      const response = await fetch(`/api/search`, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+          "Accept": "text/event-stream",
+          "Content-Type": "application/json"
+        },
+      });
+
+      for (const reader= response.body?.getReader();;) {
+        if (!reader) {
+          break;
+        }
+        const {value, done} = await reader.read();
+        if (done) {
+          break;
+        }
+        const chunks = new TextDecoder().decode(value).trim().split('\n');
+
+        for (const chunk of chunks) {
+          if (chunk.trim().length === 0) {
+            continue;
+          }
+          const event: ISearchResultsSSEEvent | IProgressSSEEvent = JSON.parse(chunk.trim());
+          if (event.type === 'results') {
+            resolve(event.data);
+          } else if (event.type === 'progress') {
+            this.toastService.progressMessages.push(event.data);
+            this.toastService.progressMessage = event.data;
+          }
+        }
+      }
+    })
   }
 
   public getDevice(knumber: string) {
