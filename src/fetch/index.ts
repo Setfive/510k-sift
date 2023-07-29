@@ -99,7 +99,7 @@ export async function searchDevices(
   const result: IDeviceDTO[] = [];
   const devicesAndCount = await query.getManyAndCount();
   for (const device of devicesAndCount[0]) {
-    const item = await deviceToDTO(device);
+    const item = await shallowDeviceToDTO(device);
     result.push(item);
   }
 
@@ -284,7 +284,7 @@ export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
   return result;
 }
 
-async function shallowDeviceToDTO(device: Device): Promise<IDeviceDTO> {
+export async function shallowDeviceToDTO(device: Device): Promise<IDeviceDTO> {
   const addressParts: string[] = [
     device.street1,
     device.street2,

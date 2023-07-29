@@ -13,6 +13,7 @@ import { ProductCodeDetailComponent } from './product-code-detail/product-code-d
 import { CompanyListComponent } from './company-list/company-list.component';
 import { CompanyDetailComponent } from './company-detail/company-detail.component';
 import { AboutComponent } from './about/about.component';
+import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { AboutComponent } from './about/about.component';
     ProductCodeDetailComponent,
     CompanyListComponent,
     CompanyDetailComponent,
-    AboutComponent
+    AboutComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,

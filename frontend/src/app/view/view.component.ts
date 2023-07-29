@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {IDeviceDTO, IDeviceSSEEvent, IProductCodeDTO, IProgressSSEEvent} from "../service/types";
 import {ApiService} from "../service/api.service";
+import {ToastService} from "../service/toast.service";
 
 @Component({
   selector: 'app-view',
@@ -13,11 +14,11 @@ export class ViewComponent implements OnInit {
   loading = true;
   device?: IDeviceDTO;
   productCodeDto?: IProductCodeDTO;
-  progressMessage = '';
-  progressMessages: string[] = [];
   loadingMarketingAudience = false;
 
-  public constructor(private activatedRoute: ActivatedRoute, private apiService: ApiService,) {
+  public constructor(private activatedRoute: ActivatedRoute,
+                     private apiService: ApiService,
+                     private toastService: ToastService) {
   }
 
   ngOnInit() {
@@ -34,13 +35,13 @@ export class ViewComponent implements OnInit {
   }
 
   async getMarketingAudience() {
-    this.progressMessage = 'Getting marketing audience from ChatGPT...';
+    this.toastService.progressMessage = 'Getting marketing audience from ChatGPT...';
     this.loadingMarketingAudience = true;
 
     this.apiService.generateMarketingAudience(`${this.device?.knumber}`).subscribe(result => {
       if(this.device) {
         this.device.deviceMarketingAudience = result.deviceMarketingAudience;
-        this.progressMessage = '';
+        this.toastService.progressMessage = '';
       }
       this.loadingMarketingAudience = false;
     });
@@ -71,23 +72,20 @@ export class ViewComponent implements OnInit {
         const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk);
         if (event.type === 'device' && this.device) {
           this.device.indicationsForUseAI = event.data.indicationsForUseAI;
-          this.progressMessage = '';
+          this.toastService.progressMessage = '';
         } else if (event.type === 'progress') {
-          this.progressMessages.push(event.data);
-          this.progressMessage = event.data;
+          this.toastService.progressMessages.push(event.data);
+          this.toastService.progressMessage = event.data;
         }
-
-        // this.popProgressMessage();
-        // setTimeout(() => this.popProgressMessage(), 2000);
       }
     }
   }
 
   popProgressMessage() {
-    if(this.progressMessages.length) {
-      this.progressMessage = `${this.progressMessages.shift()}`;
+    if(this.toastService.progressMessages.length) {
+      this.toastService.progressMessage = `${this.toastService.progressMessages.shift()}`;
     }else{
-      this.progressMessage = '';
+      this.toastService.progressMessage = '';
     }
   }
 }
