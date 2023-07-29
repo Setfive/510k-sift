@@ -85,6 +85,13 @@ export async function searchDevices(
     }
   }
 
+  console.log(request.decision);
+  if (request.decision) {
+    query
+      .andWhere("u.decision = :decision")
+      .setParameter("decision", request.decision);
+  }
+
   if (request.page > 1) {
     query.offset(request.page * PER_PAGE);
   }

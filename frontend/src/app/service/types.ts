@@ -1,6 +1,7 @@
 export interface ISearchRequest {
   knumber?: string;
   applicant?: string;
+  decision?: string;
   decisionDateGte?: string;
   decisionDateLte?: string;
   productCodes?: string[];

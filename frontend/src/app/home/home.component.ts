@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IDeviceDTO, IPagerResponse, ISearchRequest} from "../service/types";
 import {ApiService} from "../service/api.service";
+import {DECISIONS} from "./decisions";
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ export class HomeComponent implements OnInit {
   noResults = false;
   page = 1;
   pages: number[] = [];
+  protected readonly DECISIONS = DECISIONS;
 
   constructor(
     private router: Router,
@@ -27,6 +29,7 @@ export class HomeComponent implements OnInit {
       deviceName: [],
       kNumber: [],
       company: [],
+      decision: [],
       decisionDateGte: [],
       decisionDateLte: [],
       produceCodes: []
@@ -62,6 +65,10 @@ export class HomeComponent implements OnInit {
 
     if(this.form.value.produceCodes) {
       request.productCodes = `${this.form.value.produceCodes}`.split(',').map(item => item.trim());
+    }
+
+    if(this.form.value.decision) {
+      request.decision = this.form.value.decision;
     }
 
     this.loading = true;
