@@ -79,7 +79,7 @@ const logger = winston.createLogger({
 })();
 
 async function createVectorDB() {
-  const client = new QdrantClient({ url: "http://127.0.0.1:6333" });
+  const client = new QdrantClient({ url: process.env.QDRANT_URL });
   const chunks: number[][] = await getDeviceIdPKChunks();
 
   LOGGER.info("Creating collection...");

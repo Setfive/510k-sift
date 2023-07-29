@@ -22,12 +22,15 @@ import { productCodeToDTO } from "./productCodes";
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
+import { QdrantClient } from "@qdrant/js-client-rest";
 
 export const PER_PAGE = 100;
 
 export async function searchDevices(
   request: ISearchRequest
 ): Promise<IPagerResponse<IDeviceDTO>> {
+  const client = new QdrantClient({ url: process.env.QDRANT_URL });
+
   const query = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")

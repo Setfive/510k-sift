@@ -19,7 +19,7 @@ export async function generateSimilarDeviceNames(id: string) {
     .findOneByOrFail({ id: parseInt(id) });
   const targetEmbedding = JSON.parse(device.deviceNameEmbedding) as number[];
 
-  const client = new QdrantClient({ url: "http://127.0.0.1:6333" });
+  const client = new QdrantClient({ url: process.env.QDRANT_URL });
   const result = await client.search("device_names", {
     vector: targetEmbedding,
     limit: 5,
