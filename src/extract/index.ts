@@ -9,7 +9,7 @@ import { extractTextWithPdfToText } from "./pdfToText";
 import { getRelatedKNumbers } from "./getRelatedKNumbers";
 import * as moment from "moment";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { generateSimilarDevicesByDeviceName } from "../generate/generateSimilarDeviceNames";
+import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -68,7 +68,7 @@ const logger = winston.createLogger({
   } else if (options.command === "createDeviceEmbeddingBash") {
     await createDeviceEmbeddingBash();
   } else if (options.command === "generateSimilarDeviceNames") {
-    await generateSimilarDevicesByDeviceName(options.id);
+    await generateSimilarDeviceNames(options.id);
   } else if (options.command === "createGenerateSimilarDeviceNamesBash") {
     await createGenerateSimilarDeviceNamesBash();
   } else if (options.command === "createVectorDB") {

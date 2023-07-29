@@ -6,66 +6,44 @@ import { LOGGER } from "../logger";
 import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nj = require("numjs");
+import { QdrantClient } from "@qdrant/js-client-rest";
 
 interface ISimilarDeviceDotProduct {
   distance: number;
   device: Device;
 }
 
-export async function generateSimilarDevicesByDeviceName(id: string) {
+export async function generateSimilarDeviceNames(id: string) {
   const device = await appDataSource
     .getRepository(Device)
     .findOneByOrFail({ id: parseInt(id) });
   const targetEmbedding = JSON.parse(device.deviceNameEmbedding) as number[];
-  const njTargetEmbedding = nj.array(targetEmbedding);
 
-  const idChunks = await getDeviceIdPKChunks(10000);
-  let results: ISimilarDeviceDotProduct[] = [];
+  const client = new QdrantClient({ url: "http://127.0.0.1:6333" });
+  const result = await client.search("device_names", {
+    vector: targetEmbedding,
+    limit: 5,
+  });
 
-  for (const chunk of idChunks) {
-    const records = await appDataSource
-      .getRepository(Device)
-      .createQueryBuilder("u")
-      .where("u.id IN (:...ids)")
-      .setParameter("ids", chunk)
-      .getMany();
-
-    for (const record of records) {
-      const embedding = JSON.parse(record.deviceNameEmbedding) as number[];
-      const njEmbedding = nj.array(embedding);
-      const dot = nj.dot(njTargetEmbedding, njEmbedding);
-      results.push({ distance: dot.selection.data[0], device: record });
-      results
-        .sort((a, b) => {
-          if (a.distance < b.distance) {
-            return -1;
-          }
-
-          if (a.distance > b.distance) {
-            return 1;
-          }
-
-          return 0;
-        })
-        .reverse();
+  const names: string[] = [];
+  for (const d of result) {
+    if (d.id === device.id) {
+      continue;
     }
 
-    results = results.slice(0, 5);
-  }
+    const id = d.id as number;
+    const dd = await appDataSource
+      .getRepository(Device)
+      .findOneByOrFail({ id: id });
+    const rd = new DeviceRelatedDevice();
+    rd.sDevice = device;
+    rd.dDevice = dd;
+    rd.relatedType = "similar_device_name";
+    await appDataSource.manager.save(rd);
 
-  const names = results.map((i) => i.device.devicename);
+    names.push(dd.devicename);
+  }
 
   LOGGER.info(device.devicename);
   LOGGER.info(names.join(", "));
-
-  for (const d of results) {
-    if (d.device.id === device.id) {
-      continue;
-    }
-    const rd = new DeviceRelatedDevice();
-    rd.sDevice = device;
-    rd.dDevice = d.device;
-    rd.relatedType = "similar_device_name";
-    await appDataSource.manager.save(rd);
-  }
 }
