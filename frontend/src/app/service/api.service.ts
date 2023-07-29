@@ -7,7 +7,7 @@ import {
 import {
   ICompanyDTO,
   ICompanySearchRequest,
-  IDeviceDTO,
+  IDeviceDTO, IDeviceSSEEvent,
   IPagerResponse,
   IProductCodeDTO,
   IProductCodeDTOWithDevices,
@@ -21,6 +21,42 @@ import {ToastService} from "./toast.service";
 })
 export class ApiService {
   constructor(private httpClient: HttpClient, private toastService: ToastService) {}
+
+  public extractIFU(knumber: string) {
+    return new Promise<string>(async (resolve, reject) => {
+      const response = await fetch(`/api/enhance/ifu/${knumber}`, {
+        method: "POST",
+        headers: {
+          "Accept": "text/event-stream",
+          "Content-Type": "application/json"
+        },
+      });
+
+      for (const reader= response.body?.getReader();;) {
+        if (!reader) {
+          break;
+        }
+        const {value, done} = await reader.read();
+        if (done) {
+          break;
+        }
+        const chunks = new TextDecoder().decode(value).trim().split('\n');
+
+        for (const chunk of chunks) {
+          if (chunk.trim().length === 0) {
+            continue;
+          }
+          const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk.trim());
+          if (event.type === 'device') {
+            resolve(`${event.data.indicationsForUseAI}`);
+          } else if (event.type === 'progress') {
+            this.toastService.progressMessages.push(event.data);
+            this.toastService.progressMessage = event.data;
+          }
+        }
+      }
+    });
+  }
 
   public search(request: ISearchRequest) {
     return new Promise<IPagerResponse<IDeviceDTO>>(async (resolve, reject) => {
@@ -47,9 +83,14 @@ export class ApiService {
           if (chunk.trim().length === 0) {
             continue;
           }
+
           const event: ISearchResultsSSEEvent | IProgressSSEEvent = JSON.parse(chunk.trim());
           if (event.type === 'results') {
-            resolve(event.data);
+            const id = event.data;
+            this.httpClient.get<IPagerResponse<IDeviceDTO>>(`/api/search/${id}`)
+              .subscribe((searchResults) => {
+              resolve(searchResults);
+            });
           } else if (event.type === 'progress') {
             this.toastService.progressMessages.push(event.data);
             this.toastService.progressMessage = event.data;

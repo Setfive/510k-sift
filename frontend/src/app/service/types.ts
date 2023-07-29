@@ -65,7 +65,7 @@ export interface IProgressSSEEvent {
 
 export interface ISearchResultsSSEEvent {
   type: 'results';
-  data: IPagerResponse<IDeviceDTO>;
+  data: string;
 }
 
 export interface IProductCodeSearchRequest {

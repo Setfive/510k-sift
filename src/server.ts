@@ -14,6 +14,7 @@ import { appDataSource } from "./db";
 import { LOGGER } from "./logger";
 import {
   ICompanySearchRequest,
+  IPagerResponse,
   IProductCodeSearchRequest,
   ISearchRequest,
   ISemanticSearchRequest,
@@ -27,6 +28,8 @@ import {
 } from "./fetch/productCodes";
 import { generateAIDescriptionForProductCode } from "./generate/generateAIDescriptionForProductCode";
 import { fetchCompanies } from "./fetch/companies";
+import { IDeviceDTO } from "./fetch/types";
+import { v4 as uuidv4 } from "uuid";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -34,6 +37,11 @@ const fs = require("fs");
 const EventEmitter = require("events");
 
 dotenv.config();
+
+const searchResults: Map<string, IPagerResponse<IDeviceDTO>> = new Map<
+  string,
+  IPagerResponse<IDeviceDTO>
+>();
 
 (async () => {
   await appDataSource.initialize();
@@ -96,6 +104,15 @@ dotenv.config();
     }
   );
 
+  server.get(
+    "/api/search/:id",
+    async (req: express.Request, res: express.Response) => {
+      const id = req.params.id;
+      res.setHeader("Content-Type", "application/json");
+      res.send(JSON.stringify(searchResults.get(id)));
+    }
+  );
+
   server.post(
     "/api/search",
     async (req: express.Request, res: express.Response) => {
@@ -121,9 +138,14 @@ dotenv.config();
       });
 
       const result = await searchDevices(searchRequest, ee);
-      const payload = { type: "results", data: result };
+      const id = uuidv4();
+      searchResults.set(id, result);
+
+      const payload = { type: "results", data: id };
       res.write(JSON.stringify(payload) + "\n\n");
       res.end();
+
+      setTimeout(() => searchResults.delete(id), 5000);
     }
   );
 

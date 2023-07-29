@@ -90,7 +90,6 @@ export async function searchDevices(
     }
   }
 
-  console.log(request.decision);
   if (request.decision) {
     query
       .andWhere("u.decision = :decision")
