@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
   result?: IPagerResponse<IDeviceDTO>;
   loading = false;
   noResults = false;
+  hasSearch = false;
   page = 1;
   pages: number[] = [];
   protected readonly DECISIONS = DECISIONS;
@@ -50,6 +51,8 @@ export class HomeComponent implements OnInit {
   }
 
   async submit() {
+    this.hasSearch = true;
+
     const request:ISearchRequest = {};
 
     if(this.form.value.deviceName) {

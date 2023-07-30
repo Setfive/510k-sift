@@ -8,3 +8,16 @@
   font-weight: bold;
   color: #333;
 }
+
+.faq {
+  font-size: 1.2rem;
+  margin-bottom: .25rem;
+  color: var(--bs-success);
+  font-weight: bold;
+}
+
+.faq-container {
+  margin-bottom: .75rem;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid #eee;
+}
