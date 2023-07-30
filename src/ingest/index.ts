@@ -26,6 +26,11 @@ import { Device } from "../entity/device";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
+import { getEmbedding } from "../extract/getEmbedding";
+import { LOGGER } from "../logger";
+import { createDeviceNameEmbeddings } from "../extract";
+import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
+import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
 
 const logger = winston.createLogger({
   level: "info",
@@ -269,16 +274,50 @@ async function createdb() {
     }
 
     for (let i = 0; i < itemsForInsert.length; i += 1000) {
+      const slice = itemsForInsert.slice(i, i + 1000);
       await appDataSource
         .createQueryBuilder()
         .insert()
         .into(Device)
-        .values(itemsForInsert.slice(i, i + 1000))
+        .values(slice)
         .execute();
     }
 
+    const newDevices = await appDataSource
+      .getRepository(Device)
+      .findBy({ isEnhanced: false });
+    await enhanceNew510Ks(newDevices);
+
     const totalRecords = await appDataSource.getRepository(Device).count();
     logger.info(`Total records: ${totalRecords}`);
+  }
+}
+
+async function enhanceNew510Ks(items: Device[]) {
+  for (const item of items) {
+    LOGGER.info(`Enhancing ${item.knumber}`);
+    item.isEnhanced = true;
+    await appDataSource.manager.save(item);
+
+    try {
+      await createDeviceNameEmbeddings(`${item.id}`);
+    } catch (e) {
+      LOGGER.error(e.error);
+    }
+
+    try {
+      const relatedKs = await getRelatedKNumbers(item);
+      item.relatedKNumbers = JSON.stringify(relatedKs);
+      await appDataSource.manager.save(item);
+    } catch (e) {
+      LOGGER.error(e.error);
+    }
+
+    try {
+      await generateSimilarDeviceNames(`${item.id}`);
+    } catch (e) {
+      LOGGER.error(e.error);
+    }
   }
 }
 

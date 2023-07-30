@@ -142,7 +142,7 @@ async function createDeviceEmbeddingBash() {
   }
 }
 
-async function createDeviceNameEmbeddings(id: string) {
+export async function createDeviceNameEmbeddings(id: string) {
   const device = await appDataSource
     .getRepository(Device)
     .findOneByOrFail({ id: parseInt(id) });

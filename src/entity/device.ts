@@ -119,15 +119,14 @@ export class Device {
   @Column({ nullable: true, type: "text" })
   deviceNameEmbedding: string;
 
+  @Column({ nullable: false })
+  isEnhanced: boolean;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 
   @UpdateDateColumn({ type: "datetime" })
   updatedAt!: Date;
-
-  // NOTE: This is unused
-  @Column({ nullable: true, type: "text" })
-  similarDevicesByName: string;
 
   @OneToMany(
     () => DeviceRelatedDevice,
