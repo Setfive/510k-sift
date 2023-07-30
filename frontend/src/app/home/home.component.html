@@ -1,3 +1,15 @@
+<ng-template #deviceNameContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Device Name Search</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <div class="container my-5">
   <div class="mb-3">
     <h1>510(k) Sift</h1>
@@ -10,7 +22,7 @@
         <form [formGroup]="form" (submit)="submit()">
           <div class="row">
             <div class="col-9">
-              <label for="deviceName" class="form-label">Device Name</label>
+              <label for="deviceName" class="form-label">Device Name <a (click)="showDeviceNameModal()">🤖</a></label>
               <input type="text" class="form-control" id="deviceName" formControlName="deviceName" />
             </div>
             <div class="col-3">

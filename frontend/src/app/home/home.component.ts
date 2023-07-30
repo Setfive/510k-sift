@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {
@@ -12,6 +12,7 @@ import {
 import {ApiService} from "../service/api.service";
 import {DECISIONS} from "./decisions";
 import {ToastService} from "../service/toast.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-home',
@@ -28,12 +29,16 @@ export class HomeComponent implements OnInit {
   pages: number[] = [];
   protected readonly DECISIONS = DECISIONS;
 
+  @ViewChild("deviceNameContent")
+  deviceNameContent?: TemplateRef<string>;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
     private toastService: ToastService,
+    private modalService: NgbModal
   ) {
     this.form = this.formBuilder.group({
       deviceName: [],
@@ -48,6 +53,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  showDeviceNameModal() {
+    console.log(this.deviceNameContent);
+    const content = `Search is no longer`
+    this.modalService.open(this.deviceNameContent, {size: "lg"});
   }
 
   async submit() {
