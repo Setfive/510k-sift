@@ -119,6 +119,7 @@ export class Device {
   @Column({ nullable: true, type: "text" })
   deviceNameEmbedding: string;
 
+  @Index()
   @Column({ nullable: false })
   isEnhanced: boolean;
 

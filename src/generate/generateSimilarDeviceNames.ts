@@ -26,6 +26,12 @@ export async function generateSimilarDeviceNames(id: string) {
     const dd = await appDataSource
       .getRepository(Device)
       .findOneByOrFail({ id: id });
+    const existing = await appDataSource
+      .getRepository(DeviceRelatedDevice)
+      .findOneBy({ sDevice: { id: device.id }, dDevice: { id: dd.id } });
+    if (existing) {
+      continue;
+    }
     const rd = new DeviceRelatedDevice();
     rd.sDevice = device;
     rd.dDevice = dd;

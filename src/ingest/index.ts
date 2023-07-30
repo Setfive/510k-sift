@@ -23,7 +23,11 @@ import { ProductCode } from "../entity/productCode";
 import { LOGGER } from "../logger";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
-import { createDeviceNameEmbeddings } from "../extract/createDeviceNameEmbeddings";
+import {
+  createDeviceNameEmbeddings,
+  setDeviceNameEmbedding,
+} from "../extract/createDeviceNameEmbeddings";
+import { QdrantClient } from "@qdrant/js-client-rest";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -296,12 +300,14 @@ async function enhanceNew510Ks(items: Device[]) {
     await appDataSource.manager.save(item);
 
     try {
-      await createDeviceNameEmbeddings(`${item.id}`);
+      LOGGER.info(`${item.knumber}: Fetching embedding...`);
+      await setDeviceNameEmbedding(item);
     } catch (e) {
       LOGGER.error(e.error);
     }
 
     try {
+      LOGGER.info(`${item.knumber}: Fetching related 510(K) Numbers...`);
       const relatedKs = await getRelatedKNumbers(item);
       item.relatedKNumbers = JSON.stringify(relatedKs);
       await appDataSource.manager.save(item);
@@ -310,6 +316,7 @@ async function enhanceNew510Ks(items: Device[]) {
     }
 
     try {
+      LOGGER.info(`${item.knumber}: Fetching similar device names...`);
       await generateSimilarDeviceNames(`${item.id}`);
     } catch (e) {
       LOGGER.error(e.error);
