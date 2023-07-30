@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import * as commandLineArgs from "command-line-args";
-import * as winston from "winston";
 import {
   ICommandLineArgs,
   ICSVEntry,
@@ -16,39 +15,53 @@ import * as moment from "moment";
 import * as yauzl from "yauzl";
 import { v4 as uuidv4 } from "uuid";
 import * as cheerio from "cheerio";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const os = require("os");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
 import { parse } from "csv-parse/sync";
-import { DataSource } from "typeorm";
 import { Device } from "../entity/device";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
-import { getEmbedding } from "../extract/getEmbedding";
 import { LOGGER } from "../logger";
 import { createDeviceNameEmbeddings } from "../extract";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(
-    winston.format.cli(),
-    winston.format.timestamp() // adds a timestamp property
-  ),
-  transports: [new winston.transports.Console()],
-});
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const os = require("os");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require("fs");
 
 (async () => {
   const optionDefinitions = [{ name: "command", alias: "c", type: String }];
   const options: ICommandLineArgs = commandLineArgs(
     optionDefinitions
   ) as ICommandLineArgs;
-  await appDataSource.initialize();
+
+  try {
+    await appDataSource.initialize();
+  } catch (e) {
+    console.error(e);
+  }
+
+  console.log(options);
 
   if (options.command === "createdb") {
+    try {
+      await axios
+        .get<string>(
+          "https://www.accessdata.fda.gov/premarket/ftparea/pmnlstmn.zip",
+          {
+            responseType: "arraybuffer",
+          }
+        )
+        .catch((err) => {
+          console.error(err);
+        })
+        .then((result) => {
+          console.log("got a result?");
+        });
+    } catch (e) {
+      console.error(e);
+    }
+
     await createdb();
   } else if (options.command === "getDownloadUrls") {
     await getDownloadUrls();
@@ -61,7 +74,7 @@ const logger = winston.createLogger({
 
 async function downloadProductCodes(): Promise<void> {
   return new Promise<void>(async (resolve) => {
-    logger.info(`Fetching ${CURRENT_PRODUCT_CODES_CSV}`);
+    LOGGER.info(`Fetching ${CURRENT_PRODUCT_CODES_CSV}`);
     const result = await axios.get<string>(CURRENT_PRODUCT_CODES_CSV, {
       responseType: "arraybuffer",
     });
@@ -123,7 +136,7 @@ async function downloadProductCodes(): Promise<void> {
 
       await appDataSource.manager.save(productCode);
       num += 1;
-      logger.info(`downloadProductCodes: ${num}/${records.length}`);
+      LOGGER.info(`downloadProductCodes: ${num}/${records.length}`);
     }
 
     resolve();
@@ -178,7 +191,7 @@ async function getDownloadUrls() {
     end += 1000;
   }
 
-  logger.info(`getDownloadUrls: ${chunks.length} chunks!`);
+  LOGGER.info(`getDownloadUrls: ${chunks.length} chunks!`);
 
   let num = 0;
   for (const chunk of chunks) {
@@ -200,29 +213,29 @@ async function getDownloadUrls() {
           const ahref = $(this).attr("href") ?? "";
           if (text === "Summary" || text === "Statement") {
             record.summaryStatementURL = ahref;
-            logger.info(`${text}: ${ahref}`);
+            LOGGER.info(`${text}: ${ahref}`);
           }
 
           if (ahref.includes("https://www.accessdata.fda.gov/CDRH510K/")) {
             record.foiaURL = ahref;
-            logger.info(`FOIA: ${ahref}`);
+            LOGGER.info(`FOIA: ${ahref}`);
           }
         });
 
         await appDataSource.getRepository(Device).save(record);
       } catch (e) {
-        logger.error(e.message);
+        LOGGER.error(e.message);
       }
 
       num += 1;
       const percent = Math.round((num / totalRecords) * 100);
-      logger.info(`${num} / ${totalRecords} (${percent})`);
+      LOGGER.info(`${num} / ${totalRecords} (${percent})`);
     }
   }
 }
 
 async function createdb() {
-  logger.info("Starting createdb...");
+  LOGGER.info("Starting createdb...");
   const csvs = HISTORICAL_510k_CSVs.concat([CURRENT_MONTH_510k_CSV]);
 
   for (const url of csvs) {
@@ -289,7 +302,7 @@ async function createdb() {
     await enhanceNew510Ks(newDevices);
 
     const totalRecords = await appDataSource.getRepository(Device).count();
-    logger.info(`Total records: ${totalRecords}`);
+    LOGGER.info(`Total records: ${totalRecords}`);
   }
 }
 
@@ -323,13 +336,15 @@ async function enhanceNew510Ks(items: Device[]) {
 
 async function fetch510kCSV(url: string): Promise<string> {
   return new Promise<string>(async (resolve, reject) => {
-    logger.info(`Fetching ${url}`);
+    LOGGER.info(`Fetching ${url}`);
     const result = await axios.get<string>(url, {
       responseType: "arraybuffer",
     });
     const pathToFile = `${os.tmpdir()}/${uuidv4()}.zip`;
     const pathToCSV = `${os.tmpdir()}/${uuidv4()}.csv`;
     fs.writeFileSync(pathToFile, result.data);
+    LOGGER.info(`Wrote ${pathToFile}`);
+
     yauzl.open(pathToFile, { lazyEntries: true }, (err, zipfile) => {
       if (err) {
         throw err;
@@ -342,6 +357,8 @@ async function fetch510kCSV(url: string): Promise<string> {
           }
           const writeStream = fs.createWriteStream(pathToCSV);
           readStream.pipe(writeStream);
+          LOGGER.info(`Wrote ${pathToCSV}`);
+
           writeStream.on("close", () => {
             const csvData = fs.readFileSync(pathToCSV, "utf8");
             if (fs.existsSync(pathToFile)) {
@@ -350,6 +367,7 @@ async function fetch510kCSV(url: string): Promise<string> {
             if (fs.existsSync(pathToCSV)) {
               fs.unlinkSync(pathToCSV);
             }
+            LOGGER.info("Read CSV!");
             resolve(csvData);
           });
         });
