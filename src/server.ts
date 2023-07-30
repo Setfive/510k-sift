@@ -8,7 +8,6 @@ import {
   getIFUForDeviceKNumber,
   getMarketingAudienceForDevice,
   searchDevices,
-  similaritySearchIFUs,
 } from "./fetch";
 import { appDataSource } from "./db";
 import { LOGGER } from "./logger";
@@ -146,17 +145,6 @@ const searchResults: Map<string, IPagerResponse<IDeviceDTO>> = new Map<
       res.end();
 
       setTimeout(() => searchResults.delete(id), 5000);
-    }
-  );
-
-  server.post(
-    "/api/search/semantic",
-    async (req: express.Request, res: express.Response) => {
-      res.setHeader("Content-Type", "application/json");
-      const searchRequest = req.body as ISemanticSearchRequest;
-      LOGGER.info(`/api/search/semantic: Search=${searchRequest.search}`);
-      const result = await similaritySearchIFUs(searchRequest.search);
-      res.send(JSON.stringify(result));
     }
   );
 

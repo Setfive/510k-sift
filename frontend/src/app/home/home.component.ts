@@ -56,8 +56,6 @@ export class HomeComponent implements OnInit {
   }
 
   showDeviceNameModal() {
-    console.log(this.deviceNameContent);
-    const content = `Search is no longer`
     this.modalService.open(this.deviceNameContent, {size: "lg"});
   }
 

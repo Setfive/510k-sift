@@ -20,8 +20,6 @@ import EventEmitter from "events";
 import { productCodeToDTO } from "./productCodes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const nj = require("numjs");
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { DECISIONS } from "./decisions";
 import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
@@ -119,63 +117,6 @@ export async function searchDevices(
   };
 
   return pagerResult;
-}
-
-export async function similaritySearchIFUs(
-  search: string
-): Promise<IDeviceDTODotResult[]> {
-  const idVals: { id: number }[] = await appDataSource
-    .getRepository(Device)
-    .createQueryBuilder("u")
-    .select("u.id AS id")
-    .where("u.indicationsForUseEmbedding IS NOT NULL")
-    .orderBy("u.id", "ASC")
-    .getRawMany<{ id: number }>();
-  const ids = idVals.map((item) => item.id);
-  const idChunks: number[][] = [];
-  for (let i = 0; i < ids.length; i += 2500) {
-    idChunks.push(ids.slice(i, i + 2500));
-  }
-
-  const result: IDeviceDTODotResult[] = [];
-  const embedding = await getEmbedding(search);
-  const queryVect = nj.array(JSON.parse(embedding));
-
-  let vectorResults: IDeviceDotResult[] = [];
-
-  for (const idList of idChunks) {
-    const devices = await appDataSource
-      .getRepository(Device)
-      .createQueryBuilder("u")
-      .where("u.id IN (:...ids)")
-      .setParameter("ids", idList)
-      .getMany();
-    for (const d of devices) {
-      const deviceVect = nj.array(JSON.parse(d.indicationsForUseEmbedding));
-      const val = nj.dot(deviceVect, queryVect);
-
-      vectorResults.push({ data: Math.abs(val.selection.data[0]), device: d });
-      vectorResults = vectorResults
-        .sort((a, b) => {
-          if (a.data < b.data) {
-            return -1;
-          }
-          if (a.data > b.data) {
-            return 1;
-          }
-          return 0;
-        })
-        .reverse()
-        .slice(0, 5);
-    }
-  }
-
-  for (const v of vectorResults) {
-    const item = { data: v.data, device: await deviceToDTO(v.device) };
-    result.push(item);
-  }
-
-  return result;
 }
 
 export async function getMarketingAudienceForDevice(knumber: string) {

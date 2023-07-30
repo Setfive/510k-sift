@@ -4,6 +4,33 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
+    <p>
+      Search is normally implemented through some variation of "does the text include the query" algorithm.
+      Modern search engines add some sophisticated features like stemming, lemmatization, and inverse ranking but at the core it's still "does the thing we're searching for contain the query".
+    </p>
+
+    <p>
+      <strong>AI powered search works differently.</strong>
+      <br>
+      Instead of matching on text we instead use an AI model to create vectors of the text and compare the distances between the vectors.
+      <br>
+      You: Lol what?? Explain like I'm 5.
+      <br>
+      Sure, buckle up!
+    </p>
+
+    <p>
+      GPT models (like what powers ChatGPT) work by encoding chunks of text as vectors.
+      The vectors are a list of numeric values which capture the <i>semantic</i> value of the text in geometric space.
+      For example, the vector for "dog" will be "close" to the vector for "canine" even though the text of the words are not similar at all.
+    </p>
+
+    <p>
+      Because of this "closeness" property, we can compare how geometrically far the query vector is from the vectors of device names to find
+      the ones that are the closest match.
+      <br>
+      So try a search for "cardiac pacemaker" and you'll see how the semantic search works.
+    </p>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
