@@ -21,9 +21,9 @@ import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
 import { LOGGER } from "../logger";
-import { createDeviceNameEmbeddings } from "../extract";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
+import { createDeviceNameEmbeddings } from "../extract/createDeviceNameEmbeddings";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -41,27 +41,7 @@ const fs = require("fs");
     console.error(e);
   }
 
-  console.log(options);
-
   if (options.command === "createdb") {
-    try {
-      await axios
-        .get<string>(
-          "https://www.accessdata.fda.gov/premarket/ftparea/pmnlstmn.zip",
-          {
-            responseType: "arraybuffer",
-          }
-        )
-        .catch((err) => {
-          console.error(err);
-        })
-        .then((result) => {
-          console.log("got a result?");
-        });
-    } catch (e) {
-      console.error(e);
-    }
-
     await createdb();
   } else if (options.command === "getDownloadUrls") {
     await getDownloadUrls();
@@ -246,6 +226,9 @@ async function createdb() {
       delimiter: "|",
       quote: false,
     });
+
+    LOGGER.info(`Processing ${records.length} records!`);
+
     const itemsForInsert: QueryDeepPartialEntity<Device>[] = [];
     for (const record of records) {
       let item: QueryDeepPartialEntity<Device> | Device | null;
@@ -367,7 +350,6 @@ async function fetch510kCSV(url: string): Promise<string> {
             if (fs.existsSync(pathToCSV)) {
               fs.unlinkSync(pathToCSV);
             }
-            LOGGER.info("Read CSV!");
             resolve(csvData);
           });
         });

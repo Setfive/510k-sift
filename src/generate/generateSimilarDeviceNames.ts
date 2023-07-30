@@ -1,17 +1,8 @@
 import { Device } from "../entity/device";
-import { getEmbedding } from "../extract/getEmbedding";
 import { appDataSource } from "../db";
-import { getDeviceIdPKChunks } from "../extract";
 import { LOGGER } from "../logger";
 import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const nj = require("numjs");
 import { QdrantClient } from "@qdrant/js-client-rest";
-
-interface ISimilarDeviceDotProduct {
-  distance: number;
-  device: Device;
-}
 
 export async function generateSimilarDeviceNames(id: string) {
   const device = await appDataSource

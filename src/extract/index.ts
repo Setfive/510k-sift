@@ -10,6 +10,9 @@ import { getRelatedKNumbers } from "./getRelatedKNumbers";
 import * as moment from "moment";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNames";
+import { QdrantClient } from "@qdrant/js-client-rest";
+import { LOGGER } from "../logger";
+import { createDeviceNameEmbeddings } from "./createDeviceNameEmbeddings";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -20,8 +23,6 @@ const process = require("process");
 const util = require("util");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require("child_process").exec);
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { LOGGER } from "../logger";
 
 let DOWNLOADED_PDF_PATH = "/home/ubuntu/pdf_data";
 if (process.env.DOWNLOADED_PDF_PATH) {
@@ -140,15 +141,6 @@ async function createDeviceEmbeddingBash() {
       );
     }
   }
-}
-
-export async function createDeviceNameEmbeddings(id: string) {
-  const device = await appDataSource
-    .getRepository(Device)
-    .findOneByOrFail({ id: parseInt(id) });
-  const embedding = await getEmbedding(`${device.devicename}`);
-  device.deviceNameEmbedding = embedding;
-  await appDataSource.manager.save(device);
 }
 
 async function importFromJson() {
