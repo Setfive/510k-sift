@@ -6,9 +6,12 @@ import {
 } from "./types";
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
-import { deviceToDTO, PER_PAGE } from "./index";
+import { deviceToDTO, PER_PAGE, shallowDeviceToDTO } from "./index";
 import { Device } from "../entity/device";
-import { generateAIDescriptionForProductCode } from "../generate/generateAIDescriptionForProductCode";
+import {
+  generateAIDescriptionForProductCode,
+  getPromptForAIDescriptionForProductCode,
+} from "../generate/generateAIDescriptionForProductCode";
 import { nl2br } from "../openai/utility";
 import { LOGGER } from "../logger";
 
@@ -39,7 +42,7 @@ export async function getProductCode(code: string) {
 
   const deviceDTOs: IDeviceDTO[] = [];
   for (const item of devices) {
-    deviceDTOs.push(await deviceToDTO(item));
+    deviceDTOs.push(await shallowDeviceToDTO(item));
   }
   const result: IProductCodeDTOWithDevices = Object.assign(
     { devices: deviceDTOs },
@@ -135,5 +138,8 @@ export async function productCodeToDTO(
     deviceClass: productCode.deviceClass,
     regulationNumber: productCode.regulationNumber,
     aiDescription: productCode.aiDescription,
+    prompt: await getPromptForAIDescriptionForProductCode(
+      productCode.productCode
+    ),
   };
 }

@@ -30,6 +30,7 @@ export interface IProductCodeDTO {
   deviceClass: string;
   regulationNumber: string;
   aiDescription: string;
+  prompt: Record<string, string>;
 }
 
 export interface IProductCodeDTOWithDevices extends IProductCodeDTO {

@@ -2,13 +2,11 @@ import { getOpenAI } from "../openai";
 import { LOGGER } from "../logger";
 import { getProductCode } from "../fetch/productCodes";
 
-export async function generateAIDescriptionForProductCode(code: string) {
-  try {
-    const productCodeDTO = await getProductCode(code);
-    const openai = getOpenAI();
-    const prompt = `You're an expert FDA consultant working with data from 510(k).
+export async function getPromptForAIDescriptionForProductCode(code: string) {
+  const productCodeDTO = await getProductCode(code);
+  const system = `You're an expert FDA consultant working with data from 510(k).
 Use only the details provided by the user to respond to their question`;
-    const user = `These are details about a FDA 510(k) product code along with the device names for 
+  const user = `These are details about a FDA 510(k) product code along with the device names for 
 some products that are cleared in this product code. Use only these details to generate an executive summary for this product code.
 In the executive summary make sure to include: 
   * a description of the types of devices that this product code is appropriate for
@@ -26,13 +24,20 @@ ${productCodeDTO.devices
   .map((item) => item.deviceName)
   .join("\n")}`;
 
+  return { system, user };
+}
+
+export async function generateAIDescriptionForProductCode(code: string) {
+  try {
+    const openai = getOpenAI();
+    const prompt = await getPromptForAIDescriptionForProductCode(code);
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: prompt },
+        { role: "system", content: prompt.system },
         {
           role: "user",
-          content: user,
+          content: prompt.user,
         },
       ],
       max_tokens: 1000,

@@ -54,6 +54,8 @@ const fs = require("fs");
   } else if (options.command === "downloadProductCodes") {
     await downloadProductCodes();
   }
+
+  process.exit(0);
 })();
 
 async function downloadProductCodes(): Promise<void> {

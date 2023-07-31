@@ -1,3 +1,25 @@
+<ng-template #aiDescriptionModalContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Description</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+   <p>
+     The FDA descriptions of 510(k) product codes are frustratingly short.
+     For example, what types of devices and risks are associated with this product code: "{{ productCode?.deviceName }}"
+   </p>
+    <p>
+      Here's the prompt we're sending to OpenAI:
+    </p>
+    <p>
+      System: {{ productCode?.prompt?.system }}
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <div class="container my-5" *ngIf="!productCode">
   <div class="row">
     <div class="col-12 text-center">
@@ -53,7 +75,10 @@
         </div>
       </div>
       <div class="card mt-5">
-        <div class="card-header">AI Description</div>
+        <div class="card-header">
+          Description
+          <a (click)="showDescriptionModal()">🤖</a>
+        </div>
         <div class="card-body">
           <p [innerHTML]="productCode.aiDescription"></p>
 

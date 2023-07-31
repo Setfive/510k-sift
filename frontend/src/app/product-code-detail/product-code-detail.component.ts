@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {IProductCodeDTO, IProductCodeDTOWithDevices} from "../service/types";
 import {FormBuilder} from "@angular/forms";
 import {ApiService} from "../service/api.service";
 import {ActivatedRoute} from "@angular/router";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-product-code-detail',
@@ -13,9 +14,12 @@ export class ProductCodeDetailComponent implements OnInit {
   loading = false;
   productCode?: IProductCodeDTOWithDevices;
   loadingAIDescription = false;
+  @ViewChild("aiDescriptionModalContent")
+  aiDescriptionModalContent?: TemplateRef<string>;
 
   public constructor(private activatedRoute: ActivatedRoute,
-                     private apiService: ApiService) {
+                     private apiService: ApiService,
+                     private modalService: NgbModal) {
 
   }
 
@@ -24,6 +28,10 @@ export class ProductCodeDetailComponent implements OnInit {
       const code = `${paramMap.get('code')}`;
       this.apiService.getProductCode(code).subscribe(result => this.productCode = result);
     });
+  }
+
+  showDescriptionModal() {
+    this.modalService.open(this.aiDescriptionModalContent, {size: "lg"});
   }
 
   getAIDescription() {
