@@ -43,4 +43,12 @@ export class ProductCodeDetailComponent implements OnInit {
           this.productCode = result;
         });
   }
+
+  nl2br(value?: string) {
+    if(!value) {
+      return value;
+    }
+
+    return value.replace(/\n/g, '<br/>');
+  }
 }

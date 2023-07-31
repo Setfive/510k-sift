@@ -138,8 +138,6 @@ export async function productCodeToDTO(
     deviceClass: productCode.deviceClass,
     regulationNumber: productCode.regulationNumber,
     aiDescription: productCode.aiDescription,
-    prompt: await getPromptForAIDescriptionForProductCode(
-      productCode.productCode
-    ),
+    prompt: await getPromptForAIDescriptionForProductCode(productCode),
   };
 }

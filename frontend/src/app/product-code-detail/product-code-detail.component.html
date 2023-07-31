@@ -12,7 +12,8 @@
       Here's the prompt we're sending to OpenAI:
     </p>
     <p>
-      System: {{ productCode?.prompt?.system }}
+      <span [innerHTML]="nl2br(productCode?.prompt?.system)"></span><br>
+      <span [innerHTML]="nl2br(productCode?.prompt?.user)"></span>
     </p>
   </div>
   <div class="modal-footer">

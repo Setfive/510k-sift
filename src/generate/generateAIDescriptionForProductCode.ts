@@ -1,9 +1,23 @@
 import { getOpenAI } from "../openai";
 import { LOGGER } from "../logger";
 import { getProductCode } from "../fetch/productCodes";
+import { ProductCode } from "../entity/productCode";
+import { appDataSource } from "../db";
+import { Device } from "../entity/device";
+import { IDeviceDTO } from "../fetch/types";
+import { shallowDeviceToDTO } from "../fetch";
 
-export async function getPromptForAIDescriptionForProductCode(code: string) {
-  const productCodeDTO = await getProductCode(code);
+export async function getPromptForAIDescriptionForProductCode(
+  productCode: ProductCode
+) {
+  const devices = await appDataSource
+    .getRepository(Device)
+    .createQueryBuilder("u")
+    .where("u.productCode = :productCode")
+    .orderBy("u.decisionDate", "DESC")
+    .setParameter("productCode", productCode.productCode)
+    .getMany();
+
   const system = `You're an expert FDA consultant working with data from 510(k).
 Use only the details provided by the user to respond to their question`;
   const user = `These are details about a FDA 510(k) product code along with the device names for 
@@ -15,13 +29,13 @@ In the executive summary make sure to include:
   * any risks commonly associated with product using this product code
 Do not include the phrase "Executive Summary:"
 
-Product Code: ${productCodeDTO.productCode} 
-Description: ${productCodeDTO.deviceName}
-Device Class: ${productCodeDTO.deviceClass}
+Product Code: ${productCode.productCode} 
+Description: ${productCode.deviceName}
+Device Class: ${productCode.deviceClass}
 Devices:
-${productCodeDTO.devices
+${devices
   .slice(0, 5)
-  .map((item) => item.deviceName)
+  .map((item) => item.devicename)
   .join("\n")}`;
 
   return { system, user };
@@ -29,8 +43,11 @@ ${productCodeDTO.devices
 
 export async function generateAIDescriptionForProductCode(code: string) {
   try {
+    const productCode = await appDataSource
+      .getRepository(ProductCode)
+      .findOneByOrFail({ productCode: code });
     const openai = getOpenAI();
-    const prompt = await getPromptForAIDescriptionForProductCode(code);
+    const prompt = await getPromptForAIDescriptionForProductCode(productCode);
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
