@@ -1,3 +1,26 @@
+<ng-template #aiSimilarDevicesModalContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Similar Devices</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>The similar devices are determined by comparing the vectors of the device names and finding the ones that are the most similar.</p>
+
+    <p>
+      GPT models (like what powers ChatGPT) work by encoding chunks of text as vectors.
+      The vectors are a list of numeric values which capture the <i>semantic</i> value of the text in geometric space.
+      For example, the vector for "dog" will be "close" to the vector for "canine" even though the text of the words are not similar at all.
+    </p>
+
+    <p>
+      We can use this "closeness" to to find the device names that are most similar.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <div class="container my-5" *ngIf="loading">
   <div class="text-center">
     <div class="spinner-border" role="status">
@@ -51,7 +74,10 @@
       </div>
 
       <div class="card mt-5">
-        <div class="card-header">Similar Devices</div>
+        <div class="card-header">
+          Similar Devices
+          <a (click)="showSimilarDevicesModal()">🤖</a>
+        </div>
         <div class="card-body">
           <table class="table table-sm">
             <thead>
@@ -69,7 +95,6 @@
               </tr>
             </tbody>
           </table>
-          <p class="text-secondary small">Derived by finding the most similar device name embeddings.</p>
         </div>
       </div>
 

@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {IDeviceDTO, IDeviceSSEEvent, IProductCodeDTO, IProgressSSEEvent} from "../service/types";
 import {ApiService} from "../service/api.service";
 import {ToastService} from "../service/toast.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-view',
@@ -15,10 +16,13 @@ export class ViewComponent implements OnInit {
   device?: IDeviceDTO;
   productCodeDto?: IProductCodeDTO;
   loadingMarketingAudience = false;
+  @ViewChild("aiSimilarDevicesModalContent")
+  aiSimilarDevicesModalContent?: TemplateRef<string>;
 
   public constructor(private activatedRoute: ActivatedRoute,
                      private apiService: ApiService,
-                     private toastService: ToastService) {
+                     private toastService: ToastService,
+                     private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -32,6 +36,10 @@ export class ViewComponent implements OnInit {
         }
       });
     });
+  }
+
+  showSimilarDevicesModal() {
+    this.modalService.open(this.aiSimilarDevicesModalContent, {size: "lg"});
   }
 
   async getMarketingAudience() {
