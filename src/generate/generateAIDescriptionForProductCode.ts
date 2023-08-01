@@ -4,12 +4,12 @@ import { getProductCode } from "../fetch/productCodes";
 import { ProductCode } from "../entity/productCode";
 import { appDataSource } from "../db";
 import { Device } from "../entity/device";
-import { IDeviceDTO } from "../fetch/types";
+import { IDeviceDTO, IPromptDTO } from "../fetch/types";
 import { shallowDeviceToDTO } from "../fetch";
 
 export async function getPromptForAIDescriptionForProductCode(
   productCode: ProductCode
-) {
+): Promise<IPromptDTO> {
   const devices = await appDataSource
     .getRepository(Device)
     .createQueryBuilder("u")

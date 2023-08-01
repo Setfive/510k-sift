@@ -18,6 +18,8 @@ export class ViewComponent implements OnInit {
   loadingMarketingAudience = false;
   @ViewChild("aiSimilarDevicesModalContent")
   aiSimilarDevicesModalContent?: TemplateRef<string>;
+  @ViewChild("aiMarketAudienceModalContent")
+  aiMarketAudienceModalContent?: TemplateRef<string>;
 
   public constructor(private activatedRoute: ActivatedRoute,
                      private apiService: ApiService,
@@ -40,6 +42,10 @@ export class ViewComponent implements OnInit {
 
   showSimilarDevicesModal() {
     this.modalService.open(this.aiSimilarDevicesModalContent, {size: "lg"});
+  }
+
+  showMarketingAudienceModal() {
+    this.modalService.open(this.aiMarketAudienceModalContent, {size: "lg"});
   }
 
   async getMarketingAudience() {
@@ -68,5 +74,13 @@ export class ViewComponent implements OnInit {
     }else{
       this.toastService.progressMessage = '';
     }
+  }
+
+  nl2br(value?: string) {
+    if(!value) {
+      return value;
+    }
+
+    return value.replace(/\n/g, '<br/>');
   }
 }

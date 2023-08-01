@@ -21,6 +21,29 @@
   </div>
 </ng-template>
 
+<ng-template #aiMarketAudienceModalContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Target Marketing Audience</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>One of the challenges of working for a medical device company in a marketing role without a technical background
+      is not having a sense of what the subject device does, who it would be marketed to, and the potential patient population.</p>
+
+    <p>But what if OpenAI/ChatGPT could help? Here is the prompt we're sending:</p>
+
+    <p [innerHTML]="nl2br(device?.marketingAudiencePrompt?.system)"></p>
+    <p [innerHTML]="nl2br(device?.marketingAudiencePrompt?.user)"></p>
+
+    <hr />
+
+    <p class="text-secondary">NOTE: If we've extracted the indications for use, it's included.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <div class="container my-5" *ngIf="loading">
   <div class="text-center">
     <div class="spinner-border" role="status">
@@ -112,7 +135,10 @@
       </div>
 
       <div class="card mt-5">
-        <div class="card-header">Target Marketing Audience</div>
+        <div class="card-header">
+          Target Marketing Audience
+          <a (click)="showMarketingAudienceModal()">🤖</a>
+        </div>
         <div class="card-body">
           <p [innerHTML]="device?.deviceMarketingAudience"></p>
 

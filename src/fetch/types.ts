@@ -19,6 +19,7 @@ export interface IDeviceDTO {
   relatedKNumbers?: string[];
   productCodeDto?: IProductCodeDTO;
   indicationsForUseAI?: string;
+  marketingAudiencePrompt?: IPromptDTO;
   similarDevices: IDeviceDTO[];
 }
 
@@ -30,7 +31,7 @@ export interface IProductCodeDTO {
   deviceClass: string;
   regulationNumber: string;
   aiDescription: string;
-  prompt?: Record<string, string>;
+  prompt?: IPromptDTO;
 }
 
 export interface IProductCodeDTOWithDevices extends IProductCodeDTO {
@@ -73,4 +74,9 @@ export interface IDeviceDTODotResult {
 export interface ICompanyDTO {
   name: string;
   cnt: number;
+}
+
+export interface IPromptDTO {
+  system: string;
+  user: string;
 }

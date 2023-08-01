@@ -10,7 +10,10 @@ import {
 } from "./types";
 import { getEmbedding } from "../extract/getEmbedding";
 import { getIFUOpenAI } from "../extract/getIFUOpenAI";
-import { generateMarketingAudienceOpenAI } from "../generate/generateMarketingAudienceOpenAI";
+import {
+  generateMarketingAudienceOpenAI,
+  getMarketingAudiencePromptForOpenAI,
+} from "../generate/generateMarketingAudienceOpenAI";
 import { getRelatedKNumbers } from "../extract/getRelatedKNumbers";
 import { LOGGER } from "../logger";
 import { IPagerResponse, ISearchRequest } from "../types/types";
@@ -230,6 +233,10 @@ export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
     const dto = await shallowDeviceToDTO(d.dDevice);
     result.similarDevices.push(dto);
   }
+
+  result.marketingAudiencePrompt = await getMarketingAudiencePromptForOpenAI(
+    device
+  );
   return result;
 }
 
