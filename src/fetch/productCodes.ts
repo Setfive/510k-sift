@@ -113,7 +113,7 @@ export async function searchProductCodes(
   const result: IProductCodeDTO[] = [];
   const itemsAndCount = await query.getManyAndCount();
   for (const productCode of itemsAndCount[0]) {
-    const item = await productCodeToDTO(productCode);
+    const item = await shallowProductCodeToDTO(productCode);
     result.push(item);
   }
 
@@ -127,7 +127,7 @@ export async function searchProductCodes(
   return pagerResult;
 }
 
-export async function productCodeToDTO(
+export async function shallowProductCodeToDTO(
   productCode: ProductCode
 ): Promise<IProductCodeDTO> {
   return {
@@ -138,6 +138,13 @@ export async function productCodeToDTO(
     deviceClass: productCode.deviceClass,
     regulationNumber: productCode.regulationNumber,
     aiDescription: productCode.aiDescription,
-    prompt: await getPromptForAIDescriptionForProductCode(productCode),
   };
+}
+
+export async function productCodeToDTO(
+  productCode: ProductCode
+): Promise<IProductCodeDTO> {
+  const result = await shallowProductCodeToDTO(productCode);
+  result.prompt = await getPromptForAIDescriptionForProductCode(productCode);
+  return result;
 }

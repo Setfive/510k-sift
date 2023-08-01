@@ -46,7 +46,7 @@ export interface IProductCodeDTO {
   deviceClass: string;
   regulationNumber: string;
   aiDescription: string;
-  prompt: {system: string, user: string};
+  prompt?: {system: string, user: string};
 }
 
 export interface ICompanyDTO {
