@@ -20,4 +20,10 @@
   margin-bottom: .75rem;
   padding-bottom: .75rem;
   border-bottom: 1px solid #eee;
+  p {
+    margin: 0;
+  }
+  &:last-child {
+    border-bottom: 0;
+  }
 }
