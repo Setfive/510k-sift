@@ -71,7 +71,7 @@ const searchResults: Map<string, IPagerResponse<IDeviceDTO>> = new Map<
     }
   );
 
-  server.get(
+  server.post(
     "/api/enhance/ifu/:knumber",
     async (req: express.Request, res: express.Response) => {
       res.writeHead(200, {

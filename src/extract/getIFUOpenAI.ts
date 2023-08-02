@@ -9,6 +9,7 @@ import { extractTextAsPagesWithPdfToText } from "./pdfToText";
 import { getOpenAI } from "../openai";
 import { LOGGER } from "../logger";
 import EventEmitter from "events";
+import { extractTextAsPagesWitUnstructured } from "./unstructured";
 
 export async function getIFUOpenAI(
   device: Device,
@@ -37,7 +38,14 @@ export async function getIFUOpenAI(
     pathToFile = `${os.tmpdir()}/${uuidv4()}.pdf`;
     fs.writeFileSync(pathToFile, axioResult.data);
 
-    const texts = await extractTextAsPagesWithPdfToText(pathToFile);
+    if (ee) {
+      ee.emit(
+        "progress",
+        `Using Unstructured to extract the text. This takes awhile...`
+      );
+    }
+    const texts = await extractTextAsPagesWitUnstructured(pathToFile);
+
     if (ee) {
       const totalText = texts.join("").length;
       ee.emit(
@@ -45,24 +53,22 @@ export async function getIFUOpenAI(
         `Extracted ${totalText} characters from 510(k) statement or summary.`
       );
     }
-    for (const text of texts) {
-      if (!text.toLowerCase().includes("indications for use")) {
-        continue;
-      }
 
+    let page = 1;
+    for (const text of texts) {
       const prompt = `You're an expert FDA consultant working on a 510(k).
 This is a page from the summary or statement of a 510(k).
 Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.
 The indications for use starts with "Indications for Use:" and then is followed by a description of how the device is used.
 Only consider the text in the prompt, do not consider any other information.
 Do not include the phrase "Indications for Use" in the response.
-If none is present reply with None.
+If you can not find the "Indications for use", reply with "None".
       `;
 
       if (ee) {
         ee.emit(
           "progress",
-          `Extracting IFU with ChatGPT. This may take a few seconds.`
+          `Checking page ${page}/${texts.length} for an IFU with ChatGPT`
         );
       }
 
@@ -78,13 +84,14 @@ If none is present reply with None.
         max_tokens: 1000,
       });
 
-      LOGGER.info(`getIFUOpenAI: Trying ${prompt}`);
       const ifuText = `${completion.data.choices[0].message?.content}`.trim();
-      LOGGER.info(`getIFUOpenAI: Got ${ifuText}`);
+      LOGGER.info(`getIFUOpenAI: ${ifuText}`);
 
-      if (!ifuText.includes("None")) {
+      if (!ifuText.toLowerCase().includes("none")) {
         return `${ifuText.replace("Indications for Use:", "")}`;
       }
+
+      page += 1;
     }
   } catch (e) {
     console.error(e);

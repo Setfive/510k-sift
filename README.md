@@ -35,16 +35,25 @@ pip install -r requirements.txt
 
 ## Unstructured
 
-This project uses the [Unstructured-inference](https://github.com/Unstructured-IO/unstructured-inference) HTTP service to 
-extract the text from the FDA PDFs. You'll need to build and launch it before you can extract the text
-from the PDFs.
+This project uses the [Unstructured-inference](https://github.com/Unstructured-IO/unstructured-inference) HTTP service to extract the text from the FDA PDFs.
 
-If you have a GPU available (and want to use it), you'll need to install NVIDIA drivers and CUDA for your system.
+Using the Docker container is the easiest way to get setup.
 
 ```
-$ sudo apt install ubuntu-drivers-common
-$ sudo ubuntu-drivers autoinstall
-$ wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
-$ sudo dpkg -i cuda-keyring_1.0-1_all.deb
-$ sudo apt-get -y install cuda cuda-drivers
+docker pull quay.io/unstructured-io/unstructured-api:latest
+docker run -p 8000:8000 -d --rm --name unstructured-api quay.io/unstructured-io/unstructured-api:latest --port 8000 --host 0.0.0.0
+```
+
+I don't know if the Docker container is able to use a GPU if you have it available though.
+
+Test it with:
+
+```
+curl -X 'POST' \
+  'http://localhost:8000/general/v0/general' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'files=@K223581.pdf' \
+  -F 'strategy=hi_res' \
+  | python3 -mjson.tool > out.json
 ```
