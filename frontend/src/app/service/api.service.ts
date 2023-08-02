@@ -48,6 +48,7 @@ export class ApiService {
           }
           const event: IDeviceSSEEvent | IProgressSSEEvent = JSON.parse(chunk.trim());
           if (event.type === 'device') {
+            this.toastService.progressMessage = '';
             resolve(`${event.data.indicationsForUseAI}`);
           } else if (event.type === 'progress') {
             this.toastService.progressMessages.push(event.data);

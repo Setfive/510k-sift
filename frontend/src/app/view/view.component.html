@@ -1,3 +1,47 @@
+<ng-template #aiIndicationsForUseModalContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Indications for use</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>For any 510(k) device the "indications for use" is an important piece of open access data about
+      the device because it allows you to begin to establish substantial equivalence.
+      The statement or summary filed with the FDA normally contains the device's indications for use but how could you retrieve
+      it without manually reviewing each statement or summary?
+    </p>
+
+    <p>
+      Well we can use some AI! There's a few steps to make this happen:
+    </p>
+
+    <ul>
+      <li>Download the statement or summary PDF from the FDA website.</li>
+      <li>Use the <a href="https://github.com/Unstructured-IO" target="_blank">unstructured</a>
+        library to extract the text from the PDF. The unstructured includes machine learning models to improve the performance over "normal" ORC.</li>
+      <li>
+        Go page by page and ask ChatGPT to extract the the indications for use from the page.
+      </li>
+    </ul>
+
+    <p>Here's the prompt we're sending to ChatGPT along with the text of the extracted page.</p>
+
+    <p>
+      You're an expert FDA consultant working on a 510(k).<br>
+      This is a page from the summary or statement of a 510(k).<br>
+      Extract the complete indications for use (IFU) from the text. Reply with only the IFU and no other text.<br>
+      The indications for use starts with "Indications for Use:" and then is followed by a description of how the device is used.<br>
+      Only consider the text in the prompt, do not consider any other information.<br>
+      Do not include the phrase "Indications for Use" in the response.<br>
+      If you can not find the "Indications for use", reply with "None".<br>
+      What is the indications for use in this text?<br>
+      [[ text of page ]]
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <ng-template #aiSimilarDevicesModalContent let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">Similar Devices</h4>
@@ -122,7 +166,10 @@
       </div>
 
       <div class="card mt-5">
-        <div class="card-header">Indications for use</div>
+        <div class="card-header">
+          Indications for use
+          <a (click)="showIndicationsForUseModal()">🤖</a>
+        </div>
         <div class="card-body">
           <p [innerHTML]="device?.indicationsForUseAI"></p>
 

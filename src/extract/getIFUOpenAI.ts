@@ -78,7 +78,8 @@ If you can not find the "Indications for use", reply with "None".
           { role: "system", content: prompt },
           {
             role: "user",
-            content: `What is the indications for use in this text?${text.trim()}`,
+            content: `What is the indications for use in this text?
+${text.trim()}`,
           },
         ],
         max_tokens: 1000,

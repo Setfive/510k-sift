@@ -20,6 +20,8 @@ export class ViewComponent implements OnInit {
   aiSimilarDevicesModalContent?: TemplateRef<string>;
   @ViewChild("aiMarketAudienceModalContent")
   aiMarketAudienceModalContent?: TemplateRef<string>;
+  @ViewChild("aiIndicationsForUseModalContent")
+  aiIndicationsForUseModalContent?: TemplateRef<string>;
 
   public constructor(private activatedRoute: ActivatedRoute,
                      private apiService: ApiService,
@@ -48,6 +50,10 @@ export class ViewComponent implements OnInit {
     this.modalService.open(this.aiMarketAudienceModalContent, {size: "lg"});
   }
 
+  showIndicationsForUseModal() {
+    this.modalService.open(this.aiIndicationsForUseModalContent, {size: "lg"});
+  }
+
   async getMarketingAudience() {
     this.toastService.progressMessage = 'Getting marketing audience from ChatGPT...';
     this.loadingMarketingAudience = true;
@@ -66,14 +72,6 @@ export class ViewComponent implements OnInit {
       return;
     }
     this.device.indicationsForUseAI = await this.apiService.extractIFU(this.device.knumber);
-  }
-
-  popProgressMessage() {
-    if(this.toastService.progressMessages.length) {
-      this.toastService.progressMessage = `${this.toastService.progressMessages.shift()}`;
-    }else{
-      this.toastService.progressMessage = '';
-    }
   }
 
   nl2br(value?: string) {
