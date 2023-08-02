@@ -149,11 +149,8 @@ export async function getIFUForDeviceKNumber(
   if (!item.indicationsForUseAI && item.summaryStatementURL) {
     const indicationsForUse = await getIFUOpenAI(item, ee);
     if (indicationsForUse) {
-      ee.emit("progress", `Extracted IFU. Generating search embedding...`);
-
-      const embedding = await getEmbedding(indicationsForUse);
+      ee.emit("progress", `Extracted IFU.`);
       item.indicationsForUseAI = indicationsForUse;
-      item.indicationsForUseEmbedding = embedding;
     } else {
       item.indicationsForUseAI = "N/A";
     }

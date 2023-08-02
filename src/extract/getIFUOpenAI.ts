@@ -38,13 +38,30 @@ export async function getIFUOpenAI(
     pathToFile = `${os.tmpdir()}/${uuidv4()}.pdf`;
     fs.writeFileSync(pathToFile, axioResult.data);
 
+    let dots = ".";
     if (ee) {
       ee.emit(
         "progress",
-        `Using Unstructured to extract the text. This takes awhile...`
+        `Using Unstructured to extract the text. This takes awhile`
       );
     }
+    const timer = setInterval(() => {
+      if (dots.length < 10) {
+        dots += ".";
+      } else if (dots.length >= 10) {
+        dots = ".";
+      }
+
+      if (ee) {
+        ee.emit(
+          "progress",
+          `Using Unstructured to extract the text. This takes awhile${dots}`
+        );
+      }
+    }, 200);
     const texts = await extractTextAsPagesWitUnstructured(pathToFile);
+
+    clearInterval(timer);
 
     if (ee) {
       const totalText = texts.join("").length;
