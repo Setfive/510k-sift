@@ -20,7 +20,7 @@ import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
 import { ProductCode } from "../entity/productCode";
 import EventEmitter from "events";
-import { productCodeToDTO } from "./productCodes";
+import { productCodeToDTO, shallowProductCodeToDTO } from "./productCodes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 import { QdrantClient } from "@qdrant/js-client-rest";
@@ -103,10 +103,37 @@ export async function searchDevices(
 
   const result: IDeviceDTO[] = [];
 
-  ee.emit("progress", `Searching the database...`);
+  ee.emit("progress", `Searching the database`);
+  let dots = ".";
+  let timer = setInterval(() => {
+    if (dots.length < 10) {
+      dots += ".";
+    } else if (dots.length >= 10) {
+      dots = ".";
+    }
+
+    if (ee) {
+      ee.emit("progress", `Searching the database${dots}`);
+    }
+  }, 200);
   const devicesAndCount = await query.getManyAndCount();
 
-  ee.emit("progress", `Building your results...`);
+  clearInterval(timer);
+
+  ee.emit("progress", `Building your results`);
+  dots = ".";
+  timer = setInterval(() => {
+    if (dots.length < 10) {
+      dots += ".";
+    } else if (dots.length >= 10) {
+      dots = ".";
+    }
+
+    if (ee) {
+      ee.emit("progress", `Building your results${dots}`);
+    }
+  }, 200);
+
   for (const device of devicesAndCount[0]) {
     const item = await shallowDeviceToDTO(device);
     result.push(item);
@@ -119,6 +146,7 @@ export async function searchDevices(
     pages: Math.floor(devicesAndCount[1] / PER_PAGE),
   };
 
+  clearInterval(timer);
   return pagerResult;
 }
 
@@ -288,7 +316,7 @@ export async function shallowDeviceToDTO(device: Device): Promise<IDeviceDTO> {
     .getRepository(ProductCode)
     .findOneBy({ productCode: device.productcode });
   if (productCode) {
-    item.productCodeDto = await productCodeToDTO(productCode);
+    item.productCodeDto = await shallowProductCodeToDTO(productCode);
   }
   return item;
 }
