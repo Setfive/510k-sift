@@ -1,15 +1,17 @@
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
     <a class="navbar-brand" [routerLink]="['/']">510(k) Sift</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button"
+            (click)="isMenuCollapsed = !isMenuCollapsed"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link" [class.active]="isActive('home')" [routerLink]="['/']">Devices</a>
-        <a class="nav-link" [class.active]="isActive('product-codes')" [routerLink]="['/product-codes']">Product Codes</a>
-        <a class="nav-link" [class.active]="isActive('companies')" [routerLink]="['/companies']">Companies</a>
-        <a class="nav-link" [class.active]="isActive('about')" [routerLink]="['/about']">About</a>
+        <a (click)="isMenuCollapsed = true" class="nav-link" [class.active]="isActive('home')" [routerLink]="['/']">Devices</a>
+        <a (click)="isMenuCollapsed = true" class="nav-link" [class.active]="isActive('product-codes')" [routerLink]="['/product-codes']">Product Codes</a>
+        <a (click)="isMenuCollapsed = true" class="nav-link" [class.active]="isActive('companies')" [routerLink]="['/companies']">Companies</a>
+        <a (click)="isMenuCollapsed = true" class="nav-link" [class.active]="isActive('about')" [routerLink]="['/about']">About</a>
       </div>
     </div>
   </div>

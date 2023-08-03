@@ -9,6 +9,7 @@ import {Router} from "@angular/router";
 export class AppComponent {
   title = '510(k) Sift';
   activeNav = 'home';
+  isMenuCollapsed = true;
   public constructor(
     private router: Router,
   ) {}
