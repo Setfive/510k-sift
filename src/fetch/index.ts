@@ -41,9 +41,21 @@ export async function searchDevices(
     .limit(PER_PAGE)
     .orderBy("u.devicename", "ASC");
 
+  let timer: NodeJS.Timer;
+  let dots = ".";
   if (request.deviceName) {
-    ee.emit("progress", `Vector searching for similar devices...`);
+    ee.emit("progress", `Vector searching for similar devices`);
+    timer = setInterval(() => {
+      if (dots.length < 10) {
+        dots += ".";
+      } else if (dots.length >= 10) {
+        dots = ".";
+      }
 
+      if (ee) {
+        ee.emit("progress", `Vector searching for similar devices${dots}`);
+      }
+    }, 200);
     const client = new QdrantClient({ url: process.env.QDRANT_URL });
     const embedding = await getEmbedding(request.deviceName);
     const decodedEmbedding = JSON.parse(embedding) as number[];
@@ -53,6 +65,7 @@ export async function searchDevices(
     });
     const ids = result.map((item) => item.id);
     query.where("u.id IN (:...ids)").setParameter("ids", ids);
+    clearInterval(timer);
   }
 
   if (request.knumber) {
@@ -104,8 +117,8 @@ export async function searchDevices(
   const result: IDeviceDTO[] = [];
 
   ee.emit("progress", `Searching the database`);
-  let dots = ".";
-  let timer = setInterval(() => {
+  dots = ".";
+  timer = setInterval(() => {
     if (dots.length < 10) {
       dots += ".";
     } else if (dots.length >= 10) {

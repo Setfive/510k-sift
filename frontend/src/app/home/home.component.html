@@ -48,17 +48,17 @@
       <div class="card-body">
         <form [formGroup]="form" (submit)="submit()">
           <div class="row">
-            <div class="col-9">
+            <div class="col-md-9">
               <label for="deviceName" class="form-label">Device Name <a (click)="showDeviceNameModal()">🤖</a></label>
               <input type="text" class="form-control" id="deviceName" formControlName="deviceName" />
             </div>
-            <div class="col-3">
+            <div class="col-md-3 mt-2 mt-md-0">
               <label for="kNumber" class="form-label">510K Number</label>
               <input type="text" class="form-control" id="kNumber" formControlName="kNumber" />
             </div>
           </div>
           <div class="row mt-3">
-            <div class="col-6">
+            <div class="col-md-6">
               <label for="decision" class="form-label">Decision</label>
               <select formControlName="decision" id="decision" class="form-control">
                 <option [ngValue]="null"></option>
@@ -67,7 +67,7 @@
                 </option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-md-6 mt-2 mt-md-0">
               <label for="decisionDateGte" class="form-label">Decision Date</label>
               <div class="d-flex">
                 <input type="text" class="form-control" id="decisionDateGte" placeholder="2000-01-01" formControlName="decisionDateGte" />
