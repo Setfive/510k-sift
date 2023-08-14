@@ -48,7 +48,7 @@ export class Device {
   datereceived: Date;
 
   @Index()
-  @Column()
+  @Column({ type: "date" })
   decisiondate: Date;
 
   @Column()

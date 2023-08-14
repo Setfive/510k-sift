@@ -13,6 +13,7 @@ import {ApiService} from "../service/api.service";
 import {DECISIONS} from "./decisions";
 import {ToastService} from "../service/toast.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SampleSearchKeys} from "./types";
 
 @Component({
   selector: 'app-home',
@@ -53,6 +54,19 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  sampleSearch(key: SampleSearchKeys) {
+    if(key === 'stryker') {
+      this.form.get('company')?.setValue('Stryker');
+      this.form.get('decisionDateGte')?.setValue('2015-01-01');
+    }else if(key === 'gex') {
+      this.form.get('deviceName')?.setValue('catheter');
+      this.form.get('produceCodes')?.setValue('GEX');
+    }else if(key === 'sseSome') {
+      this.form.get('decision')?.setValue('SN');
+    }
+    this.submit();
   }
 
   showDeviceNameModal() {
