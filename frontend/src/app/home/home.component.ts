@@ -60,9 +60,8 @@ export class HomeComponent implements OnInit {
     if(key === 'stryker') {
       this.form.get('company')?.setValue('Stryker');
       this.form.get('decisionDateGte')?.setValue('2015-01-01');
-    }else if(key === 'gex') {
-      this.form.get('deviceName')?.setValue('catheter');
-      this.form.get('produceCodes')?.setValue('GEX');
+    }else if(key === 'bone') {
+      this.form.get('deviceName')?.setValue('bone cement');
     }else if(key === 'sseSome') {
       this.form.get('decision')?.setValue('SN');
     }

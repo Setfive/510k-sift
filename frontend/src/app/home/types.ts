@@ -1,1 +1,1 @@
-export type SampleSearchKeys = 'stryker' | 'gex' | 'sseSome';
+export type SampleSearchKeys = 'stryker' | 'bone' | 'sseSome';
