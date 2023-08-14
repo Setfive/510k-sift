@@ -57,6 +57,9 @@ export class HomeComponent implements OnInit {
   }
 
   sampleSearch(key: SampleSearchKeys) {
+    for(const control of this.form.controls) {
+      control.setValue(null);
+    }
     if(key === 'stryker') {
       this.form.get('company')?.setValue('Stryker');
       this.form.get('decisionDateGte')?.setValue('2015-01-01');
