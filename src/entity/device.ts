@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { DeviceRelatedDevice } from "./deviceRelatedDevice";
+import { Applicant } from "./applicant";
 
 @Entity()
 export class Device {
@@ -134,4 +136,7 @@ export class Device {
     (deviceRelatedDevice) => deviceRelatedDevice.sDevice
   )
   deviceRelatedDevices: DeviceRelatedDevice;
+
+  @ManyToOne(() => Applicant, (applicant) => applicant.devices)
+  company: Applicant;
 }

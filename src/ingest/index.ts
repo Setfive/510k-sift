@@ -28,6 +28,8 @@ import {
   setDeviceNameEmbedding,
 } from "../extract/createDeviceNameEmbeddings";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { Applicant } from "../entity/applicant";
+import { getDeviceIdPKChunks } from "../extract/getDeviceIdPKChunks";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -53,10 +55,51 @@ const fs = require("fs");
     await download();
   } else if (options.command === "downloadProductCodes") {
     await downloadProductCodes();
+  } else if (options.command === "createApplicants") {
+    await createApplicants();
   }
 
   process.exit(0);
 })();
+
+async function createApplicants(): Promise<void> {
+  const chunks: number[][] = await getDeviceIdPKChunks();
+  let num = 0;
+  for (const chunk of chunks) {
+    LOGGER.info(`${num} / ${chunks.length}`);
+
+    const devices = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where("u.id IN (:...ids)")
+      .setParameter("ids", chunk)
+      .getMany();
+
+    for (const device of devices) {
+      let applicant = await appDataSource
+        .getRepository(Applicant)
+        .findOneBy({ applicant: device.applicant });
+      if (!applicant) {
+        applicant = new Applicant();
+        applicant.applicant = device.applicant;
+        applicant.contact = device.contact;
+        applicant.street1 = device.street1;
+        applicant.street2 = device.street2;
+        applicant.city = device.city;
+        applicant.state = device.state;
+        applicant.country_code = device.country_code;
+        applicant.zip = device.zip;
+        applicant.postal_code = device.postal_code;
+        await appDataSource.manager.save(applicant);
+      }
+
+      device.company = applicant;
+      await appDataSource.manager.save(device);
+    }
+
+    num += 1;
+  }
+}
 
 async function downloadProductCodes(): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -247,6 +290,24 @@ async function createdb() {
         addToList = true;
       }
 
+      let applicant = await appDataSource
+        .getRepository(Applicant)
+        .findOneBy({ applicant: record.APPLICANT });
+
+      if (!applicant) {
+        applicant = new Applicant();
+        applicant.applicant = record.APPLICANT;
+        applicant.contact = record.CONTACT;
+        applicant.street1 = record.STREET1;
+        applicant.street2 = record.STREET2;
+        applicant.city = record.CITY;
+        applicant.state = record.STATE;
+        applicant.country_code = record.COUNTRY_CODE;
+        applicant.zip = record.ZIP;
+        applicant.postal_code = record.POSTAL_CODE;
+        await appDataSource.manager.save(applicant);
+      }
+
       item.knumber = record.KNUMBER;
       item.applicant = record.APPLICANT;
       item.contact = record.CONTACT;
@@ -269,6 +330,7 @@ async function createdb() {
       item.thirdparty = record.THIRDPARTY;
       item.expeditedreview = record.EXPEDITEDREVIEW;
       item.devicename = record.DEVICENAME;
+      item.company = applicant;
 
       if (addToList) {
         itemsForInsert.push(item);

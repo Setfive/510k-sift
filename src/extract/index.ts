@@ -13,6 +13,7 @@ import { generateSimilarDeviceNames } from "../generate/generateSimilarDeviceNam
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { LOGGER } from "../logger";
 import { createDeviceNameEmbeddings } from "./createDeviceNameEmbeddings";
+import { getDeviceIdPKChunks } from "./getDeviceIdPKChunks";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -317,28 +318,6 @@ async function extractIFUForm3881() {
       // logger.info(indicationsForUse);
     }
   }
-}
-
-export async function getDeviceIdPKChunks(step = 1000) {
-  const rows = await appDataSource
-    .getRepository(Device)
-    .createQueryBuilder("u")
-    .orderBy("u.id", "ASC")
-    .select("u.id AS id")
-    .getRawMany<{ id: number }>();
-
-  const ids = rows.map((item) => item.id);
-  const chunks: number[][] = [];
-
-  let start = 0;
-  let end = step;
-  while (end < ids.length) {
-    chunks.push(ids.slice(start, end));
-    start += step;
-    end += step;
-  }
-
-  return chunks;
 }
 
 async function calculateTokens() {
