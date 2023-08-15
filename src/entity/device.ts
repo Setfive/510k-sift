@@ -5,11 +5,12 @@ import {
   Index,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn, RelationId,
   UpdateDateColumn,
 } from "typeorm";
 import { DeviceRelatedDevice } from "./deviceRelatedDevice";
 import { Applicant } from "./applicant";
+import {application} from "express";
 
 @Entity()
 export class Device {
@@ -139,4 +140,7 @@ export class Device {
 
   @ManyToOne(() => Applicant, (applicant) => applicant.devices)
   company: Applicant;
+
+  @RelationId((device: Device) => device.company)
+  companyId!: number;
 }

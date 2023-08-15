@@ -21,6 +21,13 @@ export interface IDeviceDTO {
   indicationsForUseAI?: string;
   marketingAudiencePrompt?: IPromptDTO;
   similarDevices: IDeviceDTO[];
+  company?: IApplicantDTO;
+}
+
+export interface IApplicantDTO {
+  applicant: string;
+  contact: string;
+  address: string;
 }
 
 export interface IProductCodeDTO {
