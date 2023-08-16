@@ -32,6 +32,7 @@ export interface IApplicantDTO {
   contact: string;
   address: string;
   devices: IDeviceDTO[];
+  productCodes: string[];
 }
 
 export interface IProductCodeDTO {

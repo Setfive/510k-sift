@@ -80,5 +80,16 @@ export async function getCompany(id: string): Promise<IApplicantDTO> {
     const deviceDto = await shallowDeviceToDTO(item);
     dto.devices.push(deviceDto);
   }
+  const productCodes = await appDataSource
+    .getRepository(Device)
+    .createQueryBuilder("u")
+    .select("DISTINCT u.productcode AS productCode")
+    .where("u.companyId = :companyId AND productCode != ''")
+    .orderBy("u.productcode", "ASC")
+    .setParameter("companyId", parseInt(id, 10))
+    .getRawMany<{ productCode: string }>();
+  for (const item of productCodes) {
+    dto.productCodes.push(item.productCode);
+  }
   return dto;
 }

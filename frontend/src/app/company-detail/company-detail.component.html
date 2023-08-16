@@ -21,7 +21,7 @@
     <div class="col-9">
       <div class="card">
         <div class="card-header">Devices</div>
-        <div class="card-body p-0">
+        <div class="card-body p-0 card-devices">
           <div class="device-table">
             <table class="table table-bordered table-striped table-sm">
               <thead>
@@ -50,6 +50,18 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="card">
+        <div class="card-header">Product Codes</div>
+        <div class="card-body card-devices">
+          <ul>
+            <li *ngFor="let code of company.productCodes">
+              <a [routerLink]="['/product-codes/', code]" [innerHTML]="code"></a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

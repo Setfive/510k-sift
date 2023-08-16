@@ -21,5 +21,6 @@ export async function shallowApplicantToDTO(
     contact: applicant.contact,
     address: address,
     devices: [],
+    productCodes: [],
   };
 }
