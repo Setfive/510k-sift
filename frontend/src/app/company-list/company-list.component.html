@@ -33,7 +33,7 @@
     <table class="table table-bordered table-striped table-sm data-table">
       <thead>
       <tr *ngIf="!noResults">
-        <td colspan="3">{{ result.total }} results</td>
+        <td colspan="3">{{ result.total.toLocaleString() }} results</td>
       </tr>
       <tr>
         <th>Company Name</th>

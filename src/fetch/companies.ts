@@ -5,12 +5,14 @@ import { PER_PAGE } from "./index";
 import { Device } from "../entity/device";
 import { ICompanyDTO, IProductCodeDTO } from "./types";
 import { productCodeToDTO } from "./productCodes";
+import { Applicant } from "../entity/applicant";
 
 export async function fetchCompanies(request: ICompanySearchRequest) {
   const query = await appDataSource
-    .getRepository(Device)
+    .getRepository(Applicant)
     .createQueryBuilder("u")
-    .select("COUNT(*) AS cnt, u.applicant")
+    .select("COUNT(devices.id) AS cnt, u.applicant")
+    .leftJoin("u.devices", "devices")
     .limit(PER_PAGE)
     .groupBy("u.applicant")
     .orderBy("COUNT(*)", "DESC");
