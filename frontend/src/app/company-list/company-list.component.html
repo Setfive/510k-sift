@@ -46,7 +46,7 @@
       </tr>
       <tr *ngFor="let row of result.data">
         <td>
-          <a [innerHTML]="row.name"></a>
+          <a [routerLink]="['/companies/', row.id, row.slug]" [innerHTML]="row.name"></a>
         </td>
         <td [innerHTML]="row.cnt"></td>
       </tr>

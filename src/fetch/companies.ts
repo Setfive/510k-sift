@@ -3,18 +3,20 @@ import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
 import { PER_PAGE } from "./index";
 import { Device } from "../entity/device";
-import { ICompanyDTO, IProductCodeDTO } from "./types";
+import { IApplicantDTO, ICompanyDTO, IProductCodeDTO } from "./types";
 import { productCodeToDTO } from "./productCodes";
 import { Applicant } from "../entity/applicant";
+import { shallowApplicantToDTO } from "./shallowApplicantToDTO";
+import EventEmitter from "events";
 
 export async function fetchCompanies(request: ICompanySearchRequest) {
   const query = await appDataSource
     .getRepository(Applicant)
     .createQueryBuilder("u")
-    .select("COUNT(devices.id) AS cnt, u.applicant")
+    .select("COUNT(devices.id) AS cnt, u.id AS id")
     .leftJoin("u.devices", "devices")
     .limit(PER_PAGE)
-    .groupBy("u.applicant")
+    .groupBy("u.id")
     .orderBy("COUNT(*)", "DESC");
 
   if (request.name) {
@@ -23,16 +25,36 @@ export async function fetchCompanies(request: ICompanySearchRequest) {
       .setParameter("name", `${request.name}%`);
   }
 
-  const result: ICompanyDTO[] = [];
-  const items = await query.getRawMany<{ applicant: string; cnt: number }>();
-  const count = await query.getCount();
-
-  for (const entry of items) {
-    const item = { name: entry.applicant, cnt: entry.cnt };
-    result.push(item);
+  if (request.page > 1) {
+    query.offset(request.page * PER_PAGE);
   }
 
-  const pagerResult: IPagerResponse<ICompanyDTO> = {
+  const items = await query.getRawMany<{ id: number; cnt: number }>();
+  const ids = items.map((i) => i.id);
+  const byIdResults = await appDataSource
+    .getRepository(Applicant)
+    .createQueryBuilder("u")
+    .where("u.id IN (:...ids)")
+    .setParameter("ids", ids)
+    .getMany();
+  const countMap: Map<number, Applicant> = new Map<number, Applicant>();
+  for (const entry of byIdResults) {
+    countMap.set(entry.id, entry);
+  }
+
+  const result: IApplicantDTO[] = [];
+  for (const entry of items) {
+    const applicant = countMap.get(entry.id);
+    if (!applicant) {
+      continue;
+    }
+    const dto = await shallowApplicantToDTO(applicant);
+    dto.cnt = entry.cnt;
+    result.push(dto);
+  }
+
+  const count = await query.getCount();
+  const pagerResult: IPagerResponse<IApplicantDTO> = {
     data: result,
     total: count,
     paginated: count > PER_PAGE,
@@ -40,4 +62,13 @@ export async function fetchCompanies(request: ICompanySearchRequest) {
   };
 
   return pagerResult;
+}
+
+export async function getCompany(id: string): Promise<IApplicantDTO> {
+  const applicant = await appDataSource
+    .getRepository(Applicant)
+    .findOneByOrFail({ id: parseInt(id, 10) });
+  const dto = await shallowApplicantToDTO(applicant);
+
+  return dto;
 }

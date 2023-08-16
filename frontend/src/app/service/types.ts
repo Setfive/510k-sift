@@ -51,6 +51,8 @@ export interface IProductCodeDTO {
 }
 
 export interface ICompanyDTO {
+  id: number;
+  slug: string;
   name: string;
   cnt: number;
 }

@@ -136,4 +136,8 @@ export class ApiService {
   public searchCompanies(request: ICompanySearchRequest) {
     return this.httpClient.post<IPagerResponse<ICompanyDTO>>(`/api/search/companies`, request);
   }
+
+  public getCompany(id: string) {
+    return this.httpClient.get<ICompanyDTO>(`/api/search/companies/${id}`);
+  }
 }

@@ -25,7 +25,10 @@ export interface IDeviceDTO {
 }
 
 export interface IApplicantDTO {
-  applicant: string;
+  id: number;
+  cnt?: number;
+  slug: string;
+  name: string;
   contact: string;
   address: string;
 }

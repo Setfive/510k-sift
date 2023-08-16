@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'product-codes', component: ProductCodeListComponent },
   { path: 'product-codes/:code', component: ProductCodeDetailComponent },
   { path: 'companies', component: CompanyListComponent },
-  { path: 'companies/:id', component: CompanyDetailComponent },
+  { path: 'companies/:id/:slug', component: CompanyDetailComponent },
   { path: 'about', component: AboutComponent },
 ];
 

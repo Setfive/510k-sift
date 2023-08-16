@@ -5,12 +5,13 @@ import {
   Index,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn, RelationId,
+  PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from "typeorm";
 import { DeviceRelatedDevice } from "./deviceRelatedDevice";
 import { Applicant } from "./applicant";
-import {application} from "express";
+import { application } from "express";
 
 @Entity()
 export class Device {

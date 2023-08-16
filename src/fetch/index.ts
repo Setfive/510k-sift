@@ -1,10 +1,8 @@
 import { appDataSource } from "../db";
 import { Device } from "../entity/device";
 import {
-  Decision, IApplicantDTO,
-  IDeviceDotResult,
+  Decision,
   IDeviceDTO,
-  IDeviceDTODotResult,
   StatementOrSummary,
   SubmissionType,
 } from "./types";
@@ -20,13 +18,14 @@ import { IPagerResponse, ISearchRequest } from "../types/types";
 import * as moment from "moment";
 import { ProductCode } from "../entity/productCode";
 import EventEmitter from "events";
-import { productCodeToDTO, shallowProductCodeToDTO } from "./productCodes";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const os = require("os");
+import { shallowProductCodeToDTO } from "./productCodes";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { DECISIONS } from "./decisions";
 import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
-import {Applicant} from "../entity/applicant";
+import { Applicant } from "../entity/applicant";
+import { shallowApplicantToDTO } from "./shallowApplicantToDTO";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const os = require("os");
 
 export const PER_PAGE = 100;
 
@@ -257,27 +256,11 @@ export async function getDeviceDTOForKNumber(knumber: string) {
     .getRepository(Device)
     .findOneByOrFail({ knumber });
   const deviceDto = await deviceToDTO(item);
-  const applicant = await appDataSource.getRepository(Applicant).findOneByOrFail({id: item.companyId});
-  const applicantDto = await applicantToDTO(applicant);
+  const applicant = await appDataSource
+    .getRepository(Applicant)
+    .findOneByOrFail({ id: item.companyId });
+  deviceDto.company = await shallowApplicantToDTO(applicant);
   return deviceDto;
-}
-
-export async function applicantToDTO(applicant: Applicant): Promise<IApplicantDTO> {
-  const addressParts: string[] = [
-    applicant.street1,
-    applicant.street2,
-    `${applicant.city},`,
-    applicant.state,
-    applicant.postal_code,
-    applicant.country_code,
-  ];
-  const address = addressParts.filter((item) => item?.trim().length).join(" ");
-
-  return {
-    applicant: applicant.applicant,
-    contact: applicant.contact,
-    address: address,
-  };
 }
 
 export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
