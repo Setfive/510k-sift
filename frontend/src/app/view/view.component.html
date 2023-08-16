@@ -112,9 +112,9 @@
           </p>
           <p>
             <strong>Applicant:</strong><br>
-            {{ device?.applicant }}<br>
-            {{ device?.contact }}<br>
-            {{ device?.address }}
+            <a [routerLink]="['/companies/', device?.company?.id, device?.company?.slug]" [innerHTML]="device?.company?.name"></a><br>
+            {{ device?.company?.contact }}<br>
+            {{ device?.company?.address }}
           </p>
           <p>
             <strong>Decision:</strong><br>

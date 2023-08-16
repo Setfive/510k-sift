@@ -37,6 +37,7 @@ export interface IDeviceDTO {
   indicationsForUseAI?: string;
   marketingAudiencePrompt?: IPromptDTO;
   similarDevices: IDeviceDTO[];
+  company?: ICompanyDTO;
 }
 
 export interface IProductCodeDTO {
@@ -54,6 +55,7 @@ export interface ICompanyDTO {
   id: number;
   slug: string;
   name: string;
+  contact: string;
   address: string;
   cnt: number;
   devices: IDeviceDTO[];
