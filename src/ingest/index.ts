@@ -85,6 +85,7 @@ async function getMissingStatements(): Promise<void> {
       const extractedUrls = await getStatementSummaryUrlForKNumber(
         item.knumber
       );
+      LOGGER.info(`${item.knumber}: ${extractedUrls.statementSumURL}`);
       item.summaryStatementURL = extractedUrls.statementSumURL;
       item.foiaURL = extractedUrls.foiaURL;
       await appDataSource.manager.save(item);
