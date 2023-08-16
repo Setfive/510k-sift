@@ -57,10 +57,42 @@ const fs = require("fs");
     await downloadProductCodes();
   } else if (options.command === "createApplicants") {
     await createApplicants();
+  } else if (options.command === "getMissingStatements") {
+    await getMissingStatements();
   }
 
   process.exit(0);
 })();
+
+async function getMissingStatements(): Promise<void> {
+  const chunks: number[][] = await getDeviceIdPKChunks();
+  let num = 0;
+  for (const chunk of chunks) {
+    LOGGER.info(`${num} / ${chunks.length}`);
+
+    const minDate = moment().subtract(5, "years").toDate();
+    const devices = await appDataSource
+      .getRepository(Device)
+      .createQueryBuilder("u")
+      .where(
+        "u.id IN (:...ids) AND u.summaryStatementURL IS NULL AND u.decisiondate > :minDate"
+      )
+      .setParameter("ids", chunk)
+      .setParameter("minDate", minDate)
+      .getMany();
+
+    for (const item of devices) {
+      const extractedUrls = await getStatementSummaryUrlForKNumber(
+        item.knumber
+      );
+      item.summaryStatementURL = extractedUrls.statementSumURL;
+      item.foiaURL = extractedUrls.foiaURL;
+      await appDataSource.manager.save(item);
+    }
+
+    num += 1;
+  }
+}
 
 async function createApplicants(): Promise<void> {
   const chunks: number[][] = await getDeviceIdPKChunks();
@@ -209,6 +241,36 @@ async function download() {
   console.log(curls.join("\n"));
 }
 
+async function getStatementSummaryUrlForKNumber(
+  knumber: string
+): Promise<{ statementSumURL: string; foiaURL: string }> {
+  let statementSumURL = "";
+  let foiaURL = "";
+
+  try {
+    const axiosResult = await axios.get<string>(
+      `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${knumber}`
+    );
+    const $ = cheerio.load(axiosResult.data);
+    $("a").each(async function () {
+      const text = ($(this).text() ?? "").trim();
+      const ahref = $(this).attr("href") ?? "";
+
+      if (text === "Summary" || text === "Statement") {
+        statementSumURL = ahref;
+      }
+
+      if (ahref.includes("https://www.accessdata.fda.gov/CDRH510K/")) {
+        foiaURL = ahref;
+      }
+    });
+  } catch (e) {
+    LOGGER.error(e.message);
+  }
+
+  return { statementSumURL, foiaURL };
+}
+
 async function getDownloadUrls() {
   const totalRecords = await appDataSource.getRepository(Device).count();
   const chunks: number[][] = [];
@@ -232,29 +294,12 @@ async function getDownloadUrls() {
       .offset(chunk[0])
       .getMany();
     for (const record of records) {
-      try {
-        const axiosResult = await axios.get<string>(
-          `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${record.knumber}`
-        );
-        const $ = cheerio.load(axiosResult.data);
-        $("a").each(async function () {
-          const text = ($(this).text() ?? "").trim();
-          const ahref = $(this).attr("href") ?? "";
-          if (text === "Summary" || text === "Statement") {
-            record.summaryStatementURL = ahref;
-            LOGGER.info(`${text}: ${ahref}`);
-          }
-
-          if (ahref.includes("https://www.accessdata.fda.gov/CDRH510K/")) {
-            record.foiaURL = ahref;
-            LOGGER.info(`FOIA: ${ahref}`);
-          }
-        });
-
-        await appDataSource.getRepository(Device).save(record);
-      } catch (e) {
-        LOGGER.error(e.message);
-      }
+      const extractedUrls = await getStatementSummaryUrlForKNumber(
+        record.knumber
+      );
+      record.summaryStatementURL = extractedUrls.statementSumURL;
+      record.foiaURL = extractedUrls.foiaURL;
+      await appDataSource.getRepository(Device).save(record);
 
       num += 1;
       const percent = Math.round((num / totalRecords) * 100);
@@ -331,6 +376,14 @@ async function createdb() {
       item.expeditedreview = record.EXPEDITEDREVIEW;
       item.devicename = record.DEVICENAME;
       item.company = applicant;
+
+      if (!item.summaryStatementURL) {
+        const extractedUrls = await getStatementSummaryUrlForKNumber(
+          item.knumber
+        );
+        item.summaryStatementURL = extractedUrls.statementSumURL;
+        item.foiaURL = extractedUrls.foiaURL;
+      }
 
       if (addToList) {
         itemsForInsert.push(item);

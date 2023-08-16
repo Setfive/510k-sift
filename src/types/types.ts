@@ -19,7 +19,8 @@ export interface ICommandLineArgs {
     | "generateSimilarDeviceNames"
     | "createGenerateSimilarDeviceNamesBash"
     | "createVectorDB"
-    | "createApplicants";
+    | "createApplicants"
+    | "getMissingStatements";
 }
 
 export interface ICommandLineArgsExtract extends ICommandLineArgs {
