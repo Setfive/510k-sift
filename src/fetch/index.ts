@@ -24,6 +24,7 @@ import { DECISIONS } from "./decisions";
 import { DeviceRelatedDevice } from "../entity/deviceRelatedDevice";
 import { Applicant } from "../entity/applicant";
 import { shallowApplicantToDTO } from "./shallowApplicantToDTO";
+import { nl2br } from "../openai/utility";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const os = require("os");
 
@@ -191,7 +192,7 @@ export async function getIFUForDeviceKNumber(
     const indicationsForUse = await getIFUOpenAI(item, ee);
     if (indicationsForUse) {
       ee.emit("progress", `Extracted IFU.`);
-      item.indicationsForUseAI = indicationsForUse;
+      item.indicationsForUseAI = nl2br(indicationsForUse);
     } else {
       item.indicationsForUseAI = "N/A";
     }
