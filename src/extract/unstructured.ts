@@ -13,7 +13,7 @@ export async function extractTextAsPagesWitUnstructured(
       `${process.env.UNSTRUCTURED_URL}`,
       {
         files: fs.createReadStream(pdfPath),
-        strategy: "hi_res",
+        strategy: "auto",
       },
       {
         headers: {
