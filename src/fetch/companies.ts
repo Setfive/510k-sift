@@ -1,7 +1,7 @@
 import { ICompanySearchRequest, IPagerResponse } from "../types/types";
 import { appDataSource } from "../db";
 import { ProductCode } from "../entity/productCode";
-import { PER_PAGE } from "./index";
+import { PER_PAGE, shallowDeviceToDTO } from "./index";
 import { Device } from "../entity/device";
 import { IApplicantDTO, ICompanyDTO, IProductCodeDTO } from "./types";
 import { productCodeToDTO } from "./productCodes";
@@ -69,6 +69,16 @@ export async function getCompany(id: string): Promise<IApplicantDTO> {
     .getRepository(Applicant)
     .findOneByOrFail({ id: parseInt(id, 10) });
   const dto = await shallowApplicantToDTO(applicant);
-
+  const devices = await appDataSource
+    .getRepository(Device)
+    .createQueryBuilder("u")
+    .where("u.companyId = :companyId")
+    .orderBy("u.devicename", "ASC")
+    .setParameter("companyId", parseInt(id, 10))
+    .getMany();
+  for (const item of devices) {
+    const deviceDto = await shallowDeviceToDTO(item);
+    dto.devices.push(deviceDto);
+  }
   return dto;
 }

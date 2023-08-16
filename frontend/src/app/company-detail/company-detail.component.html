@@ -1,1 +1,57 @@
-<p>company-detail works!</p>
+<div class="container my-5" *ngIf="!company">
+  <div class="row">
+    <div class="col-12 text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5" *ngIf="company">
+  <div class="row">
+    <div class="col-12">
+      <div class="mb-3">
+        <h1>{{ company.name }}</h1>
+        <p class="text-secondary" [innerHTML]="company.address"></p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-9">
+      <div class="card">
+        <div class="card-header">Devices</div>
+        <div class="card-body p-0">
+          <div class="device-table">
+            <table class="table table-bordered table-striped table-sm">
+              <thead>
+              <tr>
+                <td colspan="4">{{ company.devices.length }} results</td>
+              </tr>
+              <tr>
+                <th class="wd-10">510K Number</th>
+                <th>Decision Date</th>
+                <th>Applicant</th>
+                <th>Device</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngIf="company.devices.length === 0">
+                <td colspan="4" class="text-center">No Devices</td>
+              </tr>
+              <tr *ngFor="let row of company.devices">
+                <td>
+                  <a [innerHTML]="row.knumber" [routerLink]="['/view/', row.knumber]"></a>
+                </td>
+                <td [innerHTML]="row.decisionDate"></td>
+                <td [innerHTML]="row.applicant"></td>
+                <td [innerHTML]="row.deviceName"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

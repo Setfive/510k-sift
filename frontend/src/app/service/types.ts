@@ -54,7 +54,9 @@ export interface ICompanyDTO {
   id: number;
   slug: string;
   name: string;
+  address: string;
   cnt: number;
+  devices: IDeviceDTO[];
 }
 
 export interface IDeviceSSEEvent {

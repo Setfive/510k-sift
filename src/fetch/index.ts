@@ -265,6 +265,14 @@ export async function getDeviceDTOForKNumber(knumber: string) {
 
 export async function deviceToDTO(device: Device): Promise<IDeviceDTO> {
   const result = await shallowDeviceToDTO(device);
+
+  const productCode = await appDataSource
+    .getRepository(ProductCode)
+    .findOneBy({ productCode: device.productcode });
+  if (productCode) {
+    result.productCodeDto = await shallowProductCodeToDTO(productCode);
+  }
+
   const similarDevices = await appDataSource
     .getRepository(DeviceRelatedDevice)
     .createQueryBuilder("u")
@@ -330,11 +338,5 @@ export async function shallowDeviceToDTO(device: Device): Promise<IDeviceDTO> {
     item.relatedKNumbers = JSON.parse(device.relatedKNumbers);
   }
 
-  const productCode = await appDataSource
-    .getRepository(ProductCode)
-    .findOneBy({ productCode: device.productcode });
-  if (productCode) {
-    item.productCodeDto = await shallowProductCodeToDTO(productCode);
-  }
   return item;
 }
