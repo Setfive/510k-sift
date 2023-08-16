@@ -297,7 +297,7 @@ async function getDownloadUrls() {
       );
       record.summaryStatementURL = extractedUrls.statementSumURL;
       record.foiaURL = extractedUrls.foiaURL;
-      await appDataSource.getRepository(Device).save(record);
+      await appDataSource.manager.save(record);
 
       num += 1;
       const percent = Math.round((num / totalRecords) * 100);
