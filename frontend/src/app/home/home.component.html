@@ -70,9 +70,9 @@
             <div class="col-md-6 mt-2 mt-md-0">
               <label for="decisionDateGte" class="form-label">Decision Date</label>
               <div class="d-flex">
-                <input type="text" class="form-control" id="decisionDateGte" placeholder="2000-01-01" formControlName="decisionDateGte" />
+                <input type="date" class="form-control" id="decisionDateGte" formControlName="decisionDateGte" />
                 <div class="mx-2">to</div>
-                <input type="text" class="form-control" id="decisionDateLte" placeholder="2000-01-01" formControlName="decisionDateLte" />
+                <input type="date" class="form-control" id="decisionDateLte" formControlName="decisionDateLte" />
               </div>
             </div>
           </div>
@@ -162,13 +162,15 @@
     <table class="table table-bordered table-striped table-sm data-table">
       <thead>
         <tr *ngIf="!noResults">
-          <td colspan="4">{{ result.total.toLocaleString() }} results</td>
+          <td colspan="4">
+            {{ result.total.toLocaleString() }} results. <span class="text-secondary">Sorted alphabetically by device name</span>
+          </td>
         </tr>
         <tr>
           <th class="wd-10">510K Number</th>
           <th>Decision Date</th>
           <th>Applicant</th>
-          <th>Device</th>
+          <th>Device Name</th>
         </tr>
       </thead>
       <tbody>
