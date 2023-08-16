@@ -246,11 +246,9 @@ async function getStatementSummaryUrlForKNumber(
 ): Promise<{ statementSumURL: string; foiaURL: string }> {
   let statementSumURL = "";
   let foiaURL = "";
-
+  const url = `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${knumber}`;
   try {
-    const axiosResult = await axios.get<string>(
-      `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${knumber}`
-    );
+    const axiosResult = await axios.get<string>(url);
     const $ = cheerio.load(axiosResult.data);
     $("a").each(async function () {
       const text = ($(this).text() ?? "").trim();
@@ -265,7 +263,7 @@ async function getStatementSummaryUrlForKNumber(
       }
     });
   } catch (e) {
-    LOGGER.error(e.message);
+    LOGGER.error(`${url}: ${e.message}`);
   }
 
   return { statementSumURL, foiaURL };
