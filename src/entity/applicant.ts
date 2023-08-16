@@ -43,6 +43,9 @@ export class Applicant {
   @Column()
   postal_code: string;
 
+  @Column({ nullable: true, type: "text" })
+  aiProfile: string;
+
   @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
 

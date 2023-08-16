@@ -140,4 +140,16 @@ export class ApiService {
   public getCompany(id: string) {
     return this.httpClient.get<ICompanyDTO>(`/api/search/companies/${id}`);
   }
+
+  public getCompanyWithAIDescription(id: string) {
+    return this.httpClient.post<ICompanyDTO>(`/api/search/companies/${id}/description`, {});
+  }
+
+  public nl2br(value?: string) {
+    if(!value) {
+      return value;
+    }
+
+    return value.replace(/\n/g, '<br/>');
+  }
 }

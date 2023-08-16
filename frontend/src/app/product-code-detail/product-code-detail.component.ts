@@ -45,10 +45,6 @@ export class ProductCodeDetailComponent implements OnInit {
   }
 
   nl2br(value?: string) {
-    if(!value) {
-      return value;
-    }
-
-    return value.replace(/\n/g, '<br/>');
+    return this.apiService.nl2br(value);
   }
 }

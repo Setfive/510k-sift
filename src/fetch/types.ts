@@ -33,6 +33,8 @@ export interface IApplicantDTO {
   address: string;
   devices: IDeviceDTO[];
   productCodes: string[];
+  profilePrompt?: IPromptDTO;
+  aiProfile?: string;
 }
 
 export interface IProductCodeDTO {

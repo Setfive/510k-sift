@@ -26,7 +26,11 @@ import {
   searchProductCodes,
 } from "./fetch/productCodes";
 import { generateAIDescriptionForProductCode } from "./generate/generateAIDescriptionForProductCode";
-import { fetchCompanies, getCompany } from "./fetch/companies";
+import {
+  fetchCompanies,
+  getCompany,
+  getCompanyWithAIProfile,
+} from "./fetch/companies";
 import { IDeviceDTO } from "./fetch/types";
 import { v4 as uuidv4 } from "uuid";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -216,6 +220,16 @@ const searchResults: Map<string, IPagerResponse<IDeviceDTO>> = new Map<
       res.setHeader("Content-Type", "application/json");
       const id = req.params.id;
       const result = await getCompany(id);
+      res.send(JSON.stringify(result));
+    }
+  );
+
+  server.post(
+    "/api/search/companies/:id/description",
+    async (req: express.Request, res: express.Response) => {
+      res.setHeader("Content-Type", "application/json");
+      const id = req.params.id;
+      const result = await getCompanyWithAIProfile(id);
       res.send(JSON.stringify(result));
     }
   );

@@ -1,3 +1,30 @@
+<ng-template #aiCompanyProfileModalContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Company Profile</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>
+      LLMs/OpenAI aren't databases so they can't recall facts,
+      but because their training data is so vast they're able to generate text for prompts about well know entities.
+    </p>
+    <p>
+      We can leverage that to generate company profiles for any company in the 510(k) dataset.<br>
+      NOTE: LLMs do "hallucinate" so some or all of this text may not be true or accurate.
+    </p>
+    <p>
+      Here's the prompt we're sending to OpenAI:
+    </p>
+    <p>
+      <span [innerHTML]="nl2br(company?.profilePrompt?.system)"></span><br>
+      <span [innerHTML]="nl2br(company?.profilePrompt?.user)"></span>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
 <div class="container my-5" *ngIf="!company">
   <div class="row">
     <div class="col-12 text-center">
@@ -62,6 +89,31 @@
               <a [routerLink]="['/product-codes/', code]" [innerHTML]="code"></a>
             </li>
           </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          Company Profile
+          <a (click)="showCompanyProfileModal()">🤖</a>
+        </div>
+        <div class="card-body">
+          <p [innerHTML]="company.aiProfile"></p>
+
+          <div *ngIf="!company.aiProfile && !loadingAIProfile" class="text-end">
+            <button (click)="getAIProfile()" class="btn btn-primary">Ask ChatGPT</button>
+          </div>
+
+          <div *ngIf="loadingAIProfile" class="text-end">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <div class="text-end text-secondary small" *ngIf="company.aiProfile">From ChatGPT</div>
         </div>
       </div>
     </div>

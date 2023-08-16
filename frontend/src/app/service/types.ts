@@ -58,6 +58,8 @@ export interface ICompanyDTO {
   cnt: number;
   devices: IDeviceDTO[];
   productCodes: string[];
+  aiProfile?: string;
+  profilePrompt?: IPromptDTO;
 }
 
 export interface IDeviceSSEEvent {
