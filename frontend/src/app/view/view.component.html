@@ -178,6 +178,15 @@
           </div>
 
           <div class="text-end text-secondary small" *ngIf="device?.indicationsForUseAI">From ChatGPT</div>
+
+          <div class="mt-3 text-secondary small">
+            NOTE: There's a few reasons this may not work.
+            <ul class="list-unstyled">
+              <li>The OCR is configured to balance speed and extraction so it may not be able to extract the text even though it appears visible.</li>
+              <li>The OCR may not be able to extract the text, for example poor quality handwriting.</li>
+              <li>The OpenAI GPT model may not be able to extract the indications for use from the text.</li>
+            </ul>
+          </div>
         </div>
       </div>
 

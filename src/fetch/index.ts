@@ -65,7 +65,7 @@ export async function searchDevices(
     const decodedEmbedding = JSON.parse(embedding) as number[];
     const result = await client.search("device_names", {
       vector: decodedEmbedding,
-      limit: 500,
+      limit: PER_PAGE,
     });
     for (let i = 0; i < result.length; i++) {
       sortedIds.set(result[i].id as number, i);
