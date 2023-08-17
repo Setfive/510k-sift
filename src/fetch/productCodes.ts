@@ -122,6 +122,7 @@ export async function searchProductCodes(
     total: itemsAndCount[1],
     paginated: itemsAndCount[1] > PER_PAGE,
     pages: Math.floor(itemsAndCount[1] / PER_PAGE),
+    sortedBy: "Alphabetically by product code",
   };
 
   return pagerResult;

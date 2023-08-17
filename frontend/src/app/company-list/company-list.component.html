@@ -33,7 +33,12 @@
     <table class="table table-bordered table-striped table-sm data-table">
       <thead>
       <tr *ngIf="!noResults">
-        <td colspan="3">{{ result.total.toLocaleString() }} results</td>
+        <td colspan="3">
+          <div class="d-flex justify-content-between">
+            <span>{{ result.total.toLocaleString() }} results</span>
+            <span class="text-secondary">Sorted by: {{ result.sortedBy }}</span>
+          </div>
+        </td>
       </tr>
       <tr>
         <th>Company Name</th>

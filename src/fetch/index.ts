@@ -42,6 +42,8 @@ export async function searchDevices(
     .limit(PER_PAGE)
     .orderBy("u.devicename", "ASC");
 
+  let sortedBy = "Alphabetically by device name";
+
   let timer: NodeJS.Timer;
   let dots = ".";
   if (request.deviceName) {
@@ -67,6 +69,8 @@ export async function searchDevices(
     const ids = result.map((item) => item.id);
     query.where("u.id IN (:...ids)").setParameter("ids", ids);
     clearInterval(timer);
+
+    sortedBy = "By most similar device name";
   }
 
   if (request.knumber) {
@@ -158,6 +162,7 @@ export async function searchDevices(
     total: devicesAndCount[1],
     paginated: devicesAndCount[1] > PER_PAGE,
     pages: Math.floor(devicesAndCount[1] / PER_PAGE),
+    sortedBy: sortedBy,
   };
 
   clearInterval(timer);

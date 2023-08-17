@@ -163,7 +163,10 @@
       <thead>
         <tr *ngIf="!noResults">
           <td colspan="4">
-            {{ result.total.toLocaleString() }} results. <span class="text-secondary">Sorted alphabetically by device name</span>
+            <div class="d-flex justify-content-between">
+              <span>{{ result.total.toLocaleString() }} results</span>
+              <span class="text-secondary">Sorted by: {{ result.sortedBy }}</span>
+            </div>
           </td>
         </tr>
         <tr>

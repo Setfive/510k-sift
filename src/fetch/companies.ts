@@ -68,6 +68,7 @@ export async function fetchCompanies(request: ICompanySearchRequest) {
     total: count,
     paginated: count > PER_PAGE,
     pages: Math.floor(count / PER_PAGE),
+    sortedBy: "Number of 510(k)s",
   };
 
   return pagerResult;

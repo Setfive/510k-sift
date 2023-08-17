@@ -98,6 +98,7 @@ export interface IPagerResponse<T> {
   total: number;
   paginated: boolean;
   pages: number;
+  sortedBy: string;
 }
 
 export interface IProductCodeSearchRequest {
