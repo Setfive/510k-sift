@@ -4,6 +4,7 @@ import axios from "axios";
 const os = require("os");
 import { v4 as uuidv4 } from "uuid";
 import { extractTextWithPdfToText } from "./pdfToText";
+import { extractTextAsPagesWitUnstructured } from "./unstructured";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -17,9 +18,15 @@ export async function getRelatedKNumbers(device: Device) {
       responseType: "arraybuffer",
     });
     fs.writeFileSync(pathToFile, axioResult.data);
-    const pdfText = await extractTextWithPdfToText(pathToFile);
+    const pdfTextPages = await extractTextAsPagesWitUnstructured(pathToFile);
     const re = /K\d{6}/gm;
-    const matches = pdfText.match(re);
+    let matches: string[] = [];
+    for (const pdfText of pdfTextPages) {
+      const m = pdfText.match(re);
+      if (m) {
+        matches = matches.concat(m);
+      }
+    }
     return [...new Set<string>(matches)];
   } catch (e) {
     console.error(e.message);

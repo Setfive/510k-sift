@@ -232,8 +232,8 @@ async function extractRelatedKNumbers() {
     const records = await appDataSource
       .getRepository(Device)
       .createQueryBuilder("u")
-      .where(`u.indicationsForUse IS NOT NULL AND u.id IN (:...ids)`)
-      .orderBy("u.datereceived", "ASC")
+      .where(`u.id IN (:...ids)`)
+      .orderBy("u.datereceived", "DESC")
       .setParameter("ids", chunk)
       .getMany();
     let num = 0;
@@ -242,7 +242,9 @@ async function extractRelatedKNumbers() {
       entry.relatedKNumbers = JSON.stringify(relatedKs);
       await appDataSource.manager.save(entry);
       num += 1;
-      logger.info(`[${numChunk}/${chunks.length}] ${num}/${records.length}`);
+      logger.info(
+        `[${numChunk}/${chunks.length}] ${entry.knumber}: ${entry.relatedKNumbers}`
+      );
     }
     numChunk += 1;
   }
