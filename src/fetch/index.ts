@@ -46,6 +46,7 @@ export async function searchDevices(
 
   let timer: NodeJS.Timer;
   let dots = ".";
+  const sortedIds: Map<number, number> = new Map<number, number>();
   if (request.deviceName) {
     ee.emit("progress", `Vector searching for similar devices`);
     timer = setInterval(() => {
@@ -66,8 +67,12 @@ export async function searchDevices(
       vector: decodedEmbedding,
       limit: 500,
     });
-    const ids = result.map((item) => item.id);
-    query.where("u.id IN (:...ids)").setParameter("ids", ids);
+    for (let i = 0; i < result.length; i++) {
+      sortedIds.set(result[i].id as number, i);
+    }
+    query
+      .where("u.id IN (:...ids)")
+      .setParameter("ids", Array.from(sortedIds.keys()));
     clearInterval(timer);
 
     sortedBy = "By most similar device name";
@@ -119,7 +124,7 @@ export async function searchDevices(
     query.offset(request.page * PER_PAGE);
   }
 
-  const result: IDeviceDTO[] = [];
+  const result: (IDeviceDTO & { position: number })[] = [];
 
   ee.emit("progress", `Searching the database`);
   dots = ".";
@@ -154,9 +159,11 @@ export async function searchDevices(
 
   for (const device of devicesAndCount[0]) {
     const item = await shallowDeviceToDTO(device);
-    result.push(item);
+    const position = sortedIds.get(device.id) ?? -1;
+    const itWithPos = Object.assign(item, { position });
+    result.push(itWithPos);
   }
-
+  result.sort((a, b) => a.position - b.position);
   const pagerResult: IPagerResponse<IDeviceDTO> = {
     data: result,
     total: devicesAndCount[1],
