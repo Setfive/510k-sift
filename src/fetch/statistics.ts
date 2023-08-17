@@ -9,7 +9,6 @@ export async function getStatistics(): Promise<IStatisticsDTO> {
     .createQueryBuilder("u")
     .select("MAX(u.decisiondate) AS maxDate")
     .getRawOne<{ maxDate: string }>();
-  console.log(maxDateResult);
 
   let maxDate = "N/A";
   if (maxDateResult?.maxDate) {

@@ -170,4 +170,5 @@ process_name = sift
 numprocs = 1
 autorestart = true
 user = ubuntu
+stopsignal=KILL
 ```
