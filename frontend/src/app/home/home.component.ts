@@ -7,7 +7,7 @@ import {
   IPagerResponse,
   IProgressSSEEvent,
   ISearchRequest,
-  ISearchResultsSSEEvent
+  ISearchResultsSSEEvent, IStatisticsDTO
 } from "../service/types";
 import {ApiService} from "../service/api.service";
 import {DECISIONS} from "./decisions";
@@ -23,6 +23,7 @@ import {SampleSearchKeys} from "./types";
 export class HomeComponent implements OnInit {
   form: FormGroup;
   result?: IPagerResponse<IDeviceDTO>;
+  statistics?: IStatisticsDTO;
   loading = false;
   noResults = false;
   hasSearch = false;
@@ -53,7 +54,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.apiService
+        .getStatistics()
+        .subscribe(result => this.statistics = result);
   }
 
   sampleSearch(key: SampleSearchKeys) {

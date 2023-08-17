@@ -94,3 +94,7 @@ export interface IPromptDTO {
   system: string;
   user: string;
 }
+
+export interface IStatisticsDTO {
+  latestDecisionDate: string;
+}

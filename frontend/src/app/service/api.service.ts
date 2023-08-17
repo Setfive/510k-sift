@@ -12,7 +12,7 @@ import {
   IProductCodeDTO,
   IProductCodeDTOWithDevices,
   IProductCodeSearchRequest, IProgressSSEEvent,
-  ISearchRequest, ISearchResultsSSEEvent
+  ISearchRequest, ISearchResultsSSEEvent, IStatisticsDTO
 } from "./types";
 import {ToastService} from "./toast.service";
 
@@ -151,5 +151,9 @@ export class ApiService {
     }
 
     return value.replace(/\n/g, '<br/>');
+  }
+
+  public getStatistics() {
+    return this.httpClient.get<IStatisticsDTO>(`/api/statistics`);
   }
 }
