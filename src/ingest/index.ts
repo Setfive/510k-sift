@@ -263,6 +263,9 @@ async function getStatementSummaryUrlForKNumber(
         foiaURL = ahref;
       }
     });
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(resolve, 5000);
+    });
   } catch (e) {
     LOGGER.error(`${url}: ${e.message}`);
   }
