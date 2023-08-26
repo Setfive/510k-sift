@@ -242,6 +242,12 @@ async function download() {
   console.log(curls.join("\n"));
 }
 
+async function sleep(time: number) {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => resolve(), time);
+  });
+}
+
 async function getStatementSummaryUrlForKNumber(
   knumber: string
 ): Promise<{ statementSumURL: string; foiaURL: string }> {
@@ -249,6 +255,7 @@ async function getStatementSummaryUrlForKNumber(
   let foiaURL = "";
   const url = `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${knumber}`;
   try {
+    LOGGER.info(`Fetching ${url}`);
     const axiosResult = await axios.get<string>(url);
     const $ = cheerio.load(axiosResult.data);
     $("a").each(async function () {
@@ -263,9 +270,7 @@ async function getStatementSummaryUrlForKNumber(
         foiaURL = ahref;
       }
     });
-    await new Promise<void>((resolve, reject) => {
-      setTimeout(resolve, 5000);
-    });
+    await sleep(5000);
   } catch (e) {
     LOGGER.error(`${url}: ${e.message}`);
   }
