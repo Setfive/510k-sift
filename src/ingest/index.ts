@@ -384,7 +384,7 @@ async function createdb() {
       item.devicename = record.DEVICENAME;
       item.company = applicant;
 
-      if (!item.summaryStatementURL) {
+      if (!item.summaryStatementURL && addToList) {
         const extractedUrls = await getStatementSummaryUrlForKNumber(
           item.knumber
         );
